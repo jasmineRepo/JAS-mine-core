@@ -5,8 +5,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<groupId>com.github.jasmineRepo</groupId>
-	<artifactId>microsim-core</artifactId>
-	<version>3.0.0</version>
+	<artifactId>JAS-mine-core</artifactId>
+	<version>3.0.1</version>
 	<build>
 		<plugins>
 			<plugin>
