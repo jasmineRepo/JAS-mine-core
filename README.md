@@ -5,7 +5,7 @@ It has built-in utilities for communicating with an underlying relational databa
 
 JAS-mine favours the separation of data representation and management, which is automatically taken care of by the simulation engine, from the implementation of processes and behavioural algorithms, which should be the primary concern of the modeller. The platform gives the researcher a template on how to structure a generic simulation model.
 
-This repository contains the core libraries.
+This repository contains the core libraries, for the gui libraries see https://github.com/jasmineRepo/JAS-mine-gui.
 
 See www.jas-mine.net for more details.
 
