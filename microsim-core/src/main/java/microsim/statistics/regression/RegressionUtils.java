@@ -191,80 +191,80 @@ public class RegressionUtils {
 		return event;
 	}
 
-	/**
-	 * Method to bootstrap regression covariates when they are independent from each other. 
-	 * As covariates are assumed to be independent, the input MultiKeyCoefficientMap map does
-	 * not need to have an associated covariance matrix, only a column named 'STANDARD_ERROR'.
-	 * In addition, the covariate estimates must be in a column labelled 'ESTIMATE'
-	 * 
-	 * @param map: A MultiKeyCoefficientMap that must contain two values column called 'ESTIMATE' and 'STANDARD_ERROR'.
-	 * @return a MultiKeyCoefficientMap that is bootstrapped from the input map
-	 * @author richardsonr
-	 */
-	public static MultiKeyCoefficientMap bootstrapUncorrelated(MultiKeyCoefficientMap map) {
-		
-		String[] valuesNames = map.getValuesNames();
-		int estimatesColumnNumber = -1;
-		int errorsColumnNumber = -1;
-//		int countEstimate = 0;
-//		int countError = 0;
-		String estimatesString = null;
-		String errorsString = null;
-		for(int i = 0; i < valuesNames.length; i++) {
-//			if(valuesNames[i].equals("estimate")) {
-			if(valuesNames[i].equals(RegressionColumnNames.ESTIMATE.toString())) {
-				estimatesColumnNumber = i;
-				estimatesString = valuesNames[i];
-//				countEstimate++;
-			}
-//			else if(valuesNames[i].equals("standard_error")) {
-			else if(valuesNames[i].equals(RegressionColumnNames.STANDARD_ERROR.toString())) {
-				errorsColumnNumber = i;
-				errorsString = valuesNames[i];
-//				countError++;
-			}			
-		}
-		if((estimatesColumnNumber < 0) || (errorsColumnNumber < 0)) {
-//		if((countEstimate < 1) || (countError < 1)) {
-			throw new RuntimeException(map + " does not contain columns named 'estimate' and 'standard_error', which is necessary in order to call the RegressionUtils.bootstrap() method. \nThe stack trace is "
-					+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-		}
-//		else if((countEstimate > 1) || (countError > 1)) {		//Will not work, as cannot have non-unique column names stored in MultiKeyCoefficientMap - the column last put in the map will be the one used here (note, the order of the put operations constructing the map depends on the order of iteration)
-//			throw new RuntimeException(map + " has more than one column of estimates or standard error values - cannot determine the appropriate values to use in the RegressionUtils.bootstrap() method. \nThe stack trace is "
+//	/**
+//	 * Method to bootstrap regression covariates when they are independent from each other. 
+//	 * As covariates are assumed to be independent, the input MultiKeyCoefficientMap map does
+//	 * not need to have an associated covariance matrix, only a column named 'STANDARD_ERROR'.
+//	 * In addition, the covariate estimates must be in a column labelled 'ESTIMATE'
+//	 * 
+//	 * @param map: A MultiKeyCoefficientMap that must contain two values column called 'ESTIMATE' and 'STANDARD_ERROR'.
+//	 * @return a MultiKeyCoefficientMap that is bootstrapped from the input map
+//	 * @author richardsonr
+//	 */
+//	public static MultiKeyCoefficientMap bootstrapUncorrelated(MultiKeyCoefficientMap map) {
+//		
+//		String[] valuesNames = map.getValuesNames();
+//		int estimatesColumnNumber = -1;
+//		int errorsColumnNumber = -1;
+////		int countEstimate = 0;
+////		int countError = 0;
+//		String estimatesString = null;
+//		String errorsString = null;
+//		for(int i = 0; i < valuesNames.length; i++) {
+////			if(valuesNames[i].equals("estimate")) {
+//			if(valuesNames[i].equals(RegressionColumnNames.ESTIMATE.toString())) {
+//				estimatesColumnNumber = i;
+//				estimatesString = valuesNames[i];
+////				countEstimate++;
+//			}
+////			else if(valuesNames[i].equals("standard_error")) {
+//			else if(valuesNames[i].equals(RegressionColumnNames.STANDARD_ERROR.toString())) {
+//				errorsColumnNumber = i;
+//				errorsString = valuesNames[i];
+////				countError++;
+//			}			
+//		}
+//		if((estimatesColumnNumber < 0) || (errorsColumnNumber < 0)) {
+////		if((countEstimate < 1) || (countError < 1)) {
+//			throw new RuntimeException(map + " does not contain columns named 'estimate' and 'standard_error', which is necessary in order to call the RegressionUtils.bootstrap() method. \nThe stack trace is "
 //					+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
 //		}
-		
-		//Create new multikeycoefficientmap to return with new bootstrapped column, in addition to estimate and standard error data
-		String[] valueNames = new String[3];
-		valueNames[0] = RegressionColumnNames.COEFFICIENT.toString();
-		valueNames[1] = RegressionColumnNames.ESTIMATE.toString();
-		valueNames[2] = RegressionColumnNames.STANDARD_ERROR.toString();
-		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(map.getKeysNames(), valueNames);
-		
-		for (MapIterator iterator = map.mapIterator(); iterator.hasNext();) {
-			iterator.next();
-			
-			MultiKey multiKey = (MultiKey) iterator.getKey();
-			int multiKeyLength = multiKey.getKeys().length; 
-			Object[] fullKey = new Object[multiKeyLength + 1];			//To include last key, which is the name of the appropriate value column (i.e. 'estimate' or 'standard_error')
-			for(int i = 0; i < multiKeyLength; i++) {
-				fullKey[i] = multiKey.getKey(i);
-			}
-			fullKey[multiKeyLength] = estimatesString;
-			double estimate = ((Number)map.getValue(fullKey)).doubleValue();			//This represents the expected value of the regression co-efficient
-			
-			fullKey[multiKeyLength] = errorsString;
-			double standardError = ((Number)map.getValue(fullKey)).doubleValue();
-			double errorAdjustment = SimulationEngine.getRnd().nextGaussian() * standardError;		//Adjust standard normal variable to have appropriate variance
-			double coefficient = estimate + errorAdjustment;				//Bootstrap values by randomly sampling from a normal distribution with the appropriate standard error, and add to expected value of the regression co-efficient
-			
-			Object[] values = new Object[] {coefficient, estimate, standardError};	//WARNING: Need to ensure this order is consistent with the column heading names as defined above in valueNames   
-			
-			//Add the new data to the new multikeycoefficientmap to return...
-			bootstrapMap.put(multiKey, values);
-		}
-		return bootstrapMap;
-	}
+////		else if((countEstimate > 1) || (countError > 1)) {		//Will not work, as cannot have non-unique column names stored in MultiKeyCoefficientMap - the column last put in the map will be the one used here (note, the order of the put operations constructing the map depends on the order of iteration)
+////			throw new RuntimeException(map + " has more than one column of estimates or standard error values - cannot determine the appropriate values to use in the RegressionUtils.bootstrap() method. \nThe stack trace is "
+////					+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+////		}
+//		
+//		//Create new multikeycoefficientmap to return with new bootstrapped column, in addition to estimate and standard error data
+//		String[] valueNames = new String[3];
+//		valueNames[0] = RegressionColumnNames.COEFFICIENT.toString();
+//		valueNames[1] = RegressionColumnNames.ESTIMATE.toString();
+//		valueNames[2] = RegressionColumnNames.STANDARD_ERROR.toString();
+//		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(map.getKeysNames(), valueNames);
+//		
+//		for (MapIterator iterator = map.mapIterator(); iterator.hasNext();) {
+//			iterator.next();
+//			
+//			MultiKey multiKey = (MultiKey) iterator.getKey();
+//			int multiKeyLength = multiKey.getKeys().length; 
+//			Object[] fullKey = new Object[multiKeyLength + 1];			//To include last key, which is the name of the appropriate value column (i.e. 'estimate' or 'standard_error')
+//			for(int i = 0; i < multiKeyLength; i++) {
+//				fullKey[i] = multiKey.getKey(i);
+//			}
+//			fullKey[multiKeyLength] = estimatesString;
+//			double estimate = ((Number)map.getValue(fullKey)).doubleValue();			//This represents the expected value of the regression co-efficient
+//			
+//			fullKey[multiKeyLength] = errorsString;
+//			double standardError = ((Number)map.getValue(fullKey)).doubleValue();
+//			double errorAdjustment = SimulationEngine.getRnd().nextGaussian() * standardError;		//Adjust standard normal variable to have appropriate variance
+//			double coefficient = estimate + errorAdjustment;				//Bootstrap values by randomly sampling from a normal distribution with the appropriate standard error, and add to expected value of the regression co-efficient
+//			
+//			Object[] values = new Object[] {coefficient, estimate, standardError};	//WARNING: Need to ensure this order is consistent with the column heading names as defined above in valueNames   
+//			
+//			//Add the new data to the new multikeycoefficientmap to return...
+//			bootstrapMap.put(multiKey, values);
+//		}
+//		return bootstrapMap;
+//	}
 	
 //	//This would possibly work, if the MultiKeyCoefficientMap iterated in the same order as insertion, so that rows and column orderings can be preserved.  Need to re-do MultiKeyCoefficientMaps to ensure this in future???
 	// @author richardsonr

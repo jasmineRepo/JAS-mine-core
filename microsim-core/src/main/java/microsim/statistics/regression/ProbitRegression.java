@@ -6,6 +6,7 @@ import java.util.Random;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
 import microsim.statistics.IDoubleSource;
+import microsim.statistics.IObjectSource;
 import cern.jet.random.Normal;
 import cern.jet.random.engine.MersenneTwister;
 
@@ -58,9 +59,18 @@ public class ProbitRegression extends LinearRegression implements IBinaryChoiceR
 		return (double) normalRV.cdf(score);
 	}
 	
-//	@Override
 	public <T extends Enum<T>> boolean event(IDoubleSource iDblSrc, Class<T> enumType) {
 		final double probability = getProbability(iDblSrc, enumType);
+		return (random.nextDouble() < probability);		
+	}
+	
+	public <T extends Enum<T>, U extends Enum<U>> double getProbability(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+		final double score = super.getScore(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);		
+		return (double) normalRV.cdf(score);			
+	}
+	
+	public <T extends Enum<T>, U extends Enum<U>> boolean event(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+		final double probability = getProbability(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);
 		return (random.nextDouble() < probability);		
 	}
 
