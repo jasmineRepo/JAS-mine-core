@@ -169,9 +169,14 @@ public class LinearRegression implements ILinearRegression {
 				MultiKey coeffMK = (MultiKey) iterator.getKey();	
 				String regressor = coeffMK.getKey(0).toString();							//coeffMK is assumed to only have a single key here
 				double covariate = iDblSrc.getDoubleValue(Enum.valueOf(enumType, regressor));		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface
-//				String columnName = RegressionColumnNames.COEFFICIENT.toString();
-//				double regCoefficient = ((Number)(coeffMultiMap.getValue(regressor, columnName))).doubleValue();
-				double regCoefficient = ((Number)(coeffMultiMap.getValue(regressor))).doubleValue();
+				String columnName = RegressionColumnNames.COEFFICIENT.toString();
+				double regCoefficient;
+				if(coeffMultiMap.getValuesNames().length == 1) {
+					regCoefficient = ((Number)(coeffMultiMap.getValue(regressor))).doubleValue();	
+				}
+				else {
+					regCoefficient = ((Number)(coeffMultiMap.getValue(regressor, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+				}
 //				System.out.println("regressor " + regressor + ", " + "covariate " + covariate + ", " + " regCoefficient " + regCoefficient);
 				sum += covariate * regCoefficient;				
 			}

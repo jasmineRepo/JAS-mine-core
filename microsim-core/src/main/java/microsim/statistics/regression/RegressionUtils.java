@@ -469,7 +469,8 @@ public class RegressionUtils {
 			MultiKey multiKey = (MultiKey) iterator.getKey();
 			String regressor = (String) multiKey.getKey(regressorColumnIndex);
 			int rowIndex = indexOfValuesNameMap.get(regressor);
-			bootstrapMap.put(multiKey, new Object[]{means[rowIndex]});
+//			bootstrapMap.put(multiKey, new Object[]{means[rowIndex]});		
+			bootstrapMap.put(multiKey, means[rowIndex]);
 			
 //			Object[] keyValues = new Object[multiKey.getKeys().length+1];
 //			for(int i1 = 0; i1 < multiKey.getKeys().length; i1++) {
