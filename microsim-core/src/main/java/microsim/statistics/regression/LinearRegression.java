@@ -446,11 +446,9 @@ public class LinearRegression implements ILinearRegression {
 
 	/**
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
-	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)
-	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-     
-	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.  
-	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
-	 *
+	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)
+	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-      
+	 * 
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
 	 * @param enumTypeDouble specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
 	 * @param iObjSrc is an object that implements the IObjectSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getObjectValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the conditioning regression key entries of coeffMultiMap's MultiKey (not the first key entry, which is reserved for the regressor name)
@@ -466,9 +464,9 @@ public class LinearRegression implements ILinearRegression {
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
 	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)
 	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-     
+	 * 
 	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.  
 	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
-	 * 
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey containing the name of the regressor variable.  The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
 	 * @param enumTypeDouble specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
