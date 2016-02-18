@@ -396,12 +396,12 @@ public class LinearRegression implements ILinearRegression {
 
 						double regCoefficient = ((Number)coeffMultiMap.getValue(fullKeys)).doubleValue();
 						score += covariate * regCoefficient;
-						System.out.println("regressor " + regressor + ", " + "covariate " + covariate + ", " + " regCoefficient " + regCoefficient);
+//						System.out.println("regressor " + regressor + ", " + "covariate " + covariate + ", " + " regCoefficient " + regCoefficient);
 					}
 					else {							//Case when coeffMultiMap only has one value column
 						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();		
 						score += covariate * regCoefficient;
-						System.out.println("regressor " + regressor + ", " + "covariate " + covariate + ", " + " regCoefficient " + regCoefficient);
+//						System.out.println("regressor " + regressor + ", " + "covariate " + covariate + ", " + " regCoefficient " + regCoefficient);
 					}
 				}
 				
