@@ -22,7 +22,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity
-@Table(name="jas_experiment")
+@Table(name="jasmine_experiment")
 public class Experiment {
 
 	@Id

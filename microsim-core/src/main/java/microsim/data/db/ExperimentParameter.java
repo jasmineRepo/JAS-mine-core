@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="jas_experiment_parameter")
+@Table(name="jasmine_experiment_parameter")
 public class ExperimentParameter {
 
 	@Id
