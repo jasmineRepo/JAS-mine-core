@@ -13,7 +13,7 @@ public interface Event extends Comparable<Event> {
 	   * 	can be specified using the ordering integer - an event 
 	   * 	with a lower ordering value will be fired earlier.  If 
 	   * 	two or more events have equal absolute time and ordering, 
-	   * 	they will be fired in random order.
+	   * 	the first event that was scheduled will be fired first.
 	   * @param withLoop - the time period between repeated firing of 
 	   * 	the event.  If this parameter is set to 0, this event will 
 	   * 	not be fired more than once.

@@ -12,6 +12,7 @@ import microsim.engine.SimulationEngine;
 import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
 
 public class RegressionUtils {
 
@@ -434,6 +435,7 @@ public class RegressionUtils {
 			int rowIndex = indexOfValuesNameMap.get(regressor);
 			Object[] mapValuesRow = ((Object[])map.getValue(multiKey));
 			means[rowIndex] = ((Number)mapValuesRow[estimateIndex]).doubleValue();		//Should throw null pointer exception if the RHS returns null
+//			System.out.println(regressor + ", " + rowIndex + ", " + means[rowIndex]);
 			for(String covariableName : indexOfValuesNameMap.keySet()) {
 				int columnIndex = indexOfValuesNameMap.get(covariableName);
 				covarianceMatrix[rowIndex][columnIndex] = ((Number)mapValuesRow[valuesMap.get(covariableName)]).doubleValue();		//Should throw null pointer exception if the RHS returns null
@@ -454,7 +456,7 @@ public class RegressionUtils {
 //			System.out.print("\n");
 //		}
 		
-		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution(means, covarianceMatrix);
+		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrix);
 		means = multiNormDist.sample();		//This returns the bootstrapped values of the estimates
 		
 		//Create new multikeycoefficientmap to return with new bootstrapped column, in addition to estimate and standard error data
@@ -478,7 +480,7 @@ public class RegressionUtils {
 //			}
 //			keyValues[multiKey.getKeys().length] = means[rowIndex];
 //			bootstrapMap.putValue(keyValues);
-//			System.out.println("regressor " + regressor + " coefficient " + bootstrapMap.getValue(multiKey));
+			System.out.println("regressor " + regressor + " coefficient " + bootstrapMap.getValue(multiKey));
 		}
 		return bootstrapMap;
 

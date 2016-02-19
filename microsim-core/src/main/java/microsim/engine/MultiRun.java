@@ -82,7 +82,9 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 		multiRunListeners = new ArrayList<MultiRunListener>();
 		engineListeners = new ArrayList<EngineListener>();
 		
-		multiRunId = "Run " + new Random().nextInt();
+//		multiRunId = "Run " + new Random().nextInt();		//Ross: Why is this Random?
+//		multiRunId = "Run " + SimulationEngine.getRnd().nextInt();		//Ross: Why is this Random?
+		multiRunId = "Run " + counter;
 	}
 
 	/**

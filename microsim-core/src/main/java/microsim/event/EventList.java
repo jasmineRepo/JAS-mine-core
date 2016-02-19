@@ -164,10 +164,10 @@ public class EventList {
 	 * @param atTime
 	 *            The time when event will be fired.
 	 * @param withOrdering
-	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled at the same time
+	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the choice of the first event to be fired at the scheduled time is determined randomly.
+	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
 	 */
 	public EventList scheduleOnce(Event event, double atTime, int withOrdering) {
 		event.setTimeOrderingAndLoopPeriod(atTime, withOrdering, 0);
@@ -182,10 +182,10 @@ public class EventList {
 	 * @param atTime
 	 *            The time when event will be fired for the first time.
 	 * @param withOrdering
-	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled at the same time
+	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the choice of the first event to be fired at the scheduled time is determined randomly.
+	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
 	 * @param timeBetweenEvents
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 */
@@ -202,7 +202,8 @@ public class EventList {
 	 * Warning - This method is deprecated as it doesn't specify the ordering of events scheduled for the same time 
 	 * - all events scheduled using this method are set with a default ordering of 0.
 	 * In this instance, if events e1 and e2 are scheduled for the same time (i.e. e1.time == e2.time) using this method, 
-	 * there is no way of ensuring that, for example, e1 is fired before e2 - the actual order these same-time events is randomly determined.
+	 * there is no way of ensuring that, for example, e2 is fired before e1 - the actual order these same-time events is 
+	 * determined by the order in which they are added to the EventList.
 	 * 
 	 * This method is still included in the JAS-mine libraries for backwards compatibility with JAS2 models, however it is preferable to use
 	 * scheduleOnce(Event, double, int) or scheduleRepeating(Event, double, int, double), where the order of same-time events can be fully specified 
@@ -227,7 +228,8 @@ public class EventList {
 	 * Warning - This method is deprecated as it doesn't specify the ordering of events scheduled for the same time 
 	 * - all events scheduled using this method are set with a default ordering of 0.
 	 * In this instance, if events e1 and e2 are scheduled for the same time (i.e. e1.time == e2.time) using this method, 
-	 * there is no way of ensuring that, for example, e1 is fired before e2 - the actual order these same-time events is randomly determined.
+	 * there is no way of ensuring that, for example, e2 is fired before e1 - the actual order these same-time events is 
+	 * determined by the order in which they are added to the EventList.
 	 * 
 	 * This method is still included in the JAS-mine libraries for backwards compatibility with JAS2 models, however it is preferable to use
 	 * scheduleOnce(Event, double, int) or scheduleRepeating(Event, double, int, double), where the order of same-time events can be fully specified 
@@ -255,10 +257,10 @@ public class EventList {
 	 * @param atTime
 	 *            The time when event will be fired for the first time.
 	 * @param withOrdering
-	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled at the same time
+	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the choice of the first event to be fired at the scheduled time is determined randomly.
+	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
 	 * @param withLoop
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 * 

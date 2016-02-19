@@ -26,7 +26,7 @@ public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 		else
 			list.addAll(agentList);
 		
-		Collections.shuffle(list);
+		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		
 		Map<T, Double> map = new HashMap<T, Double>();

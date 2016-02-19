@@ -1,6 +1,7 @@
 package microsim.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
 
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 
 /**
@@ -116,10 +118,49 @@ public class SimulationEngine extends Thread {
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();
-		rnd = new Random(randomSeed);
+//		rnd = new Random(randomSeed);
+		rnd = new RandomNumberGenerator(randomSeed);
 		engineListeners = new ArrayList<EngineListener>();
 		
 		instance = this;
+	}
+	
+	/* This class enables the construction of an apache commons math3
+	 * MultivariateNormalDistribution class that uses the SimulationEngine's rnd object.
+	 * 
+	 * RandomNumberGenerator is basically the Java.util.Random object as previously, 
+	 * however now it implements the RandomGenerator interface from apache commons math3,
+	 * which is compatible with Java.util.Random
+	 * 
+	 * @author Ross Richardson
+	 *
+	 */
+	class RandomNumberGenerator extends Random implements RandomGenerator {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5942825728562046996L;
+
+		RandomNumberGenerator(long seed) {
+			super(seed);
+		}
+		
+		@Override
+		public void setSeed(int seed) {
+			setSeed((long)seed);
+			
+		}
+
+		@Override
+		public void setSeed(int[] seed) {
+			throw new RuntimeException("SimulationEngine's RandomNumberGenerator class "
+					+ "is derived from the Java.util.Random class, which doesn't "
+					+ "implement a constructor taking an int[] argument.  This method "
+					+ "should not be used!\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+		}
+		
+		
 	}
 
 	public boolean isSilentMode() {
@@ -277,7 +318,7 @@ public class SimulationEngine extends Thread {
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();
-		rnd = new Random(randomSeed);		
+		rnd = new RandomNumberGenerator(randomSeed);		
 	}
 
 	/**
@@ -438,7 +479,7 @@ public class SimulationEngine extends Thread {
 	 *            The new random seed.
 	 */
 	public void setRandomSeed(long newSeed) {
-		rnd.setSeed((int) newSeed);
+		rnd.setSeed(newSeed);
 		randomSeed = newSeed;
 	}
 
@@ -563,7 +604,8 @@ public class SimulationEngine extends Thread {
 	}
 	
 	public Random getRandom() {
-		return new Random(rnd.nextLong());		//TODO:  This seems to be creating a new random number generator with a randomly generated seed, every time getRandom is called.  Is this the reason why two simulation runs with the same inputs, parameters and seeds do not produce identical outputs?  Should we correct this to just return the rnd field?
+//		return new Random(rnd.nextLong());
+		return rnd;
 	}
 
 	public String getMultiRunId() {

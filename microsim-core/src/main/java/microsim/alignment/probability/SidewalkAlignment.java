@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
+import microsim.engine.SimulationEngine;
+
 public class SidewalkAlignment<T> extends AbstractProbabilityAlignment<T> {
 
 	@Override
@@ -22,7 +24,7 @@ public class SidewalkAlignment<T> extends AbstractProbabilityAlignment<T> {
 		else
 			list.addAll(agentList);
 		
-		Collections.shuffle(list);
+		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		double sum = 0;
 		

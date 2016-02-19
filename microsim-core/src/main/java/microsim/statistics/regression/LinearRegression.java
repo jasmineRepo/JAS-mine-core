@@ -546,7 +546,7 @@ public class LinearRegression implements ILinearRegression {
 					final Long r = (Long) value;
 					resultMap.put(key, ((Long)(r != null ? r : 0L)).doubleValue());				
 				} else if (value.getClass().equals(Integer.class)) {
-					Integer r = (Integer) value;
+					final Integer r = (Integer) value;
 					resultMap.put(key, ((Integer)(r != null ? r : 0)).doubleValue());				
 				} else if (value.getClass().equals(Boolean.class)) {
 					Boolean r = (Boolean) value;
