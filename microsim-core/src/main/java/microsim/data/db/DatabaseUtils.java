@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,7 @@ public class DatabaseUtils {
 		experiment.parameters = new ArrayList<ExperimentParameter>();
 
 		for (Object model : models) {
+			HashSet<String> modelParamNames = new HashSet<String>();
 			Field[] fields = model.getClass().getDeclaredFields();
 			for (Field field : fields) {
 				ModelParameter modelParamter = field
@@ -58,7 +60,9 @@ public class DatabaseUtils {
 					field.setAccessible(true);
 					ExperimentParameter parameter = new ExperimentParameter();
 					parameter.experiment = experiment;
-					parameter.name = field.getName();
+					String name = field.getName();
+					parameter.name = name;
+					modelParamNames.add(name);
 					Object obj = field.get(model);
 					parameter.value = (obj != null ? obj.toString() : "null");
 
@@ -67,54 +71,31 @@ public class DatabaseUtils {
 			}
 			
 			//Check that getter and setter exists for each model parameter (to ensure ability to control via microsim.shell GUI)
-			List<String> getters = new ArrayList<String>();
-			List<String> setters = new ArrayList<String>();			
+			HashSet<String> getters = new HashSet<String>();
+			HashSet<String> setters = new HashSet<String>();			
 			Method[] methods = model.getClass().getMethods();
 
 			for(Method method : methods){
 				if(isGetter(method)) {
 					getters.add(method.getName());
-//					System.out.println(method.getName());
 				}
 				else if(isSetter(method)) {
 					setters.add(method.getName());
-//					System.out.println(method.getName());
 				}
 			}
-			for(String s : getters) {
-				System.out.println(s);
-			}
 			
-			for(ExperimentParameter modelParameter : experiment.parameters) {
-				String modelParameterName = modelParameter.name;
+			for(String modelParameterName : modelParamNames) {
 				String capModelParameterName = modelParameterName.substring(0, 1).toUpperCase() + modelParameterName.substring(1, modelParameterName.length());		//Ensure first letter of name is capitalised
 				String getterName = "get" + capModelParameterName;
 				String setterName = "set" + capModelParameterName;
 				
-				boolean noGetter = true;
-				for(String s : getters) {
-					if(s.contentEquals(getterName)) {
-						noGetter = false;
-//						getters.remove(s);
-						break;
-					}
-				}
-//				if(!getters.contains(getterName)) {
-				if(noGetter) {
-					throw new RuntimeException("Model parameter " + modelParameterName + " does not have the required getter method called " + getterName + ".  Please create a getter method called " + getterName + " to enable this model parameter to be controlled via the GUI.");
+				if(!getters.contains(getterName)) {
+					if(!getters.contains("is" + capModelParameterName))		//handles case for boolean 'is' getter methods
+						throw new RuntimeException("Model parameter " + modelParameterName + " has no getter method.  Please create a getter method called " + getterName + " in the " + model.getClass() + " class to enable this model parameter to be controlled via the GUI.");
 				}
 				
-				boolean noSetter = true;
-				for(String s : setters) {
-					if(s.contentEquals(setterName)) {
-						noSetter = false;
-//						setters.remove(s);
-						break;
-					}
-				}
-//				else if(!setters.contains(setterName)) {
-				if(noSetter) {
-					throw new RuntimeException("Model parameter " + modelParameterName + " does not have the required setter method called " + setterName + ".  Please create a setter method called " + setterName + " to enable this model parameter to be controlled via the GUI.");
+				else if(!setters.contains(setterName)) {
+					throw new RuntimeException("Model parameter " + modelParameterName + " has no setter method.  Please create a setter method called " + setterName + " in the " + model.getClass() + " class to enable this model parameter to be controlled via the GUI.");
 				}
 			}
 			
@@ -127,7 +108,7 @@ public class DatabaseUtils {
 	}
 	
 		public static boolean isGetter(Method method){
-			  if(!method.getName().startsWith("get"))		return false;
+			  if(!(method.getName().startsWith("get")||method.getName().startsWith("is")))		return false;
 			  if(method.getParameterTypes().length != 0)	return false;  
 			  if(void.class.equals(method.getReturnType()))	return false;
 			  return true;
