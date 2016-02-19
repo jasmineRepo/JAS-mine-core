@@ -1,6 +1,7 @@
 package microsim.data.db;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,6 +65,59 @@ public class DatabaseUtils {
 					experiment.parameters.add(parameter);
 				}
 			}
+			
+			//Check that getter and setter exists for each model parameter (to ensure ability to control via microsim.shell GUI)
+			List<String> getters = new ArrayList<String>();
+			List<String> setters = new ArrayList<String>();			
+			Method[] methods = model.getClass().getMethods();
+
+			for(Method method : methods){
+				if(isGetter(method)) {
+					getters.add(method.getName());
+//					System.out.println(method.getName());
+				}
+				else if(isSetter(method)) {
+					setters.add(method.getName());
+//					System.out.println(method.getName());
+				}
+			}
+			for(String s : getters) {
+				System.out.println(s);
+			}
+			
+			for(ExperimentParameter modelParameter : experiment.parameters) {
+				String modelParameterName = modelParameter.name;
+				String capModelParameterName = modelParameterName.substring(0, 1).toUpperCase() + modelParameterName.substring(1, modelParameterName.length());		//Ensure first letter of name is capitalised
+				String getterName = "get" + capModelParameterName;
+				String setterName = "set" + capModelParameterName;
+				
+				boolean noGetter = true;
+				for(String s : getters) {
+					if(s.contentEquals(getterName)) {
+						noGetter = false;
+//						getters.remove(s);
+						break;
+					}
+				}
+//				if(!getters.contains(getterName)) {
+				if(noGetter) {
+					throw new RuntimeException("Model parameter " + modelParameterName + " does not have the required getter method called " + getterName + ".  Please create a getter method called " + getterName + " to enable this model parameter to be controlled via the GUI.");
+				}
+				
+				boolean noSetter = true;
+				for(String s : setters) {
+					if(s.contentEquals(setterName)) {
+						noSetter = false;
+//						setters.remove(s);
+						break;
+					}
+				}
+//				else if(!setters.contains(setterName)) {
+				if(noSetter) {
+					throw new RuntimeException("Model parameter " + modelParameterName + " does not have the required setter method called " + setterName + ".  Please create a setter method called " + setterName + " to enable this model parameter to be controlled via the GUI.");
+				}
+			}
+			
 		}
 
 		experiment = entityManager.merge(experiment);
@@ -71,6 +125,20 @@ public class DatabaseUtils {
 
 		return experiment;
 	}
+	
+		public static boolean isGetter(Method method){
+			  if(!method.getName().startsWith("get"))		return false;
+			  if(method.getParameterTypes().length != 0)	return false;  
+			  if(void.class.equals(method.getReturnType()))	return false;
+			  return true;
+		}
+
+		public static boolean isSetter(Method method){
+			  if(!method.getName().startsWith("set"))		return false;
+			  if(method.getParameterTypes().length != 1)	return false;
+			  return true;
+		}
+
 
 	public static void snap(EntityManager em, Long run, Double time, Object target)
 			throws Exception {
