@@ -480,7 +480,7 @@ public class RegressionUtils {
 //			}
 //			keyValues[multiKey.getKeys().length] = means[rowIndex];
 //			bootstrapMap.putValue(keyValues);
-			System.out.println("regressor " + regressor + " coefficient " + bootstrapMap.getValue(multiKey));
+//			System.out.println("regressor " + regressor + " coefficient " + bootstrapMap.getValue(multiKey));
 		}
 		return bootstrapMap;
 
