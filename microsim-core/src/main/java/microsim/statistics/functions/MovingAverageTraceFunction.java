@@ -51,7 +51,7 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	protected double[] values;
 	protected double average;
 	
-	protected boolean firstUpdate = true;		//Flag determining whether it is the first time applyFunction() has been called
+	protected int valueCount = 0;
 	
 	/** Create a basic statistic probe on a IDoubleSource object.
 	 *  @param name Name of the statistic object.
@@ -108,10 +108,12 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	 * */
 	public void applyFunction() 
 	{
-		if(firstUpdate) {		//Slower calculation at startup as average is calculated directly by summing all entries in the values array
-			average = 0;				//Reset value
+		if(valueCount < len) {		//Slower calculation at startup as average is calculated directly by summing all entries in the values array
+			valueCount++;			//First time this method is called, valueCount is incremented to 1.
 			
-			for (int i = 0; i < len - 1; i++) {
+			average = 0.;				//Reset value
+			
+			for (int i = len - valueCount; i < len - 1; i++) {			//First time this method is called, skips for loop.  When valueCount == len, i starts from 0.
 				values[i] = values[i + 1];			//Thus, values[0] is oldest value, values[values.length] is latest value
 				average += values[i];
 			}
@@ -130,9 +132,7 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 			 
 			average += values[len - 1]; 	
 			
-			average = average / ((double)len);
-			
-			firstUpdate = false;		//No need to run through startup calculation again, use faster calculation below
+			average = average / ((double)valueCount);		//Divide by number of values included in calculation, instead of window length (len) which would give moving average values biased towards zero.
 			
 		} else {			//Faster calculation takes advantage of previously calculated average
 		
