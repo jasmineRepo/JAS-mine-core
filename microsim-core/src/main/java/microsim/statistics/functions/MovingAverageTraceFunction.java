@@ -40,9 +40,10 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	protected static final int TYPE_LNG = 3;
 
 	protected IDoubleSource dblSource;
-	protected ILongSource lngSource;
-	protected IIntSource intSource;
 	protected IFloatSource fltSource;
+	protected IIntSource intSource;
+	protected ILongSource lngSource;
+
 	protected int type;
 	protected Enum<?> valueID;
 					
@@ -50,9 +51,11 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	protected double[] values;
 	protected double average;
 	
-	/** Create a basic statistic probe on a IDblSource object.
+	protected boolean firstUpdate = true;		//Flag determining whether it is the first time applyFunction() has been called
+	
+	/** Create a basic statistic probe on a IDoubleSource object.
 	 *  @param name Name of the statistic object.
-	 *  @param source The IDblSource object.
+	 *  @param source The IDoubleSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IDoubleSource source, Enum<?> valueID, int windowSize) {
 		super();
@@ -62,9 +65,9 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 		values = new double[len];
 	}
 
-	/** Create a basic statistic probe on a IDblSource object.
+	/** Create a basic statistic probe on a IFloatSource object.
 	 *  @param name Name of the statistic object.
-	 *  @param source The IDblSource object.
+	 *  @param source The IFloatSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IFloatSource source, Enum<?> valueID, int windowSize) {
 		super();
@@ -74,9 +77,9 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 		values = new double[len];
 	}
 	
-	/** Create a basic statistic probe on a IDblSource object.
+	/** Create a basic statistic probe on a ILongSource object.
 	 *  @param name Name of the statistic object.
-	 *  @param source The IDblSource object.
+	 *  @param source The ILongSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(ILongSource source, Enum<?> valueID, int windowSize) {
 		super();
@@ -86,9 +89,9 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 		values = new double[len];
 	}
 	
-	/** Create a basic statistic probe on a IDblSource object.
+	/** Create a basic statistic probe on a IIntSource object.
 	 *  @param name Name of the statistic object.
-	 *  @param source The IDblSource object.
+	 *  @param source The IIntSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IIntSource source, Enum<?> valueID, int windowSize) {
 		super();
@@ -97,32 +100,69 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 		this.valueID = valueID;
 		values = new double[len];
 	}
-				
-	/** Collect a value from the source. */
+
+	/** Collect a value from the source. 
+	 * 
+	 * @author Ross Richardson
+	 * 
+	 * */
 	public void applyFunction() 
-	{ 
-		int ln = values.length - 1;
-		for (int i = 0; i > ln; i++)
-			values[i] = values[i + 1];
+	{
+		if(firstUpdate) {		//Slower calculation at startup as average is calculated directly by summing all entries in the values array
+			average = 0;				//Reset value
+			
+			for (int i = 0; i < len - 1; i++) {
+				values[i] = values[i + 1];			//Thus, values[0] is oldest value, values[values.length] is latest value
+				average += values[i];
+			}
+			
+			switch(type)
+			{
+				case TYPE_DBL:
+					values[len - 1] = dblSource.getDoubleValue(valueID); break;
+				case TYPE_FLT:
+					values[len - 1] = fltSource.getFloatValue(valueID); break;
+				case TYPE_LNG:
+					values[len - 1] = lngSource.getLongValue(valueID); break;
+				case TYPE_INT:
+					values[len - 1] = intSource.getIntValue(valueID); break;				
+			}
+			 
+			average += values[len - 1]; 	
+			
+			average = average / ((double)len);
+			
+			firstUpdate = false;		//No need to run through startup calculation again, use faster calculation below
+			
+		} else {			//Faster calculation
 		
-		switch(type)
-		{
-			case TYPE_DBL:
-				values[len - 1] = dblSource.getDoubleValue(valueID); break;
-			case TYPE_FLT:
-				values[len - 1] = fltSource.getFloatValue(valueID); break;
-			case TYPE_LNG:
-				values[len - 1] = lngSource.getLongValue(valueID); break;
-			case TYPE_INT:
-				values[len - 1] = intSource.getIntValue(valueID); break;				
+			//No need to run through the whole array of values to update the average
+			average *= (double)len;
+			average -= values[0];
+			
+			//Still update the values array (though not the average value)
+			for (int i = 0; i < len - 1; i++) {
+				values[i] = values[i + 1];			//Thus, values[0] is oldest value, values[values.length] is latest value
+			}
+			
+			switch(type)
+			{
+				case TYPE_DBL:
+					values[len - 1] = dblSource.getDoubleValue(valueID); break;
+				case TYPE_FLT:
+					values[len - 1] = fltSource.getFloatValue(valueID); break;
+				case TYPE_LNG:
+					values[len - 1] = lngSource.getLongValue(valueID); break;
+				case TYPE_INT:
+					values[len - 1] = intSource.getIntValue(valueID); break;				
+			}
+			 
+			average += values[len - 1]; 	
+			
+			average = average / ((double)len);
 		}
-		 
-		for (int i = 0; i < values.length; i++) {
-			average += values[i]; 	
-		}
-		average = average / (double) len;
-		
 	}
+
 		
 	/** Return the result of a given statistic.
 			*  @param valueID One of the F_ constants representing available statistics.
