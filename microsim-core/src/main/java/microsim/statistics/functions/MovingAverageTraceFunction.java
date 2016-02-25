@@ -134,7 +134,7 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 			
 			firstUpdate = false;		//No need to run through startup calculation again, use faster calculation below
 			
-		} else {			//Faster calculation
+		} else {			//Faster calculation takes advantage of previously calculated average
 		
 			//No need to run through the whole array of values to update the average
 			average *= (double)len;

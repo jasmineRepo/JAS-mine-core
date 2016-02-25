@@ -38,9 +38,9 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	protected static final int TYPE_LNG = 3;
 
 	protected IDoubleArraySource dblSource;
-	protected ILongArraySource lngSource;
-	protected IIntArraySource intSource;
 	protected IFloatArraySource fltSource;
+	protected IIntArraySource intSource;
+	protected ILongArraySource lngSource;
 	protected int type;
 	
 	

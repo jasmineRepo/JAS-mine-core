@@ -79,7 +79,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 			vals = data.length;
 		
 		double sum = 0.0;
-		for (int i = data.length; i > firstElement ; i++) {
+		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
 		}
 		mean = sum / vals;
@@ -97,7 +97,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 			vals = data.length;
 		
 		double sum = 0.0;
-		for (int i = data.length; i > firstElement ; i++) {
+		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
 		}
 		mean = sum / vals;
@@ -115,7 +115,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 			vals = data.length;
 		
 		double sum = 0.0;
-		for (int i = data.length; i > firstElement ; i++) {
+		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
 		}
 		mean = sum / vals;
