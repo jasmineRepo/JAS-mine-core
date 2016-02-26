@@ -40,7 +40,7 @@ import microsim.statistics.reflectors.LongInvoker;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa
+ * @author Michele Sonnessa and Ross Richardson
  * <p>
  */
 public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSource, EventListener  {
@@ -116,7 +116,7 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
 	public static class Long extends MultiTraceFunction implements ILongSource {
@@ -130,8 +130,7 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		private long lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
-		 *  @param source The IDblSource object.
+		 *  @param source The ILongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(ILongSource source, Enum<?> valueID) {
 			target = source;
@@ -139,7 +138,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -182,7 +180,8 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 			*  @return The computed value.
 			*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public long getLongValue(Enum<?> valueID) {
-			if (valueID.equals( IIntSource.Variables.Default))
+//			if (valueID.equals( IIntSource.Variables.Default))
+			if (valueID.equals( ILongSource.Variables.Default))		//Change made by Ross
 				return lastRead;
 			switch ( (MultiTraceFunction.Variables) valueID ) {
 				case LastValue:		return lastRead;
@@ -201,13 +200,14 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		 *  @return The variance value.*/
 		public double getVariance() {
 			if (count > 1)
-				return (sumSquare - (sum * sum)) / (count - 1);
+//				return (sumSquare - (sum * sum)) / (count - 1);
+				return (sumSquare - ( (sum * sum) / count) ) / (count - 1);		//Corrected by Ross
 			else
 				return 0.0;
 		}
 
-		/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
+		/** Return the last long value read from the source object.
+			*  @return A long value collected at the last reading operation.*/
 		public long getLastValue() {
 			return lastRead;
 		}
@@ -257,10 +257,10 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
-	public static class Double extends MultiTraceFunction {
+	public static class Double extends MultiTraceFunction implements IDoubleSource{
 		protected double max = java.lang.Double.MIN_VALUE;
 		protected double min = java.lang.Double.MAX_VALUE;
 		protected double sum = 0, sumSquare = 0;
@@ -271,7 +271,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		private double lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Double(IDoubleSource source, Enum<?> valueID) {
@@ -280,7 +279,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -309,7 +307,8 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			if (valueID.equals( IIntSource.Variables.Default))
+//			if (valueID.equals( IIntSource.Variables.Default))
+			if (valueID.equals( IDoubleSource.Variables.Default))		//Change by Ross
 				return lastRead;
 			switch ( (MultiTraceFunction.Variables) valueID) {
 				case LastValue :	return lastRead;
@@ -324,7 +323,8 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		 *  @return The variance value.*/
 		public double getVariance() {
 			if (count > 1)
-				return (sumSquare - (sum * sum)) / (count - 1);
+//				return (sumSquare - (sum * sum)) / (count - 1);
+				return (sumSquare - ( (sum * sum) / count) ) / (count - 1);		//Corrected by Ross
 			else
 				return 0.0;
 		}
@@ -380,12 +380,10 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
-	public static class Integer
-		extends MultiTraceFunction
-		implements IIntSource {
+	public static class Integer	extends MultiTraceFunction implements IIntSource {
 		protected int max = java.lang.Integer.MIN_VALUE;
 		protected int min = java.lang.Integer.MAX_VALUE;
 		protected int sum = 0;
@@ -397,7 +395,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		private int lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(IIntSource source, Enum<?> valueID) {
@@ -406,7 +403,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -470,13 +466,14 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		 *  @return The variance value.*/
 		public double getVariance() {
 			if (count > 1)
-				return (sumSquare - (sum * sum)) / (count - 1);
+//				return (sumSquare - (sum * sum)) / (count - 1);
+				return (sumSquare - ( (sum * sum) / count) ) / (count - 1);		//Corrected by Ross
 			else
 				return 0.0;
 		}
 
-		/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
+		/** Return the last int value read from the source object.
+			*  @return A int value collected at the last reading operation.*/
 		public int getLastValue() {
 			return lastRead;
 		}
@@ -525,12 +522,10 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
-	public static class Float
-		extends MultiTraceFunction
-		implements IFloatSource {
+	public static class Float extends MultiTraceFunction implements IFloatSource {
 		protected float max = java.lang.Float.MIN_VALUE;
 		protected float min = java.lang.Float.MAX_VALUE;
 		protected float sum = 0.0f;
@@ -542,7 +537,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		private float lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(IFloatSource source, Enum<?> valueID) {
@@ -551,7 +545,6 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -580,7 +573,8 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			if (valueID.equals( IIntSource.Variables.Default))
+//			if (valueID.equals( IIntSource.Variables.Default))
+			if (valueID.equals( IFloatSource.Variables.Default))		//Change by Ross
 				return lastRead;
 			switch ((MultiTraceFunction.Variables) valueID) {
 				case LastValue :			return (double) lastRead;
@@ -614,13 +608,14 @@ public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSou
 		 *  @return The variance value.*/
 		public double getVariance() {
 			if (count > 1)
-				return (sumSquare - (sum * sum)) / (count - 1);
+//				return (sumSquare - (sum * sum)) / (count - 1);
+				return (sumSquare - ( (sum * sum) / count) ) / (count - 1);		//Corrected by Ross
 			else
 				return 0.0;
 		}
 
-		/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
+		/** Return the last float value read from the source object.
+			*  @return A float value collected at the last reading operation.*/
 		public float getLastValue() {
 			return lastRead;
 		}

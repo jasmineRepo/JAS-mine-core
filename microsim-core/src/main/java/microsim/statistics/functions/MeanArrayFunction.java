@@ -27,7 +27,7 @@ import microsim.statistics.ILongArraySource;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa
+ * @author Michele Sonnessa and Ross Richardson
  * <p>
  */
 public class MeanArrayFunction extends AbstractArrayFunction implements IDoubleSource {
@@ -68,14 +68,14 @@ public class MeanArrayFunction extends AbstractArrayFunction implements IDoubleS
 	public void apply(double[] data) {
 		
 		mean = 0.0;
-			
-		double sum = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sum += data[i];
-		if (data.length == 0)
-			mean = 0.0;
-		else
+		if (data.length != 0) {
+		
+			double sum = 0.0;
+			for (int i = 0; i < data.length; i++) {
+				sum += data[i];
+			}
 			mean = sum / data.length;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -84,14 +84,14 @@ public class MeanArrayFunction extends AbstractArrayFunction implements IDoubleS
 	public void apply(float[] data) {
 		
 		mean = 0.0;
-			
-		double sum = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sum += data[i];
-		if (data.length == 0)
-			mean = 0.0;
-		else
+		if (data.length != 0) {
+		
+			double sum = 0.0;
+			for (int i = 0; i < data.length; i++) {
+				sum += data[i];
+			}
 			mean = sum / data.length;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -100,14 +100,14 @@ public class MeanArrayFunction extends AbstractArrayFunction implements IDoubleS
 	public void apply(int[] data) {
 		
 		mean = 0.0;
-			
-		double sum = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sum += data[i];
-		if (data.length == 0)
-			mean = 0.0;
-		else
+		if (data.length != 0) {
+		
+			double sum = 0.0;
+			for (int i = 0; i < data.length; i++) {
+				sum += data[i];
+			}
 			mean = sum / data.length;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -116,14 +116,14 @@ public class MeanArrayFunction extends AbstractArrayFunction implements IDoubleS
 	public void apply(long[] data) {
 
 		mean = 0.0;
-			
-		double sum = 0.0;
-		for (int i = 0; i < data.length; i++)
-			sum += data[i];
-		if (data.length == 0)
-			mean = 0.0;
-		else
+		if (data.length != 0) {
+		
+			double sum = 0.0;
+			for (int i = 0; i < data.length; i++) {
+				sum += data[i];
+			}
 			mean = sum / data.length;
+		}
 	}
 
 	/* (non-Javadoc)

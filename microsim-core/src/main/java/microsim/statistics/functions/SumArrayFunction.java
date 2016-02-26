@@ -85,7 +85,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 	 * @author Michele Sonnessa
 	 *
 	 */
-	public static class Double extends SumArrayFunction 
+	public static class Double extends SumArrayFunction implements IDoubleSource
 	{
 		/** Create a sum function on a double array source.
 		 * @param source The data source.
@@ -100,7 +100,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(double[] data) {
-			dsum = 0;
+			dsum = 0.;
 			
 			for (int i = 0; i < data.length; i++)
 				dsum += data[i];

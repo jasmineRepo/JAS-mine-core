@@ -39,7 +39,7 @@ import microsim.statistics.reflectors.LongInvoker;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa
+ * @author Michele Sonnessa and Ross Richardson
  * <p>
  */
 public abstract class MaxTraceFunction extends AbstractFunction implements IDoubleSource  {
@@ -98,8 +98,7 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		private long lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
-		 *  @param source The IDblSource object.
+		 *  @param source The ILongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(ILongSource source, Enum<?> valueID) {
 			super();
@@ -108,7 +107,6 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -187,10 +185,10 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
-	public static class Double extends MaxTraceFunction {
+	public static class Double extends MaxTraceFunction implements IDoubleSource {
 		protected double max = java.lang.Double.MIN_VALUE;
 		
 		protected IDoubleSource target;
@@ -199,7 +197,6 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		private double lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Double(IDoubleSource source, Enum<?> valueID) {
@@ -209,7 +206,6 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -287,8 +283,7 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		private int lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
-		 *  @param source The IDblSource object.
+		 *  @param source The IIntSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(IIntSource source, Enum<?> valueID) {
 			super();
@@ -297,7 +292,6 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
@@ -375,9 +369,7 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 	 * @author Michele Sonnessa
 	 *
 	 */
-	public static class Float
-		extends MaxTraceFunction
-		implements IFloatSource {
+	public static class Float extends MaxTraceFunction implements IFloatSource {
 		protected float max = java.lang.Float.MIN_VALUE;
 		
 		protected IFloatSource target;
@@ -386,8 +378,7 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		private float lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param name Name of the statistic object.
-		 *  @param source The IDblSource object.
+		 *  @param source The IFloatSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(IFloatSource source, Enum<?> valueID) {
 			super();
@@ -396,7 +387,6 @@ public abstract class MaxTraceFunction extends AbstractFunction implements IDoub
 		}
 
 		/** Create a basic statistic probe on a generic object.
-		  *  @param name Name of the statistic object.
 		  *  @param source A generic source object.
 		  *  @param valueName The name of the field or the method returning the variable to be probed.
 		  *  @param getFromMethod Specifies if valueName is a method or a property value. */

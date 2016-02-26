@@ -29,7 +29,7 @@ import microsim.statistics.ILongSource;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa
+ * @author Michele Sonnessa and Ross Richardson
  * <p>
  */
 public class MovingAverageTraceFunction extends AbstractFunction implements IDoubleSource  {

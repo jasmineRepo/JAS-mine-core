@@ -30,7 +30,7 @@ import microsim.statistics.ILongSource;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa
+ * @author Michele Sonnessa and Ross Richardson
  * <p>
  */
 public abstract class MaxArrayFunction extends AbstractArrayFunction implements IDoubleSource {
@@ -85,7 +85,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	 * @author Michele Sonnessa
 	 *
 	 */
-	public static class Double extends MaxArrayFunction 
+	public static class Double extends MaxArrayFunction implements IDoubleSource
 	{
 		/** Create a maximum function on a double array source.
 		 * @param source The data source.
@@ -251,7 +251,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
 	 * 
-	 * @author Michele Sonnessa
+	 * @author Michele Sonnessa and Ross Richardson
 	 *
 	 */
 	public static class Float extends MaxArrayFunction implements IFloatSource
@@ -272,7 +272,8 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 			fmax = java.lang.Float.MIN_VALUE;
 			
 			for (int i = 0; i < data.length; i++)
-				if (fmax > data[i])
+//				if (fmax > data[i])
+				if (fmax < data[i])					//Corrected by Ross
 					fmax = data[i];
 		}
 
