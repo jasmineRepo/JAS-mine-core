@@ -6,16 +6,18 @@ import java.io.IOException;
 
 import microsim.data.MultiKeyCoefficientMap;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 
 public class ExcelAssistant {
 
-	private static Object getCellValue(HSSFCell cell) {
+	private static Object getCellValue(Cell cell) {
 		Object val = null;
 		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 			val = cell.getStringCellValue();
@@ -32,7 +34,7 @@ public class ExcelAssistant {
 		return val;
 	}
 	
-	private static String getStringCellValue(HSSFCell cell) {
+	private static String getStringCellValue(Cell cell) {
 		Object val = null;
 		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 			val = cell.getStringCellValue();
@@ -49,7 +51,7 @@ public class ExcelAssistant {
 	/**
 	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, reading from the first line of the spreadsheet, and automatically finds the last line of the spreadsheet 
 	 * (blank lines within the data are not allowed and will result in a NullPointerException).
-	 * @param excelFileName: the Excel workbook (.xls) that stores the data
+	 * @param excelFileName: the Excel workbook (.xls or .xlsx) that stores the data
 	 * @param sheetName: the Excel worksheet name that stores the data
 	 * @param keyColumns: the number of columns (stored to the left of the worksheet) that represent keys. This will equal the number of keys of the MultiKeyCoefficientMap that is returned
 	 * @param valueColumns: the number of columns (stored to the right of the keys in the worksheet) that represents values, not keys.  This will equal the size of the values[] array for each MultiKey in the MultiKeyCoefficientMap
@@ -61,7 +63,7 @@ public class ExcelAssistant {
 
 	/**
 	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, choosing which line to start reading from via the startLine parameter
-	 * @param excelFileName: the Excel workbook (.xls) that stores the data
+	 * @param excelFileName: the Excel workbook (.xls or .xlsx) that stores the data
 	 * @param sheetName: the Excel worksheet name that stores the data
 	 * @param keyColumns: the number of columns (stored to the left of the worksheet) that represent keys. This will equal the number of keys of the MultiKeyCoefficientMap that is returned
 	 * @param valueColumns: the number of columns (stored to the right of the keys in the worksheet) that represents values, not keys.  This will equal the size of the values[] array for each MultiKey in the MultiKeyCoefficientMap
@@ -75,18 +77,18 @@ public class ExcelAssistant {
 		
 		try {
 			FileInputStream fileInputStream = new FileInputStream(excelFileName);
-			HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
-			HSSFSheet worksheet = workbook.getSheet(sheetName);
+			Workbook workbook = WorkbookFactory.create(fileInputStream);			
+			Sheet worksheet = workbook.getSheet(sheetName);
 						
-			HSSFRow headerRow = worksheet.getRow(startLine - 1);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
+			Row headerRow = worksheet.getRow(startLine - 1);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
 			String[] keyVector = new String[keyColumns];
 			for (int j = 0; j < keyColumns; j++) {
-				HSSFCell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+				Cell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
 				keyVector[j] = getStringCellValue(cell);
 			}	
 			String[] valueVector = new String[valueColumns];
 			for (int j = keyColumns; j < valueColumns + keyColumns; j++) {
-				HSSFCell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+				Cell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
 				valueVector[j - keyColumns] = getStringCellValue(cell);
 			}
 			
@@ -94,34 +96,34 @@ public class ExcelAssistant {
 			
 			//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1 in loop index bounds.
 			for (int i = startLine; i <= Math.min(worksheet.getLastRowNum(), endLine - 1); i++) {	
-				HSSFRow row = worksheet.getRow(i);
+				Row row = worksheet.getRow(i);
 				Object[] keyValueVector = null;
 				if (valueColumns == 1) {					
 					keyValueVector = new Object[keyColumns + valueColumns];
 					for (int j = 0; j < keyColumns; j++) {
-//						HSSFCell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						HSSFCell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+//						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);
 					}				
 										
 					for (int j = keyColumns; j < keyColumns + valueColumns; j++) {
-//						HSSFCell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						HSSFCell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+//						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);						
 					}	
 				} else {
 					keyValueVector = new Object[keyColumns + 1];
 					for (int j = 0; j < keyColumns; j++) {
-//						HSSFCell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						HSSFCell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+//						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);
 //						System.out.println("key " + keyValueVector[j]);
 					}				
 					
 					Object[] values = new Object[valueColumns];
 					for (int j = 0; j < valueColumns; j++) {
-//						HSSFCell cell = row.getCell((short) (j + keyColumns), Row.RETURN_BLANK_AS_NULL);
-						HSSFCell cell = row.getCell((short) (j + keyColumns), Row.CREATE_NULL_AS_BLANK);
+//						Cell cell = row.getCell((short) (j + keyColumns), Row.RETURN_BLANK_AS_NULL);
+						Cell cell = row.getCell((short) (j + keyColumns), Row.CREATE_NULL_AS_BLANK);
 						values[j] = getCellValue(cell);
 //						System.out.println("val " + values[j]);
 					}	
@@ -132,6 +134,12 @@ public class ExcelAssistant {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (EncryptedDocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
