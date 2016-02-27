@@ -82,8 +82,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 		else
 		{
 			mean = sum / (double) count;
-//			variance = (sumOfSquares - mean * sum) / (double) count;
-			variance = (sumOfSquares - mean * sum) / (double)(count - 1);		//Ross: Changed to Sample Variance to be consistent with MultiTraceFunction definition of Variance (i.e. sample not population variance) 
+			variance = (sumOfSquares - mean * sum) / (double) count; 		//This is a population variance as it is the variance of the array's data.
 		}		
 	}
 	
