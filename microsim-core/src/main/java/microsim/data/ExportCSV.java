@@ -41,13 +41,25 @@ public class ExportCSV {
 	Set<String> fieldsForExport;
 	FileWriter fileWriter = null;
 	
-	Collection<?> target;
+	Collection<?> sourceCollection;		//Use if source is a Collection (iterate across the collection).  Null if a single object is the source.
+	
+	Object sourceObject;		//Use for a single source (no iteration across a collection).  Null if the source is a collection.
 
-	public ExportCSV(Collection<?> targetCollection) {
+	public ExportCSV(Object source) {
         try { 
-        	target = targetCollection;
-        	//Checks whether a file with the same filename already exists - if not, then creates one.  Useful for MultiRun case. 
-        	Object obj = target.iterator().next();
+        	
+        	Object obj;
+        	
+        	if(source instanceof Collection<?>) {        		
+	        	sourceCollection = (Collection<?>) source;
+	        	//Checks whether a file with the same filename already exists - if not, then creates one.  Useful for MultiRun case. 
+	        	obj = sourceCollection.iterator().next();
+        	}
+        	else {
+        		sourceObject = source;
+        		obj = sourceObject;
+        	}
+        	
         	String filename = obj.getClass().getSimpleName();
         	File f = new File(directory + File.separator + filename + ".csv");
         	if(!f.exists())
@@ -122,22 +134,40 @@ public class ExportCSV {
 			String run = SimulationEngine.getInstance().getCurrentExperiment().id.toString();
 			String time = ((Double)SimulationEngine.getInstance().getTime()).toString();
             	
-        	for(Object obj : target) {
-
-                fileWriter.append(newLine);
+			if(sourceCollection != null) {
+	        	for(Object obj : sourceCollection) {
+	
+	                fileWriter.append(newLine);
+	        		fileWriter.append(run + delimiter + time + delimiter);
+	        		
+	        		Field idField = obj.getClass().getDeclaredField("id");
+	        		idField.setAccessible(true);
+					fileWriter.append(((PanelEntityKey)idField.get(obj)).getId().toString() + delimiter);
+					
+	        		for(String fieldName : fieldsForExport) {
+	        			Field thisField = obj.getClass().getDeclaredField(fieldName);
+	        			thisField.setAccessible(true);
+	   					fileWriter.append(thisField.get(obj).toString());    					 
+		            	fileWriter.append(delimiter);
+	        		}
+	        	}
+			}
+			else if(sourceObject != null) {
+			    fileWriter.append(newLine);
         		fileWriter.append(run + delimiter + time + delimiter);
         		
-        		Field idField = obj.getClass().getDeclaredField("id");
+        		Field idField = sourceObject.getClass().getDeclaredField("id");
         		idField.setAccessible(true);
-				fileWriter.append(((PanelEntityKey)idField.get(obj)).getId().toString() + delimiter);
+				fileWriter.append(((PanelEntityKey)idField.get(sourceObject)).getId().toString() + delimiter);
 				
         		for(String fieldName : fieldsForExport) {
-        			Field thisField = obj.getClass().getDeclaredField(fieldName);
+        			Field thisField = sourceObject.getClass().getDeclaredField(fieldName);
         			thisField.setAccessible(true);
-   					fileWriter.append(thisField.get(obj).toString());    					 
+   					fileWriter.append(thisField.get(sourceObject).toString());    					 
 	            	fileWriter.append(delimiter);
         		}
-        	}
+			}
+			else throw new NullPointerException("ExportCSV's targetCollection and targetObject fields are both null!  Cannot export to CSV");
             
         } catch (IOException e) {
 			e.printStackTrace();
