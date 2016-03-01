@@ -100,7 +100,7 @@ public class DatabaseUtils {
     	if (idField != null)
 			idField.setAccessible(true);
 		else throw new IllegalArgumentException("Object of type "
-				+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
+				+ Object.class + " cannot be exported to database as it does not have a field of type PanelEntityKey.class or it is null!");
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
@@ -163,7 +163,7 @@ public class DatabaseUtils {
 	    	if (idField != null)
 				idField.setAccessible(true);
 			else throw new IllegalArgumentException("Object of type "
-					+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
+					+ Object.class + " cannot be exported to database as it does not have a field of type PanelEntityKey.class or it is null!");
 
 //			final Field idField = targetCollection.iterator().next().getClass()
 //					.getDeclaredField("id");
