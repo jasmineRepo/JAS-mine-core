@@ -172,7 +172,7 @@ public class SimulationEngine extends Thread {
 			return;
 		
 		this.silentMode = silentMode;
-		ExperimentManager.getInstance().copyInputFolderStructure = ! silentMode;
+//		ExperimentManager.getInstance().copyInputFolderStructure = ! silentMode;
 		ExperimentManager.getInstance().saveExperimentOnDatabase = ! silentMode;
 	}
 

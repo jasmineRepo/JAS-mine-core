@@ -131,7 +131,8 @@ public class ExportCSV {
 	public void dumpToCSV() {
  
 		try {
-			String run = SimulationEngine.getInstance().getCurrentExperiment().id.toString();
+//			String run = SimulationEngine.getInstance().getCurrentExperiment().id.toString();
+			String run = ((Integer)SimulationEngine.getInstance().getCurrentRunNumber()).toString();
 			String time = ((Double)SimulationEngine.getInstance().getTime()).toString();
             	
 			if(sourceCollection != null) {
