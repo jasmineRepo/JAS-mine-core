@@ -41,7 +41,7 @@ public class ExportCSV {
 	final static String directory = SimulationEngine.getInstance().getCurrentExperiment().getOutputFolder() + File.separator + "csv";
 	
 	Set<String> fieldsForExport;
-	FileWriter fileWriter = null;
+	FileWriter fileWriter;// = null;
 	
 	Collection<?> sourceCollection;		//Use if source is a Collection (iterate across the collection).  Null if a single object is the source.
 	
@@ -60,62 +60,79 @@ public class ExportCSV {
         	
         	Object obj;
         	
-        	if(source instanceof Collection<?>) {        		
-	        	sourceCollection = (Collection<?>) source;
-	        	//Checks whether a file with the same filename already exists - if not, then creates one.  Useful for MultiRun case. 
+        	//Set source
+        	if(source instanceof Collection<?>) {        	        		
+	        	sourceCollection = (Collection<?>) source; 
 	        	obj = sourceCollection.iterator().next();
         	}
-        	else {
+        	else {        		
         		sourceObject = source;
         		obj = sourceObject;
         	}
         	
-        	String filename = obj.getClass().getSimpleName();
+        	final Field idField = obj.getClass().getDeclaredField("id");
+			if (idField != null)
+				idField.setAccessible(true);
+			else throw new NullPointerException("Object of type " + Object.class + " has an id that is null and therefore cannot be exported!"); 
+
+        	if(!idField.getType().equals(PanelEntityKey.class)) {
+				throw new IllegalArgumentException("Object of type "
+						+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class!");
+        	}
+			
+        	String filename;
+        	if(source instanceof Collection<?>) {   
+        		filename = obj.getClass().getSimpleName();
+        	}
+        	else {		//Use id of object to enumerate the name of .csv output files if several of the same object are for export.
+					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)idField.get(obj)).getId().toString();
+        	}
+	
         	File f = new File(directory + File.separator + filename + ".csv");
-        	if(!f.exists())
+        	//Checks whether a file with the same filename already exists - if not, then creates one.  Useful for MultiRun case.
+        	boolean fAlreadyExists = f.exists(); 
+        	if(fAlreadyExists && !(source instanceof Collection<?>)) {
+        		throw new IllegalAccessException("A .csv file to export object " + obj.toString() 
+        				+ " already exists!\nCannot create more than one ExportCSV object for the same object!");
+        	}
+        	else
         	{
 				File dir = new File(directory);
 				dir.mkdir();
+//				f = new File(directory + File.separator + filename + ".csv");
 				f.createNewFile();
-        	    fileWriter = new FileWriter(f);
-
-        	    final Field idField = obj.getClass().getDeclaredField("id");
-        	    
-    			if (idField != null)
-    				idField.setAccessible(true);
-
-    			if (idField == null
-    					|| !idField.getType().equals(PanelEntityKey.class))
-    				throw new IllegalArgumentException("Object of type "
-    						+ Object.class + " cannot be snapped!");
-        	    
-    			List<Field> declaredFields = new ArrayList<Field>();
-    
-        	    List<Field> allFields = ExportCSV.getAllFields(declaredFields, obj.getClass());
-        	    
-        	    TreeSet<String> nonTransientFieldNames = new TreeSet<String>();
-        	    
-        	    for(Field field : allFields) {
-        	    	Transient trans = field.getAnnotation(Transient.class);
-        	    	if(trans == null) {			//Ignore the field if it has the 'Transient' annotation, just like when exporting the data to the output database
-        	    		if(field.getType().isPrimitive() || field.getType().equals(String.class)|| field.isEnumConstant()) {
-        	    			nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately)
-        	    		}
-        	    	}
-        	    }
-
-        	  	fileWriter.append("run" + delimiter + "time" + delimiter + "id" + delimiter);
-        	  	
-        	    fieldsForExport = new LinkedHashSet<String>();
-        	    
-        	    for(String fieldNames : nonTransientFieldNames) {		//Iterated in correct order
-        	    	fieldsForExport.add(fieldNames);
-        	    	fileWriter.append(fieldNames + delimiter);	
-        	    }
-        	    
-        	} else {
-                fileWriter = new FileWriter(f);        		
         	}
+    	    fileWriter = new FileWriter(f);
+
+			List<Field> declaredFields = new ArrayList<Field>();
+
+    	    List<Field> allFields = ExportCSV.getAllFields(declaredFields, obj.getClass());
+    	    
+    	    TreeSet<String> nonTransientFieldNames = new TreeSet<String>();
+    	    
+    	    for(Field field : allFields) {
+    	    	Transient trans = field.getAnnotation(Transient.class);
+    	    	if(trans == null) {			//Ignore the field if it has the 'Transient' annotation, just like when exporting the data to the output database
+    	    		if(field.getType().isPrimitive() || field.getType().equals(String.class)|| field.isEnumConstant()) {
+    	    			nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately)
+    	    		}
+    	    	}
+    	    }
+
+    	  	fileWriter.append("run" + delimiter + "time" + delimiter + "id" + delimiter);
+    	  	
+    	    fieldsForExport = new LinkedHashSet<String>();
+    	    
+    	    for(String fieldNames : nonTransientFieldNames) {		//Iterated in correct order
+    	    	fieldsForExport.add(fieldNames);
+    	    	if(!fAlreadyExists) {
+    	    		fileWriter.append(fieldNames + delimiter);
+    	    	}
+    	    }
+    	    
+//        	} else {
+//                fileWriter = new FileWriter(f);        		
+//    	}
         	        	        	
 	    } catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -123,7 +140,10 @@ public class ExportCSV {
 		} catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
