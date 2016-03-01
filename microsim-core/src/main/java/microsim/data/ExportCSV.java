@@ -24,7 +24,9 @@ import microsim.data.db.PanelEntityKey;
 import microsim.engine.SimulationEngine;
 
 /**
- * 
+ * ExportCSV class allows the exporting of data to .csv files.  This is a useful alternative to exporting to an output database, as it is faster and produces
+ * separate files for each class of object.  Note that only numbers, enums or strings are exported to .csv files. 
+ *  
  * @author Ross Richardson
  *
  */
@@ -45,6 +47,14 @@ public class ExportCSV {
 	
 	Object sourceObject;		//Use for a single source (no iteration across a collection).  Null if the source is a collection.
 
+	/**
+	 * Allows the exporting of all fields (including private and inherited fields) of an object to a .csv file named after the object's class name. 
+	 * Note that only numbers, enums or strings are exported to .csv files.
+	 * 
+	 * @param source - the object whose fields will be exported to a .csv file with a name equal to the object's class name.  
+	 * If the source is a Collection of objects, each member of the collection will have their individual fields exported to the .csv file, labelled by their id.
+	 *  
+	 */
 	public ExportCSV(Object source) {
         try { 
         	
@@ -119,11 +129,9 @@ public class ExportCSV {
 
 	/**
 	 * 
-	 * Creates a comma-seperated value file of data provided by arrays
-	 * 
-	 * @param filename - the name of the file.  If a file with the same name already exists, this method will create a new file with an incremented index
-	 * @param fileHeader - the headings for the table columns
-	 * @param dataArrays - the arrays carrying the data
+	 * Export data to the .csv files named after the class of the source object 
+	 * (or if a collection of objects, the class of the collection's members).
+	 * Note that only numbers, enums or strings are exported to .csv files. 
 	 * 
 	 * @author Ross Richardson
 	 * 
