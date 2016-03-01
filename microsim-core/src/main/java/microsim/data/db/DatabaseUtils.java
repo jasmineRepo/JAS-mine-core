@@ -80,30 +80,44 @@ public class DatabaseUtils {
 		if (SimulationEngine.getInstance().isSilentMode())
 			return;
 		
-		final Field idField = target.getClass().getDeclaredField("id");
-		if (idField != null)
+		final Field[] targetFields = target.getClass().getDeclaredFields();
+    	Field idField = null;
+//    	String idFieldName;
+    	for(Field fld : targetFields) {
+    		if(fld.getType().equals(PanelEntityKey.class)) {		//Doesn't rely on the name of the field
+    			idField = fld;
+//    			idFieldName = fld.getName();
+    			break;
+    		}
+    	}
+//		final Field idField = target.getClass().getDeclaredField("id");		//Relies on the name of the field being 'id', which may not be true if the user gives it another name.
+//		if (idField != null)
+//			idField.setAccessible(true);
+//
+//		if (idField == null || !idField.getType().equals(PanelEntityKey.class))
+//			throw new IllegalArgumentException("Object of type " + Object.class
+//					+ " cannot be snapped!");
+    	if (idField != null)
 			idField.setAccessible(true);
-
-		if (idField == null || !idField.getType().equals(PanelEntityKey.class))
-			throw new IllegalArgumentException("Object of type " + Object.class
-					+ " cannot be snapped!");
+		else throw new IllegalArgumentException("Object of type "
+				+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
 
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
 		try {
 			em.detach(target);
-			final PanelEntityKey id = (PanelEntityKey) idField.get(target);
+			final PanelEntityKey key = (PanelEntityKey) idField.get(target);
 			PanelEntityKey newId = new PanelEntityKey();
-			if (id != null)
-				newId.setId(id.getId());
+			if (key != null)
+				newId.setId(key.getId());
 			else
 				newId.setId(autoincrementSeed++);
 			newId.setSimulationTime(SimulationEngine.getInstance().getTime());
 			newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
 			idField.set(target, newId);
 			em.merge(target);
-			idField.set(target, id);
+			idField.set(target, key);
 		} catch (Exception e) {
 			tx.rollback();
 			throw e;
@@ -136,15 +150,30 @@ public class DatabaseUtils {
 
 			EntityTransaction tx = null;
 
-			final Field idField = targetCollection.iterator().next().getClass()
-					.getDeclaredField("id");
-			if (idField != null)
+			final Field[] targetFields = targetCollection.iterator().next().getClass().getDeclaredFields();
+	    	Field idField = null;
+//	    	String idFieldName;
+	    	for(Field fld : targetFields) {
+	    		if(fld.getType().equals(PanelEntityKey.class)) {		//Doesn't rely on the name of the field
+	    			idField = fld;
+//	    			idFieldName = fld.getName();
+	    			break;
+	    		}
+	    	}
+	    	if (idField != null)
 				idField.setAccessible(true);
+			else throw new IllegalArgumentException("Object of type "
+					+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
 
-			if (idField == null
-					|| !idField.getType().equals(PanelEntityKey.class))
-				throw new IllegalArgumentException("Object of type "
-						+ Object.class + " cannot be snapped!");
+//			final Field idField = targetCollection.iterator().next().getClass()
+//					.getDeclaredField("id");
+//			if (idField != null)
+//				idField.setAccessible(true);
+//
+//			if (idField == null
+//					|| !idField.getType().equals(PanelEntityKey.class))
+//				throw new IllegalArgumentException("Object of type "
+//						+ Object.class + " cannot be snapped!");
 
 			tx = em.getTransaction();
 			tx.begin();
@@ -152,17 +181,17 @@ public class DatabaseUtils {
 			for (Object panelTarget : targetCollection) {
 				try {
 					em.detach(panelTarget);
-					final PanelEntityKey id = (PanelEntityKey) idField.get(panelTarget);
+					final PanelEntityKey key = (PanelEntityKey) idField.get(panelTarget);
 					PanelEntityKey newId = new PanelEntityKey();
-					if (id != null)
-						newId.setId(id.getId());
+					if (key != null)
+						newId.setId(key.getId());
 					else
 						newId.setId(autoincrementSeed++);
 					newId.setSimulationTime(SimulationEngine.getInstance().getTime());
 					newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
 					idField.set(panelTarget, newId);
 					em.merge(panelTarget);
-					idField.set(panelTarget, id);
+					idField.set(panelTarget, key);
 				} catch (Exception e) {
 					if (tx != null && tx.isActive())
 						tx.rollback();

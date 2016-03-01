@@ -16,23 +16,23 @@ public class DataExport {
 	private ExportCSV csvExport;
 	private boolean toDatabase;
 	private boolean toCSV;
-	private Object sourceObject;
-	private Collection<?> collectionSource;
+	private Object targetObject;
+	private Collection<?> collectionTarget;
 	
 	/**
 	 * Create a DataExport object to handle the exporting of a collection of objects to an output database and/or .csv files.  Note 
 	 * that only numbers, enums or strings are exported to .csv files.
 	 * 
-	 * @param sourceCollection - a collection of objects whose fields (including private and inherited) will be exported
+	 * @param targetCollection - a collection of objects whose fields (including private and inherited) will be exported
 	 * @param exportToDatabase - set to true if the user wants to export to an output database
-	 * @param exportToCSVfile - set to true if the user wants to export to .csv files named after the class name of the sourceCollection
+	 * @param exportToCSVfile - set to true if the user wants to export to .csv files named after the class name of the targetCollection
 	 */
-	public DataExport(Collection<?> sourceCollection, boolean exportToDatabase, boolean exportToCSVfile) {
-		this.collectionSource = sourceCollection;
+	public DataExport(Collection<?> targetCollection, boolean exportToDatabase, boolean exportToCSVfile) {
+		this.collectionTarget = targetCollection;
 		toDatabase = exportToDatabase;
 		toCSV = exportToCSVfile;
 		if(toCSV) {
-			csvExport = new ExportCSV(collectionSource); 
+			csvExport = new ExportCSV(collectionTarget); 
 		}
 	}
 
@@ -41,17 +41,17 @@ public class DataExport {
 	 * Create a DataExport object to handle the exporting of an object to an output database and/or .csv files.  Note 
 	 * that only numbers, enums or strings are exported to .csv files.
 	 * 
-	 * @param sourceSingleObject - an object whose fields (including private and inherited) will be exported
+	 * @param targetSingleObject - an object whose fields (including private and inherited) will be exported
 	 * @param exportToDatabase - set to true if the user wants to export to an output database
-	 * @param exportToCSVfile - set to true if the user wants to export to .csv files named after the class name of the sourceCollection
+	 * @param exportToCSVfile - set to true if the user wants to export to .csv files named after the class name of the targetCollection
 	 */
-	public DataExport(Object sourceSingleObject, boolean exportToDatabase, boolean exportToCSVfile) {
-		sourceObject = sourceSingleObject; 
+	public DataExport(Object targetSingleObject, boolean exportToDatabase, boolean exportToCSVfile) {
+		targetObject = targetSingleObject; 
 		toDatabase = exportToDatabase;
 		toCSV = exportToCSVfile;
 		
 		if(toCSV) {
-			csvExport = new ExportCSV(sourceObject); 
+			csvExport = new ExportCSV(targetObject); 
 		}
 	}
 		
@@ -65,11 +65,11 @@ public class DataExport {
 		
 		if(toDatabase) {
 			try {
-				if(collectionSource != null) {	
-					DatabaseUtils.snap(collectionSource);
+				if(collectionTarget != null) {	
+					DatabaseUtils.snap(collectionTarget);
 				}
-				else if(sourceObject != null) {
-					DatabaseUtils.snap(sourceObject);
+				else if(targetObject != null) {
+					DatabaseUtils.snap(targetObject);
 				}
 				else throw new NullPointerException();
 				
