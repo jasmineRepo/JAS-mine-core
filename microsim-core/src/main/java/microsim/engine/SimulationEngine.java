@@ -62,7 +62,7 @@ public class SimulationEngine extends Thread {
 	
 	private int eventThresold = 0;
 
-	private int currentRunNumber = 0;
+	private int currentRunNumber = 1;
 
 	private Experiment currentExperiment = null;
 

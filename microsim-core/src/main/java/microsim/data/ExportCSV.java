@@ -104,7 +104,7 @@ public class ExportCSV {
         		filename = obj.getClass().getSimpleName();
         	}
         	else {		//Use id of object to enumerate the name of .csv output files if several of the same object are for export.
-					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)targetObjectIdField.get(targetObject)).getId().toString();
+					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)idField.get(targetObject)).getId().toString();
         	}
 	
         	File f = new File(directory + File.separator + filename + ".csv");

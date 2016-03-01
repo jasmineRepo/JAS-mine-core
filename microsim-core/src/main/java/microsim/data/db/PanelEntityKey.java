@@ -11,7 +11,7 @@ public class PanelEntityKey implements Serializable {
 	private static final long serialVersionUID = -1264771886420608859L;
 
 	@Column(name="id")
-	private Long id;
+	private Long id = 1L;
 	
 	@Column(name="simulation_time")
 	private Double simulationTime;
