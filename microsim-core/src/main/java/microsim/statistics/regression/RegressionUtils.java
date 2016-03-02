@@ -527,12 +527,12 @@ public class RegressionUtils {
 
 		String[] outcomeNames = estimates.getValuesNames();		//If simple linear or binomial (logit/probit) regression, this should have a single String value 'EsTIMATE'.  If it refers to a multinomial (logit/probit) regression, these should be numbered e.g. 'ESTIMATE1', 'ESTIMATE2', etc.  
 		int numRegressionOutcomes = outcomeNames.length;		//If > 1, then the regression must refer to a multinomial regression
-		for(int i = 0; i < numRegressionOutcomes; i++) {
-			if(!outcomeNames[i].startsWith(RegressionColumnNames.ESTIMATE.toString())) {
-				throw new RuntimeException("The 'estimates' map in RegressionUtils.boostrap(estimates, covarianceMatrix) has no column(s) labelled with name(s) starting with " + RegressionColumnNames.REGRESSOR.toString()
-						+ "\nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-			}
-		}
+//		for(int i = 0; i < numRegressionOutcomes; i++) {
+//			if(!outcomeNames[i].startsWith(RegressionColumnNames.ESTIMATE.toString())) {
+//				throw new RuntimeException("The 'estimates' map in RegressionUtils.boostrap(estimates, covarianceMatrix) has no column(s) labelled with name(s) starting with " + RegressionColumnNames.REGRESSOR.toString()
+//						+ "\nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+//			}
+//		}
 		
 		//Check dimensions of estimates and covarianceMatrix are consistent
 		int numCovariates = estimates.size();
@@ -562,9 +562,9 @@ public class RegressionUtils {
 			means = new double[enlargedSize];
 			for(int i = 0; i < numRegressionOutcomes; i++) {
 				for(int j = 0; j < numCovariates; j++) {
-					String outcomeName = RegressionColumnNames.ESTIMATE.toString() + (i+1);
-					enlargedKeyNames[i*numCovariates + j] = outcomeName + "_" + covariates[j];
-					means[i*numCovariates + j] = (double) estimates.get(covariates[j], outcomeName);
+//					String outcomeName = RegressionColumnNames.ESTIMATE.toString() + (i+1);
+					enlargedKeyNames[i*numCovariates + j] = outcomeNames[i] + "_" + covariates[j];
+					means[i*numCovariates + j] = (double) estimates.get(covariates[j], outcomeNames[i]);
 				}
 			}
 
@@ -597,18 +597,18 @@ public class RegressionUtils {
 		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrixOrdered);
 		double[] newMeans = multiNormDist.sample();		//This returns the bootstrapped values of the estimates
 		
-		//Create new MultiKeyCoefficientMap to return with new bootstrapped column
-		String[] valueNames = new String[numRegressionOutcomes];
-		for(int i = 0; i < numRegressionOutcomes; i++) {
-			valueNames[i] = RegressionColumnNames.COEFFICIENT.toString() + (i+1);	
-		}
+//		//Create new MultiKeyCoefficientMap to return with new bootstrapped column
+//		String[] valueNames = new String[numRegressionOutcomes];
+//		for(int i = 0; i < numRegressionOutcomes; i++) {
+//			valueNames[i] = RegressionColumnNames.COEFFICIENT.toString() + (i+1);	
+//		}
 		
-		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(estimatesKeys, valueNames);
+		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(estimatesKeys, outcomeNames);
 		for(int i = 0; i < numRegressionOutcomes; i++) {
 			for(int j = 0; j < numCovariates; j++) {
 				String outcomeName;
 				if(numRegressionOutcomes > 1) {
-					outcomeName = RegressionColumnNames.COEFFICIENT.toString() + (i+1);
+					outcomeName = outcomeNames[i];		//For MultiProbitRegression case, will not enforce naming conventions of 'COEFFICIENT' for columns, but allow user to name columns by outcome name???
 				}
 				else {
 					outcomeName = RegressionColumnNames.COEFFICIENT.toString();
