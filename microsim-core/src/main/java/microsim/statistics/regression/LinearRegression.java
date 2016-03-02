@@ -44,7 +44,8 @@ public class LinearRegression implements ILinearRegression {
 				regressorKeyExists = true;
 //				break;
 			}
-			if(keys[i].equals(RegressionColumnNames.COEFFICIENT.toString())) {
+//			if(keys[i].equals(RegressionColumnNames.COEFFICIENT.toString())) {
+			if(keys[i].startsWith(RegressionColumnNames.COEFFICIENT.toString())) {
 				coefficientValueKeyInMultiKeyByMistake = true;
 			}
 			i++;
@@ -52,7 +53,8 @@ public class LinearRegression implements ILinearRegression {
 		
 		int j = 0;
 		while(j < valuesNames.length) {
-			if(valuesNames[j].equals(RegressionColumnNames.COEFFICIENT.toString())) {
+//			if(valuesNames[j].equals(RegressionColumnNames.COEFFICIENT.toString())) {
+			if(valuesNames[j].startsWith(RegressionColumnNames.COEFFICIENT.toString())) {
 				coefficientValueKeyExists = true;
 //				break;
 			}

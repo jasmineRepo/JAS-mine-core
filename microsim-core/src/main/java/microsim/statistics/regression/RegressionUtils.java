@@ -365,17 +365,12 @@ public class RegressionUtils {
 //		return bootstrapMap;
 //
 //	}
-
-	/*
-	 * Perhaps should create a bootstrap(estimates, covarianceMatrix) method, where the covarianceMatrix is a 
-	 * MultiKeyCoefficientMap or something similar, where we can simply specify the relevant element by the two keys 
-	 * representing the row variable and column variable names. 
-	 */
+	
 	/**
 	 * 
 	 * Method to bootstrap regression covariates.
 	 * 
-	 * @param map - A MultiKeyCoefficientMap that provides informaion on the covariate estimates and covariance matrix.
+	 * @param map - A MultiKeyCoefficientMap that provides information on the covariate estimates and covariance matrix.
 	 *   map is required to only have one key entry in the MultiKeyCoefficientMap map's MultiKey.  
 	 *   map must also contain a value column with the heading 'ESTIMATE' and an additional value column for each key element, 
 	 *   in order to represent the (square, symmetric, positive semi-definite) covariance matrix. 
@@ -486,4 +481,143 @@ public class RegressionUtils {
 
 	}
 
+	
+	/*
+	 * Perhaps should create a bootstrap(estimates, covarianceMatrix) method, where the covarianceMatrix is a 
+	 * MultiKeyCoefficientMap or something similar, where we can simply specify the relevant element by the two keys 
+	 * representing the row variable and column variable names. 
+	 */
+
+	/**
+	 * 
+	 * Method to bootstrap regression covariates.
+	 * 
+	 * @param estimates - A MultiKeyCoefficientMap that provides the regression coefficient estimates, 'estimates' 
+	 * is required to only have one key entry in each of the MultiKeyCoefficientMap map's MultiKeys, with the entries being 
+	 * the name of the regression covariates.  If loading from an Excel spreadsheet using the ExcelAssistant.loadCoefficientMap(),
+	 * the column containing the covariate names must be labelled with a header 'REGRESSOR'.  For simple linear or binomial 
+	 * (logistic / probit) regressions, there must be only one values column containing the regression coefficients for each 
+	 * covariate, and this column must be labelled 'ESTIMATES' in the Excel spreadsheet.  In the case of multinomial 
+	 * (probit / logistic) regressions, the columns in the 'estimates' map contain regression coefficients for each specific 
+	 * outcome of the multinomial regression, and must be labelled 'ESTIMATES_[name of outcome].
+	 * 
+	 * @param covarianceMatrix - A MultiKeyCoefficientMap that provides the covariance matrix of a regression's estimates.  
+	 * covarianceMatrix must contain a column called 'COVARIANCE' which contains the regression covariates.  The other 
+	 * columns should be headed with labels matching the regression covariates (though the order need not match the estimates)
+	 * to represent a (square, symmetric, positive semi-definite) covariance matrix. 
+	 * 
+	 * @return a MultiKeyCoefficientMap that is bootstrapped from the input estimates map.
+	 * @author richardsonr
+	 */
+	public static MultiKeyCoefficientMap bootstrap(MultiKeyCoefficientMap estimates, MultiKeyCoefficientMap covarianceMatrix) {
+
+		int regressorColumnIndex = -1;
+		String[] estimatesKeys = estimates.getKeysNames();
+		if(estimatesKeys.length > 1) {
+			throw new IllegalArgumentException("The estimates map in RegressionUtils.bootstrap(estimates, covarianceMatrix) cannot have more than one key entry in the MultiKey."
+					+ "\nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+		}
+		else {
+			if(estimatesKeys[0].equals(RegressionColumnNames.REGRESSOR.toString())) {
+				regressorColumnIndex = 0;				
+			}
+			else throw new RuntimeException("RegressionUtils.boostrap(estimates, covarianceMatrix) has no column named " + RegressionColumnNames.REGRESSOR.toString() + " in 'estimates' map."
+					+ "\nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+		}
+
+		String[] outcomeNames = estimates.getValuesNames();		//If simple linear or binomial (logit/probit) regression, this should have a single String value 'EsTIMATE'.  If it refers to a multinomial (logit/probit) regression, these should be numbered e.g. 'ESTIMATE1', 'ESTIMATE2', etc.  
+		int numRegressionOutcomes = outcomeNames.length;		//If > 1, then the regression must refer to a multinomial regression
+		for(int i = 0; i < numRegressionOutcomes; i++) {
+			if(!outcomeNames[i].startsWith(RegressionColumnNames.ESTIMATE.toString())) {
+				throw new RuntimeException("The 'estimates' map in RegressionUtils.boostrap(estimates, covarianceMatrix) has no column(s) labelled with name(s) starting with " + RegressionColumnNames.REGRESSOR.toString()
+						+ "\nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+			}
+		}
+		
+		//Check dimensions of estimates and covarianceMatrix are consistent
+		int numCovariates = estimates.size();
+		if(covarianceMatrix.size() != numCovariates*numRegressionOutcomes) {
+			throw new IllegalArgumentException("Number of rows in the covarianceMatrix does not match the number of covariates multiplied by the number of outcomes (num of values columns) in the estimates map!  Check the input for estimates and covarianceMatrix.");
+		}
+		if(covarianceMatrix.getValuesNames().length != covarianceMatrix.size()) {
+			throw new IllegalArgumentException("covarianceMatrix is not a square matrix!  Check the inputs for covarianceMatrix to ensure that the number of rows and columns are equal.");
+		}
+	
+		String[] covariates = new String[numCovariates];
+		int n = 0;
+		for(Object o : estimates.keySet()) {
+			if(o instanceof MultiKey) {
+				covariates[n] = ((MultiKey)o).getKey(0).toString();
+				n++;
+			}
+		}
+		
+		double[][] covarianceMatrixOrdered;
+		String[] enlargedKeyNames;
+		double[] means;
+		if(numRegressionOutcomes > 1) {
+			//For case of multinomial regressions, have to construct enlarged column of means and corresponding covariance matrix produced by tensor product of ESTIMATE column name and covariate
+			int enlargedSize = numCovariates * numRegressionOutcomes;
+			enlargedKeyNames = new String[enlargedSize];
+			means = new double[enlargedSize];
+			for(int i = 0; i < numRegressionOutcomes; i++) {
+				for(int j = 0; j < numCovariates; j++) {
+					String outcomeName = RegressionColumnNames.ESTIMATE.toString() + (i+1);
+					enlargedKeyNames[i*numCovariates + j] = outcomeName + "_" + covariates[j];
+					means[i*numCovariates + j] = (double) estimates.get(covariates[j], outcomeName);
+				}
+			}
+
+			//Create covariance matrix with an order consistent with the covariates array
+			covarianceMatrixOrdered = new double[enlargedSize][enlargedSize];
+			for(int row = 0; row < enlargedSize; row++) {
+				for(int col = 0; col < enlargedSize; col++) {
+					covarianceMatrixOrdered[row][col] = (double) covarianceMatrix.get(enlargedKeyNames[row], enlargedKeyNames[col]);
+					System.out.println("row " + row + ", enlargedKeyNames[" + row + "] " + enlargedKeyNames[row] + ", col " + col + ", enlargedKeyNames[" + col + "] " + enlargedKeyNames[col] + ", covariance " + covarianceMatrixOrdered[row][col]);
+				}
+			}			
+
+		}
+		else {
+			means = new double[numCovariates];
+			for(int j = 0; j < numCovariates; j++) {
+				means[j] = (double) estimates.get(covariates[j], RegressionColumnNames.ESTIMATE.toString());
+			}
+			
+			//Create covariance matrix with an order consistent with the covariates array
+			covarianceMatrixOrdered = new double[numCovariates][numCovariates];
+			for(int row = 0; row < numCovariates; row++) {
+				for(int col = 0; col < numCovariates; col++) {
+					covarianceMatrixOrdered[row][col] = (double) covarianceMatrix.get(covariates[row], covariates[col]);
+					System.out.println("row " + row + ", covariates[" + row + "] " + covariates[row] + ", col " + col + ", covariates[" + col + "]" + covariates[col] + ", covariance " + covarianceMatrixOrdered[row][col]);
+				}
+			}			
+		}
+		
+		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrixOrdered);
+		double[] newMeans = multiNormDist.sample();		//This returns the bootstrapped values of the estimates
+		
+		//Create new MultiKeyCoefficientMap to return with new bootstrapped column
+		String[] valueNames = new String[numRegressionOutcomes];
+		for(int i = 0; i < numRegressionOutcomes; i++) {
+			valueNames[i] = RegressionColumnNames.COEFFICIENT.toString() + (i+1);	
+		}
+		
+		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(estimatesKeys, valueNames);
+		for(int i = 0; i < numRegressionOutcomes; i++) {
+			for(int j = 0; j < numCovariates; j++) {
+				String outcomeName;
+				if(numRegressionOutcomes > 1) {
+					outcomeName = RegressionColumnNames.COEFFICIENT.toString() + (i+1);
+				}
+				else {
+					outcomeName = RegressionColumnNames.COEFFICIENT.toString();
+				}
+				bootstrapMap.put(covariates[j], outcomeName, newMeans[i*numCovariates + j]);
+				System.out.println(covariates[j] + ", " + outcomeName + ", " + newMeans[i*numCovariates + j]);
+			}
+		}
+		return bootstrapMap;
+	}
+	
 }
