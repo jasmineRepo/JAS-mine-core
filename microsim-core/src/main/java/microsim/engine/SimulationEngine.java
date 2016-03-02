@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * can schedule events at a specified time point and the engine will notify to
  * it at the right time. The SimEngine stores a list of windows created by
  * models. Using the addSimWindow() method each simulation windows is managed by
- * the engine. It is able to show windows detroyed by user. When the windows is
+ * the engine. It is able to show windows destroyed by user. When the windows is
  * shown the engine put the windows in the location where it was when the
  * project document was saved to disk. The window size is stored, too.
  * 
@@ -440,7 +440,7 @@ public class SimulationEngine extends Thread {
 		modelMap.clear();
 		
 		System.gc();
-		currentRunNumber = 0;
+//		currentRunNumber = 0;		//Ross: Why do we need to do this?
 
 		silentModeAvailable = true;
 		
