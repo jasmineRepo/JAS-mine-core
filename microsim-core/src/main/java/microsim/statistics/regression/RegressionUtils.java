@@ -606,15 +606,16 @@ public class RegressionUtils {
 		MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(estimatesKeys, outcomeNames);
 		for(int i = 0; i < numRegressionOutcomes; i++) {
 			for(int j = 0; j < numCovariates; j++) {
-				String outcomeName;
+//				String outcomeName;
 				if(numRegressionOutcomes > 1) {
-					outcomeName = outcomeNames[i];		//For MultiProbitRegression case, will not enforce naming conventions of 'COEFFICIENT' for columns, but allow user to name columns by outcome name???
+//					outcomeName = RegressionColumnNames.COEFFICIENT.toString() + "_" + outcomeNames[i];
+					bootstrapMap.put(covariates[j], outcomeNames[i], newMeans[i*numCovariates + j]);	//Just use the values column names of the estimates MultiKeyCoefficientMap  
+					System.out.println(covariates[j] + ", " + outcomeNames[i] + ", " + newMeans[i*numCovariates + j]);
 				}
 				else {
-					outcomeName = RegressionColumnNames.COEFFICIENT.toString();
+//					outcomeName = RegressionColumnNames.COEFFICIENT.toString();
+					bootstrapMap.put(covariates[j], newMeans[i*numCovariates + j]);
 				}
-				bootstrapMap.put(covariates[j], outcomeName, newMeans[i*numCovariates + j]);
-				System.out.println(covariates[j] + ", " + outcomeName + ", " + newMeans[i*numCovariates + j]);
 			}
 		}
 		return bootstrapMap;

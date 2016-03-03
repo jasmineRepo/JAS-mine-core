@@ -2,12 +2,10 @@ package microsim.statistics.regression;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-
-
-
-
+import java.util.Set;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
@@ -26,13 +24,26 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps) {		
 		random = SimulationEngine.getRnd();
 		this.maps = maps;
+		int count = 0;
+		Set<String> covariateNames = new HashSet<String>();
 		for(T event : maps.keySet()) {
-			for(Object key : (maps.get(event)).keySet()) {
-				if((maps.get(event)).getValue(key).equals(0)) {
-					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + key.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+			@SuppressWarnings("unchecked")
+			Set<Object> covariateSet = (maps.get(event)).keySet();
+			for(Object covariate : covariateSet) {
+				if(count == 0) {
+					covariateNames.add(covariate.toString());
 				}
+				else {
+					if(!covariateNames.contains(covariate.toString()) || covariateNames.size() != covariateSet.size()) {
+						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiProbitRegression object do not match!");
+					}
+				}
+//				if((maps.get(event)).getValue(covariate).equals(0)) {
+//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
+//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+//				}
 			}
+			count++;
 		}
 		normalRV = new Normal(0.0, 1.0, new MersenneTwister(random.nextInt()));
 	}
@@ -40,13 +51,26 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {			
 		this.random = random;
 		this.maps = maps;
+		int count = 0;
+		Set<String> covariateNames = new HashSet<String>();
 		for(T event : maps.keySet()) {
-			for(Object key : (maps.get(event)).keySet()) {
-				if((maps.get(event)).getValue(key).equals(0)) {
-					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + key.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+			@SuppressWarnings("unchecked")
+			Set<Object> covariateSet = (maps.get(event)).keySet();
+			for(Object covariate : covariateSet) {
+				if(count == 0) {
+					covariateNames.add(covariate.toString());
 				}
+				else {
+					if(!covariateNames.contains(covariate.toString()) || covariateNames.size() != covariateSet.size()) {
+						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiProbitRegression object do not match!");
+					}
+				}
+//				if((maps.get(event)).getValue(covariate).equals(0)) {
+//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
+//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+//				}
 			}
+			count++;
 		}
 		normalRV = new Normal(0.0, 1.0, new MersenneTwister(random.nextInt()));
 	}
@@ -88,7 +112,8 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 			if (probs.get(eventProbs[i]) == null) {						//The multiprobit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
 				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
 				if(countNullEventProbs > 1) {
-					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+//					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+					throw new RuntimeException("MultiProbitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
 				}
 				else {
 					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
@@ -137,7 +162,8 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 			if (probs.get(eventProbs[i]) == null) {						//The multiprobit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
 				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
 				if(countNullEventProbs > 1) {
-					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+//					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+					throw new RuntimeException("MultiProbitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
 				}
 				else {
 					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
@@ -182,8 +208,6 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 		}
 		
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
-//		T k = null;
-//		T[] eventProbs = (T[]) k.getClass().getEnumConstants();		//Results in Null Pointer Exception
 		T[] eventProbs = enumType.getEnumConstants();
 //		T[] eventProbs = (T[]) maps.keySet().getClass().getEnumConstants();		//Results in Null Pointer Exception
 
@@ -192,7 +216,8 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 			if (probs.get(eventProbs[i]) == null) {						//The multiprobit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
 				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
 				if(countNullEventProbs > 1) {
-					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+//					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
+					throw new RuntimeException("MultiProbitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
 				}
 				else {
 					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
