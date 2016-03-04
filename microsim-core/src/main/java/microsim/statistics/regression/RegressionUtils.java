@@ -448,7 +448,7 @@ public class RegressionUtils {
 					//Check that all events have the same MultiKeys (regression covariates)
 					for(MultiKey mk : otherMultiKeys) {
 						if(!covariateMultiKeys.contains(mk)) {
-							throw new IllegalArgumentException("The covariates " + mk.getKey(0) + " specified in the regression coefficient MultiKeyCofficientMap for event " + t + " does not appear in the covariates of "
+							throw new IllegalArgumentException("The covariate " + mk.getKey(0) + " specified in the regression coefficient MultiKeyCofficientMap for event " + t + " does not appear in the set of covariates of "
 									+ "event " + baseT + ".  Check that all events have the same set of regression covariates!");							
 						}
 					}					
