@@ -22,7 +22,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 public class RegressionUtils {
 
 	private static final double EPSILON = 1.e-15;	//Consider making larger if there are regular IllegalArgumentException throws due to an unnecessarily high requirement of precision.   
-//	private static final double SYMMETRIC_MATRIX_EPS = 1.e-5;		//Relative tolerance of matrix symmetric test, defined as {Mij - Mji > max(Mij, Mji) * eps}
+	private static final double SYMMETRIC_MATRIX_EPS = 1.e-5;		//Relative tolerance of matrix symmetric test, defined as {Mij - Mji > max(Mij, Mji) * eps}
 	
 	public static <T> T event(Class<T> eventClass, double[] prob) {
 		return event(eventClass.getEnumConstants(), prob, SimulationEngine.getRnd());		
@@ -269,8 +269,8 @@ public class RegressionUtils {
 			}			
 		}
 		
-//		RealMatrix realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrix);
-//		MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);		//Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori
+		RealMatrix realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrix);
+		MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);		//Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori
 		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrix);
 		means = multiNormDist.sample();		//This returns the bootstrapped values of the estimates
 		
@@ -349,8 +349,8 @@ public class RegressionUtils {
 			}
 		}
 		
-//		RealMatrix realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrixOrdered);
-//		MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);		//Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori 
+		RealMatrix realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrixOrdered);
+		MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);		//Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori 
 		MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrixOrdered);
 		means = multiNormDist.sample();		//This returns the bootstrapped values of the estimates
 				
