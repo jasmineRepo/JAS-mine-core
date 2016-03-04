@@ -476,7 +476,6 @@ public class RegressionUtils {
 				enlargedCoefficientMap.putValue(combinedName, regCoefficientsMap.getValue(mk));
 			}
 		}
-		System.out.println("");
 		
 		enlargedCoefficientMap = bootstrap(enlargedCoefficientMap, covarianceMatrix);
 		
@@ -485,11 +484,10 @@ public class RegressionUtils {
 			MultiKeyCoefficientMap newCoefficientMap = new MultiKeyCoefficientMap(multiKeyMapKeyNames, multiKeyMapValueNames);
 			for(MultiKey mk : covariateMultiKeys) {
 				String combinedName = event.toString() + "_" + mk.getKey(0).toString();
-				System.out.println("combinedName " + combinedName);
-				Double regCoefficient = ((Number)enlargedCoefficientMap.getValue(combinedName)).doubleValue();
-//				System.out.println("regCoefficient " + regCoefficient);
+//				System.out.println("combinedName " + combinedName);
+				double regCoefficient = ((Number)enlargedCoefficientMap.getValue(combinedName)).doubleValue();
 				newCoefficientMap.putValue(mk, regCoefficient);
-				System.out.println(mk.toString() + ", " + regCoefficient);
+//				System.out.println(mk.toString() + ", " + regCoefficient);
 			}
 			newMap.put(event, newCoefficientMap);
 		}
