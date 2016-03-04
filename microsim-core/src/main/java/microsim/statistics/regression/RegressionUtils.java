@@ -200,7 +200,7 @@ public class RegressionUtils {
 	/**
 	 * 
 	 * Method to bootstrap regression covariates.  This method creates a new set of regression estimates by sampling
-	 * from a multinomial normal distribution with means equal to the 'coefficients' parameter and a covariance matrix
+	 * from a multivariate normal distribution with expected values (means) equal to the 'coefficients' parameter and a covariance matrix
 	 * as specified. 
 	 * 
 	 * @param map - A MultiKeyCoefficientMap that contains both regression coefficients and a corresponding covariance matrix.
@@ -208,7 +208,8 @@ public class RegressionUtils {
 	 *   map must also contain a value column with the heading 'COEFFICIENT' and an additional value column for each regressor (covariate), 
 	 *   in order to represent the (square, symmetric, positive semi-definite) covariance matrix. 
 	 * 
-	 * @return a MultiKeyCoefficientMap that is bootstrapped from the input map
+	 * @return a MultiKeyCoefficientMap containing a new set of bootstrapped regression coefficients
+	 * 
 	 * @author richardsonr
 	 */
 	public static MultiKeyCoefficientMap bootstrap(MultiKeyCoefficientMap map) {
@@ -292,19 +293,18 @@ public class RegressionUtils {
 	/**
 	 * 
 	 * Method to bootstrap regression covariates.  This method creates a new set of regression estimates by sampling
-	 * from a multinomial normal distribution with means equal to the 'coefficients' parameter and a covariance matrix
-	 * as specified. 
+	 * from a multivariate normal distribution with expected values (means) equal to the 'coefficients' parameter and 
+	 * a covariance matrix as specified. 
 	 * 
-	 * @param coefficients - A MultiKeyCoefficientMap that is used as the means of a multivariate normal distribution.
-	 * The means represent the estimates of the regression coefficients.  The 'coefficients' map 
-	 * is required to only have one key entry in each of the MultiKeyCoefficientMap map's MultiKeys, with the entries being 
-	 * the name of the regression covariates.  If loading from an Excel spreadsheet using the ExcelAssistant.loadCoefficientMap(),
-	 * the column containing the covariate names must be labelled with a header 'REGRESSOR'.  There must be only one values column
-	 * containing the regression coefficients for each covariate, and this column must be labelled 'COEFFICIENT' in the Excel spreadsheet.
+	 * @param coefficients - A MultiKeyCoefficientMap that contains a set of regression coefficients.  The 'coefficients' map 
+	 *  is required to only have one key entry in each of the MultiKeyCoefficientMap map's MultiKeys, with the entries being 
+	 *  the name of the regression covariates.  There must be only one values column containing the regression coefficients 
+	 *  for each covariate (regressor).
 	 * 
 	 * @param covarianceMatrix - A MultiKeyCoefficientMap that provides the covariance matrix of a regression's coefficients.  
-	 * The first column of covarianceMatrix must be named 'COVARIANCE', and contain the names of the regression covariates.  The other 
-	 * columns should be headed with labels matching the regression covariates (though the order need not match the estimates). 
+	 *  The covarianceMatrix map is required to only have one key entry in each of the MultiKeyCoefficientMap map's MultiKeys,
+	 *  with each entry corresponding to the name of a regression covariate.  The values must contain a name key corresponding 
+	 *  to each of the covariates, though the ordering of the values (columns) need not match the MultiKey (row) ordering. 
 	 * 
 	 * @return a MultiKeyCoefficientMap of new regression coefficients that is bootstrapped from the input estimates map.
 	 * 
@@ -359,7 +359,39 @@ public class RegressionUtils {
 		}
 		return bootstrapMap;
 	}
-	
+
+	/**
+	 * 
+	 * Method to bootstrap multinomial regression covariates.  This method creates a new map of sets of regression 
+	 * coefficients by sampling from a multivariate normal distribution with expected values (means) equal to the 
+	 * regression coefficients contained in the 'coefficientOutcomeMap' and a covariance matrix as specified. 
+	 * 
+	 * @param <T>  The event (outcome) of a multinomial regression
+	 * 
+	 * @param coefficientOutcomeMap - A map whose keys are the possible events (outcomes) of type T of the multinomial 
+	 *  regression, and whose values are MultiKeyCoefficientMaps each containing a set of regression coefficients 
+	 *  corresponding to its event (the key).  Each MultiKeyCoefficientMap of regression coefficients is used as 
+	 *  expected value of a multivariate normal distribution, which is sampled in order to produce a new set of 
+	 *  regression coefficients.  The MultiKeyCoefficientMaps are required to only have one key entry, with the entries being 
+	 *  the name of the regression covariates.  There must be only one values column in the MultiKeyCoefficientMaps,
+	 *  containing the regression coefficients for each covariate.
+	 * 
+	 * @param covarianceMatrix - A MultiKeyCoefficientMap that provides the covariance matrix of a regression's coefficients.  
+	 *  The covarianceMatrix map is required to only have one key entry in each of the MultiKeyCoefficientMap map's MultiKeys,
+	 *  with each entry corresponding to the name of a regression covariate.  The values must contain a name key corresponding 
+	 *  to each of the covariates, though the ordering of the values (columns) need not match the MultiKey (row) ordering. 
+	 *  
+	 * @return a Map whose keys are the possible events (outcomes) of type T of the multinomial regression and whose values 
+	 * are MultiKeyCoefficientMap with new regression coefficients (one set of coefficients for each event).
+	 * 
+	 * @author richardsonr
+	 * 
+	 */
+	public static <T> Map<T, MultiKeyCoefficientMap> boostrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> coefficientOutcomeMap, MultiKeyCoefficientMap covarianceMatrix) {
+
+		
+		
+	}
 	
 	
 }
