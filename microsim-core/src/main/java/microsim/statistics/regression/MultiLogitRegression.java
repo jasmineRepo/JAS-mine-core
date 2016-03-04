@@ -9,8 +9,6 @@ import java.util.Set;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
 import microsim.statistics.IDoubleSource;
-import cern.jet.random.Normal;
-import cern.jet.random.engine.MersenneTwister;
 
 public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceRegression<T> {
 
