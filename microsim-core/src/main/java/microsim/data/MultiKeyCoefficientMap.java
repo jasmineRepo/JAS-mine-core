@@ -132,7 +132,11 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {
 				case 1:
 					throw new IllegalArgumentException("Wrong number of key parameters");			
 				case 2:
-					super.put(new MultiKey(new Object[] { keyValues[0] }), keyValues[1]);
+					if (keyValues[0] instanceof MultiKey)		//Ross: If we don't do this check, a new MultiKey of a MultiKey is created unnecessarily, which then leads to a null pointer exception as the MultKeyCoefficientMap does not have a key entry of the type MultiKey(MultiKey()). 
+						super.put(keyValues[0], keyValues[1]);
+					else {
+						super.put(new MultiKey(new Object[] { keyValues[0] }), keyValues[1]);
+					}
 					break;
 				case 3:
 					super.put(keyValues[0], keyValues[1], keyValues[2]);

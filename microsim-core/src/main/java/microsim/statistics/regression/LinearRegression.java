@@ -268,7 +268,7 @@ public class LinearRegression implements ILinearRegression {
 				}
 
 				if(coeffMKapplicableForIDblSrc == true) {
-					String regressor = ((String) ((MultiKey) coeffMK).getKey(regressorColumnIndex));
+					String regressor = coeffMK.getKey(regressorColumnIndex).toString();
 					double covariate = iDblSrc.getDoubleValue(Enum.valueOf(enumType, regressor));		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface
 					if(coeffMultiMap.getValuesNames().length > 1) {			//Case when coeffMultiMap has more than one value column
 //						Object[] fullKeys = new Object[coeffMK.getKeys().length+1];
@@ -377,7 +377,7 @@ public class LinearRegression implements ILinearRegression {
 					i++;
 				}
 				if(coeffMKapplicable == true) {
-					String regressor = ((String) ((MultiKey) coeffMK).getKey(regressorColumnIndex));
+					String regressor = coeffMK.getKey(regressorColumnIndex).toString();
 					double covariate = Double.MIN_VALUE;
 					if(valueMap.containsKey(regressor)) {
 						covariate = valueMap.get(regressor);		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface	
@@ -503,7 +503,7 @@ public class LinearRegression implements ILinearRegression {
 					i++;
 				}
 				if(coeffMKapplicableForIDblSrc == true) {
-					String regressor = ((String) ((MultiKey) coeffMK).getKey(regressorColumnIndex));
+					String regressor = coeffMK.getKey(regressorColumnIndex).toString();
 					double covariate = iDblSrc.getDoubleValue(Enum.valueOf(enumTypeDouble, regressor));		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface
 					if(coeffMultiMap.getValuesNames().length > 1) {			//Case when coeffMultiMap has more than one value column
 						Object[] fullKeys = new Object[coeffMK.getKeys().length+1];
