@@ -95,10 +95,11 @@ public class ExportCSV {
         		}
         	}
 //        	final Field idField = obj.getClass().getDeclaredField("id");	//Relies on the name of the field being 'id', which is not good if the user has another naming convention.
-			if (idField != null)
+			if (idField != null) {
 				idField.setAccessible(true);
+			}
 			else throw new IllegalArgumentException("Object of type "
-					+ Object.class + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
+					+ target.getClass() + " cannot be exported to .csv as it does not have a field of type PanelEntityKey.class or it is null!");
  
 			//Set up file and fileWriter - create new file and directory if required
         	String filename;
