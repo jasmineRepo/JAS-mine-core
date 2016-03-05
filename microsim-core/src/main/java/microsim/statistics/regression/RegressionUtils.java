@@ -231,7 +231,7 @@ public class RegressionUtils {
 			if(keys[0].equals(RegressionColumnNames.REGRESSOR.toString())) {
 				regressorColumnIndex = 0;				
 			}
-			else throw new RuntimeException("RegressionUtils.boostrap(map) has no column named " + RegressionColumnNames.REGRESSOR.toString() + " in map.");			
+			else throw new NullPointerException("There is no key named " + RegressionColumnNames.REGRESSOR.toString() + " in the map argument of RegressionUtils.bootstrap(map).  If map was loaded from an Excel spreadsheet, check there is a column with the heading \'" + RegressionColumnNames.REGRESSOR.toString() + "\'.");			
 		}
 		String[] valuesNames = map.getValuesNames();
 		int numValueColumns = valuesNames.length;		
@@ -239,7 +239,7 @@ public class RegressionUtils {
 		HashMap<String, Integer> indexOfValuesNameMap = new HashMap<String, Integer>();
 		HashMap<String, Integer> valuesMap = new HashMap<String, Integer>();
 		int index = 0;
-		int estimateIndex = 0;
+		int estimateIndex = -1;
 		for(int i = 0; i < numValueColumns; i++) {
 			valuesMap.put(valuesNames[i], i);
 			
@@ -251,6 +251,9 @@ public class RegressionUtils {
 				index++;
 			}
 
+		}
+		if(estimateIndex == -1) {
+			throw new NullPointerException("There is no value label named " + RegressionColumnNames.COEFFICIENT.toString() + " in the map argument of RegressionUtils.bootstrap(map).  If map was loaded from an Excel spreadsheet, check there is a column with the heading \'" + RegressionColumnNames.COEFFICIENT.toString() + "\'.");
 		}
 		
 		double means[] = new double[numRowsInCovarianceMatrix];
