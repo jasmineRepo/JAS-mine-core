@@ -117,7 +117,6 @@ public class ExcelAssistant {
 //						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
 						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);
-//						System.out.println("key " + keyValueVector[j]);
 					}				
 					
 					Object[] values = new Object[valueColumns];
@@ -125,7 +124,6 @@ public class ExcelAssistant {
 //						Cell cell = row.getCell((short) (j + keyColumns), Row.RETURN_BLANK_AS_NULL);
 						Cell cell = row.getCell((short) (j + keyColumns), Row.CREATE_NULL_AS_BLANK);
 						values[j] = getCellValue(cell);
-//						System.out.println("val " + values[j]);
 					}	
 					keyValueVector[keyValueVector.length - 1] = values;
 				}

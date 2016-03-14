@@ -245,9 +245,7 @@ public class ExportCSV {
         finally {
         	try { 
         		bufferWriter.flush(); 
-//        		fileWriter.close(); 
-        	} catch (IOException e) { 
-//        			System.out.println("Error while flushing/closing fileWriter."); 
+        	} catch (IOException e) {  
         			e.printStackTrace(); 
         	} 
         }

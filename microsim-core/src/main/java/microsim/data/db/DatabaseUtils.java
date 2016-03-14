@@ -304,7 +304,6 @@ public class DatabaseUtils {
 				if (databaseInputUrl != null) {
 					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
 					//connectionUrl = connectionUrl.replaceFirst("\\[input-path\\]", databaseInputUrl);
-					System.out.println("[input-path] again" + databaseInputUrl);
 					connectionUrl = connectionUrl.replace("[input-path]", databaseInputUrl);
 					configured.getProperties().put("hibernate.connection.url", connectionUrl);
 				};

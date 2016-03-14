@@ -59,11 +59,9 @@ public abstract class AbstractEvent implements Event {
 		
 		//time and ordering must be equal, so now check which event was scheduled first and return an int such that the first event is fired first.
 		if(eventNumber > ((AbstractEvent)e).eventNumber) {
-//			System.out.println("this eventNumber is greater:" + eventNumber + " vs " + ((AbstractEvent)e).eventNumber);
 			return 1;
 		}
 		else if(eventNumber < ((AbstractEvent)e).eventNumber) {
-//			System.out.println("the other eventNumber is greater:" + eventNumber + " vs " + ((AbstractEvent)e).eventNumber);
 			return -1;
 		}
 		else throw new RuntimeException("Two events have the same eventNumber.  This should not be possible!\n" + Thread.currentThread().getStackTrace());

@@ -23,7 +23,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	//
 	//------------------------------------------------------------------------------------
 	/**
-	 * Align share of population by resampling 
+	 * Align share of population by resampling.
 	 * 
 	 * @param agentList
 	 * @param filter
@@ -41,13 +41,17 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
 		
 		if(targetShare > 1.) {
-			targetShare = 1.;
-			System.out.println("WARNING! ResamplingAlignment target is greater than 1 (meaning 100%)!  This is impossible, so target will be redefined to be 1.");
-			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+//			targetShare = 1.;
+//			System.out.println("WARNING! ResamplingAlignment target is greater than 1 (meaning 100%)!  This is impossible, so target will be redefined to be 1.");
+//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment target is greater than 1 (meaning 100%)!  This is impossible.\n"
+					+ Arrays.toString(Thread.currentThread().getStackTrace()));
 		} else if(targetShare < 0.) {
-			targetShare = 0.;
-			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible, so target will be redefined to be 0.");
-			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+//			targetShare = 0.;
+//			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible, so target will be redefined to be 0.");
+//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment target is negative!  This is impossible.\n"
+					+ Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
 		
 		List<T> list = new ArrayList<T>();		
@@ -117,7 +121,13 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		}
 		
 		if(count >= maxResamplingAttempts) { 
-			System.out.println("Resampling Alignment Algorithm has reached the maximum number of resample attempts (on average, " + avgResampleAttemptPerCapita + " attempts per object to be aligned) and has terminated.  Alignment may have failed.  The difference between the population in the system with the desired outcome and the target number is " + delta + " (" + (delta*100./((double)n)) + " percent).  If this is too large, check the resampling method and the subset of population to understand why not enough of the population are able to change their outcomes.");
+			System.out.println("Resampling Alignment Algorithm has reached the maximum number of resample attempts "
+					+ "(on average, " + avgResampleAttemptPerCapita + " attempts per object to be aligned) and has "
+							+ "terminated.  Alignment may have failed.  The difference between the population in "
+							+ "the system with the desired outcome and the target number is " + delta + " (" 
+							+ (delta*100./((double)n)) + " percent).  If this is too large, check the resampling "
+							+ "method and the subset of population to understand why not enough of the "
+							+ "population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
 //		System.out.println("final delta is ," + delta);
@@ -130,31 +140,39 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	//
 	//------------------------------------------------------------------------------------
 	/**
-	 * Align share of population by resampling 
+	 * Align absolute number of population by resampling 
 	 * 
 	 * @param agentList
 	 * @param filter
 	 * @param closure
-	 * @param targetShare
+	 * @param targetNumber
 	 */
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
 		align(agentList, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
-	 * Align share of population by resampling.  Includes argument specifying the maximum number of attempts before terminating the algorithm.
+	 * Align absolute number of population by resampling.  Includes argument specifying the maximum number of attempts before terminating the algorithm.
+	 *  
+	 * @param agentList
+	 * @param filter
+	 * @param closure
+	 * @param targetNumber
+	 * @param maxResamplingAttempts
 	 */
 //	@Override
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
 		if(targetNumber > agentList.size()) {
-			targetNumber = agentList.size();
-			System.out.println("WARNING! ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach, so target number will be redefined to be the population size.");
-			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+//			targetNumber = agentList.size();
+//			System.out.println("WARNING! ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach, so target number will be redefined to be the population size.");
+//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach.");
 		} else if(targetNumber < 0) {
 			targetNumber = 0;
-			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible to reach, so target number will be redefined to be 0.");
-			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+//			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible to reach, so target number will be redefined to be 0.");
+//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment targetNumber is negative!  This is impossible to reach.");
 		}
 		
 		List<T> list = new ArrayList<T>();		
@@ -224,7 +242,14 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		}
 		
 		if(count >= maxResamplingAttempts) { 
-			System.out.println("Resampling Alignment Algorithm has reached the maximum number of resample attempts (on average, " + avgResampleAttemptPerCapita + " attempts per object to be aligned) and has terminated.  Alignment may have failed.  The difference between the population in the system with the desired outcome and the target number is " + delta + " (" + (delta*100./((double)n)) + " percent).  If this is too large, check the resampling method and the subset of population to understand why not enough of the population are able to change their outcomes.");
+			System.out.println("Resampling Alignment Algorithm has reached the maximum number of "
+					+ "resample attempts (on average, " + avgResampleAttemptPerCapita + " attempts "
+							+ "per object to be aligned) and has terminated.  Alignment may have "
+							+ "failed.  The difference between the population in the system with the "
+							+ "desired outcome and the target number is " + delta + " (" 
+							+ (delta*100./((double)n)) + " percent).  If this is too large, check "
+							+ "the resampling method and the subset of population to understand why "
+							+ "not enough of the population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
 //		System.out.println("final delta is ," + delta);
