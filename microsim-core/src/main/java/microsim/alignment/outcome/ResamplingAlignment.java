@@ -12,6 +12,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
 /**
+ * Align the population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
+ * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+ * either the alignment target is reached, or the maximum number of attempts to resample has been reached.
+ * Implementation closely follows 
+ * "Richiardi M., Poggi A. (2014). Imputing Individual Effects in Dynamic Microsimulation Models. An application to household formation and labor market participation in Italy. International Journal of Microsimulation, 7(2), pp. 3-39."
+ * and "Leombruni R, Richiardi M (2006). LABORsim: An Agent-Based Microsimulation of Labour Supply. An application to Italy. Computational Economics, vol. 27, no. 1, pp. 63-88"
+
+ * 
  * @author Ross Richardson
  */
 public class ResamplingAlignment<T extends EventListener> extends AbstractOutcomeAlignment<T> {
@@ -23,35 +31,38 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	//
 	//------------------------------------------------------------------------------------
 	/**
-	 * Align share of population by resampling.
+	 * Align share of population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
+	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
 	 * @param agentList
-	 * @param filter
-	 * @param closure
-	 * @param targetShare
+	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
+	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
+	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
 		align(agentList, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
-	 * Align share of population by resampling.  Includes argument specifying the maximum number of attempts before terminating the algorithm.
+	 * Align share of population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
+	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
+	 * 
+	 * @param agentList
+	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
+	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
+	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
+	 * @param maxResamplingAttempts - the maximum number of attempts to resample before terminating the alignment (this is in case the resampling (as defined by the AlignmentOutcomeClosure) is unable to alter
+	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
+	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	@Override
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
 		
 		if(targetShare > 1.) {
-//			targetShare = 1.;
-//			System.out.println("WARNING! ResamplingAlignment target is greater than 1 (meaning 100%)!  This is impossible, so target will be redefined to be 1.");
-//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
-			throw new IllegalArgumentException("ResamplingAlignment target is greater than 1 (meaning 100%)!  This is impossible.\n"
-					+ Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment targetShare is greater than 1 (meaning 100%)!  This is impossible.");
 		} else if(targetShare < 0.) {
-//			targetShare = 0.;
-//			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible, so target will be redefined to be 0.");
-//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
-			throw new IllegalArgumentException("ResamplingAlignment target is negative!  This is impossible.\n"
-					+ Arrays.toString(Thread.currentThread().getStackTrace()));
+			throw new IllegalArgumentException("ResamplingAlignment targetShare is negative!  This is impossible.");
 		}
 		
 		List<T> list = new ArrayList<T>();		
@@ -140,38 +151,37 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	//
 	//------------------------------------------------------------------------------------
 	/**
-	 * Align absolute number of population by resampling 
+	 * Align absolute number of population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
+	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
 	 * @param agentList
-	 * @param filter
-	 * @param closure
-	 * @param targetNumber
+	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
+	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
+	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
 		align(agentList, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
-	 * Align absolute number of population by resampling.  Includes argument specifying the maximum number of attempts before terminating the algorithm.
-	 *  
+	 * Align absolute number of population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
+	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
+	 * 
 	 * @param agentList
-	 * @param filter
-	 * @param closure
-	 * @param targetNumber
-	 * @param maxResamplingAttempts
+	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
+	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
+	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
+	 * @param maxResamplingAttempts - the maximum number of attempts to resample before terminating the alignment (this is in case the resampling (as defined by the AlignmentOutcomeClosure) is unable to alter
+	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
+	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-//	@Override
 	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
 		if(targetNumber > agentList.size()) {
-//			targetNumber = agentList.size();
-//			System.out.println("WARNING! ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach, so target number will be redefined to be the population size.");
-//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach.");
 		} else if(targetNumber < 0) {
-			targetNumber = 0;
-//			System.out.println("WARNING! ResamplingAlignment target is negative!  This is impossible to reach, so target number will be redefined to be 0.");
-//			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is negative!  This is impossible to reach.");
 		}
 		
