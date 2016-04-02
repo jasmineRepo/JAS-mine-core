@@ -7,16 +7,14 @@ import java.lang.annotation.ElementType;
 
 /**
  * Annotate variables of the simulation manager automatically managed by JAS-mine gui
- * to ask parameters to simulation user.  Note that this has been deprecated as the name
- * is misleading.  Please use GUIparameter class instead.
- *  
- * @author Michele Sonnessa
- *
+ * to ask parameters to simulation user.  A GUIparameter can be modified at run-time.
+ * Was previously called ModelParmameter but name changed as this name was misleading.
+ * 
+ * @author ross richardson
  */
-@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD })		//Added by Ross 
-public @interface ModelParameter {
+@Target( { ElementType.FIELD }) 
+public @interface GUIparameter {
 
 	public String section() default "";
 	

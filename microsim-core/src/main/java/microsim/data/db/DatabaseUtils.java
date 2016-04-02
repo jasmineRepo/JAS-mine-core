@@ -13,7 +13,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import microsim.annotation.ModelParameter;
+import microsim.annotation.GUIparameter;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
@@ -51,8 +51,8 @@ public class DatabaseUtils {
 		for (Object model : models) {
 			Field[] fields = model.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				ModelParameter modelParamter = field
-						.getAnnotation(ModelParameter.class);
+				GUIparameter modelParamter = field
+						.getAnnotation(GUIparameter.class);
 				if (modelParamter != null) {
 					field.setAccessible(true);
 					ExperimentParameter parameter = new ExperimentParameter();
