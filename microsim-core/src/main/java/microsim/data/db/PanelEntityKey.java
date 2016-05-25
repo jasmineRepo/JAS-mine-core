@@ -11,32 +11,32 @@ public class PanelEntityKey implements Serializable {
 	private static final long serialVersionUID = -1264771886420608859L;
 
 	@Column(name="id")
-	private Long id = 1L;
+	private long id = 1L;
 	
 	@Column(name="simulation_time")
-	private Double simulationTime;
+	private double simulationTime;
 	
 	@Column(name="simulation_run")
-	private Long simulationRun;
+	private long simulationRun;
 
 	public PanelEntityKey() {
 		super();
 	}
 	
-	public PanelEntityKey(Long id) {
+	public PanelEntityKey(long id) {
 		super();
 		this.id = id;
 	}
 	
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public Double getSimulationTime() {
+	public double getSimulationTime() {
 		return simulationTime;
 	}
 
@@ -44,7 +44,7 @@ public class PanelEntityKey implements Serializable {
 		this.simulationTime = simulationTime;
 	}
 
-	public Long getSimulationRun() {
+	public long getSimulationRun() {
 		return simulationRun;
 	}
 

@@ -34,7 +34,9 @@ import org.apache.commons.collections.Predicate;
  * in the population to be aligned, to be used as target; method: the alignment
  * method to be used.
  * 
- * @author Matteo Richiardi and Ross Richardson This version: July 2015
+ * @author Matteo Richiardi
+ * @author Ross Richardson 
+ * This version: July 2015
  * 
  * @param <T>
  */

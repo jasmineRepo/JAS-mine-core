@@ -51,7 +51,7 @@ public class ExportCSV {
 
 	/**
 	 * Allows the exporting of all fields (including private and inherited fields) of an object to a .csv file named after the object's class name. 
-	 * Note that only numbers, enums or strings are exported to .csv files.
+	 * Note that only numbers, enums or strings are exported to .csv files.  The serialVersionUID of a class will also not be exported.
 	 * 
 	 * @param target - the object whose fields will be exported to a .csv file with a name equal to the object's class name.  
 	 * If the target is a Collection of objects, each member of the collection will have their individual fields exported to the .csv file, labelled by their id.
@@ -107,7 +107,7 @@ public class ExportCSV {
         		filename = obj.getClass().getSimpleName();
         	}
         	else {		//Use id of object to enumerate the name of .csv output files if several of the same object are for export.
-					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)idField.get(targetObject)).getId().toString();
+					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)idField.get(targetObject)).getId();
         	}
 	
         	File f = new File(directory + File.separator + filename + ".csv");
@@ -142,7 +142,10 @@ public class ExportCSV {
     	    	Transient transientAnnotation = field.getAnnotation(Transient.class);
     	    	if(transientAnnotation == null) {			//Ignore the field if it has the 'Transient' annotation, just like when exporting the data to the output database
     	    		if(field.getType().isPrimitive() || Number.class.isAssignableFrom(field.getType()) || field.getType().equals(String.class)|| field.getType().equals(Boolean.class) || field.getType().isEnum() || field.getType().equals(Character.class)) {
-    	    			nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately)
+    	    			String name = field.getName();
+    	    			if(!name.equals("serialVersionUID")) {
+    	    				nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately).  Also ignores serialVersionUID value.
+    	    			}
     	    		}
     	    	}
     	    }    	  	
@@ -188,10 +191,10 @@ public class ExportCSV {
 	        		
 	        		Field idField = obj.getClass().getDeclaredField(idFieldName);
 	        		idField.setAccessible(true);
-					bufferWriter.append(((PanelEntityKey)idField.get(obj)).getId().toString() + delimiter);
+					bufferWriter.append(((PanelEntityKey)idField.get(obj)).getId() + delimiter);
 					
 	        		for(String fieldName : fieldsForExport) {
-	        			Field thisField = obj.getClass().getDeclaredField(fieldName);
+	        			Field thisField = findUnderlyingField(obj.getClass(), fieldName);	        			
 	        			thisField.setAccessible(true);
 	        			Object value = thisField.get(obj);
 	        			if(value == null) {
@@ -210,7 +213,7 @@ public class ExportCSV {
         		
 //        		Field idField = targetObject.getClass().getDeclaredField(idFieldName);
 //        		Field idField = targetObjectIdField;
-				bufferWriter.append(((PanelEntityKey)targetObjectIdField.get(targetObject)).getId().toString() + delimiter);
+				bufferWriter.append(((PanelEntityKey)targetObjectIdField.get(targetObject)).getId() + delimiter);
 				
         		for(String fieldName : fieldsForExport) {
         			Field thisField = targetObject.getClass().getDeclaredField(fieldName);
@@ -251,15 +254,25 @@ public class ExportCSV {
         }
 	}	
 	
+	private static Field findUnderlyingField(Class<?> clazz, String fieldName) {
+	    Class<?> current = clazz;
+	    do {
+	       try {
+	           return current.getDeclaredField(fieldName);
+	       } catch(Exception e) {}
+	    } while((current = current.getSuperclass()) != null);
+	    return null;
+	}
+
 	//Recursive method to get all fields of a class, including inherited ones
-		private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-		    fields.addAll(Arrays.asList(type.getDeclaredFields()));
+	private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+	    fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
-		    if (type.getSuperclass() != null) {
-		        fields = getAllFields(fields, type.getSuperclass());
-		    }
+	    if (type.getSuperclass() != null) {
+	        fields = getAllFields(fields, type.getSuperclass());
+	    }
 
-		    return fields;
-		}
+	    return fields;
+	}
 		
 }
