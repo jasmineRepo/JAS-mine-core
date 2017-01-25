@@ -30,7 +30,7 @@ import cern.colt.list.LongArrayList;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  * 
- * @author Michele Sonnessa
+ * @author Michele Sonnessa, Ross Richardson
  *
  */
 public abstract class Series implements EventListener, IUpdatableSource
@@ -186,9 +186,9 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected ILongSource target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IDblSource objects.
+		/** Create a statistic probe on a collection of ILongSource objects.
 		 *  @param name Name of the statistic object.
-		 *  @param source The collection containing IDblSource object.
+		 *  @param source The collection containing ILongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(ILongSource source, Enum<?> valueID)
 		{ 
@@ -218,6 +218,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		{ 
 			this.valueID = ILongSource.Variables.Default;
 			target = new LongInvoker(source, valueName, getFromMethod);
+			valueList = new BufferedLongArrayList();
 		}
 		
 		public long[] getLongArray() 
@@ -267,9 +268,9 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected IIntSource target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IDblSource objects.
+		/** Create a statistic probe on a collection of IIntSource objects.
 		 *  @param name Name of the statistic object.
-		 *  @param source The collection containing IDblSource object.
+		 *  @param source The collection containing IIntSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(IIntSource source, Enum<?> valueID)
 		{ 
@@ -299,6 +300,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		{ 
 			this.valueID = IIntSource.Variables.Default;
 			target = new IntegerInvoker(source, valueName, getFromMethod);
+			valueList = new BufferedIntArrayList();
 		}
 
 		public int[] getIntArray() 
@@ -348,9 +350,9 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected IFloatSource target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IDblSource objects.
+		/** Create a statistic probe on a collection of IFloatSource objects.
 		 *  @param name Name of the statistic object.
-		 *  @param source The collection containing IDblSource object.
+		 *  @param source The collection containing IFloatSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(IFloatSource source, Enum<?> valueID)
 		{ 
@@ -361,7 +363,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 
 		/** Create a statistic probe on a collection of IFloatSource objects.
 		 * It uses the IFloatSource variable id.
-		 *  @param source The collection containing IDoubleSource object.
+		 *  @param source The collection containing IFloatSource object.
 	 	*/
 		public Float(IFloatSource source)
 		{ 
@@ -380,6 +382,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		{ 
 			this.valueID = IFloatSource.Variables.Default;
 			target = new FloatInvoker(source, valueName, getFromMethod);
+			valueList = new BufferedFloatArrayList();
 		}
 			
 		public float[] getFloatArray() 
