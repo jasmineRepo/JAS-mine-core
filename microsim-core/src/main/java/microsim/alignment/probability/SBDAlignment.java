@@ -26,7 +26,6 @@ public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 		else
 			list.addAll(agentList);
 		
-		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		
 		Map<T, Double> map = new HashMap<T, Double>();
@@ -36,13 +35,16 @@ public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 			double r = SimulationEngine.getRnd().nextDouble();
 			map.put(agent, new Double(p-r));
 		}
-		sortByComparator(map, false); // true for ascending order
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i); 
-			if (i<targetShare*n) 
-				closure.align(agent, 1.0);				
-			else
-				closure.align(agent, 0.0);				
+		map = sortByComparator(map, false); // true for ascending order.			//Returns a LinkedHashMap, that maintains the order of insertion.
+		int i = 0;
+		for (T agent : map.keySet()) {
+			if (i<targetShare*n) { 
+				closure.align(agent, 1.0);
+			}
+			else { 
+				closure.align(agent, 0.0);
+			}
+			i++;
 		}
 		
 	}

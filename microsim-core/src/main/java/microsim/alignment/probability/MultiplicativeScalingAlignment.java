@@ -24,7 +24,6 @@ public class MultiplicativeScalingAlignment<T> extends AbstractProbabilityAlignm
 		else
 			list.addAll(agentList);
 		
-		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		double sum = 0;
 		

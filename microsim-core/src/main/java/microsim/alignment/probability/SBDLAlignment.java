@@ -1,15 +1,14 @@
 package microsim.alignment.probability;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import microsim.engine.SimulationEngine;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+
+import microsim.engine.SimulationEngine;
 
 public class SBDLAlignment<T> extends AbstractProbabilityAlignment<T> {
 
@@ -26,7 +25,7 @@ public class SBDLAlignment<T> extends AbstractProbabilityAlignment<T> {
 		else
 			list.addAll(agentList);
 		
-		Collections.shuffle(list, SimulationEngine.getRnd());
+//		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		
 		Map<T, Double> map = new HashMap<T, Double>();
@@ -36,13 +35,16 @@ public class SBDLAlignment<T> extends AbstractProbabilityAlignment<T> {
 			double r = SimulationEngine.getRnd().nextDouble();		
 			map.put(agent, new Double(Math.log(1/r-1)+Math.log(p/(1-p))));
 		}
-		sortByComparator(map, false); // true for ascending order
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i); 
-			if (i<targetShare*n) 
-				closure.align(agent, 1.0);				
-			else 
+		map = sortByComparator(map, false); // true for ascending order			//Returns a LinkedHashMap, that maintains the order of insertion.
+		int i = 0;
+		for (T agent : map.keySet()) {
+			if (i<targetShare*n) { 
+				closure.align(agent, 1.0);
+			}
+			else { 
 				closure.align(agent, 0.0);
+			}
+			i++;
 		}
 		
 	}
