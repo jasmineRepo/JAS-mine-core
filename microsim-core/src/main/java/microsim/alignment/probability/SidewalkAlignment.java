@@ -28,18 +28,21 @@ public class SidewalkAlignment<T> extends AbstractProbabilityAlignment<T> {
 		int n = list.size();
 		double sum = 0;
 		
-		sum = 0;
 		for (int i=0; i<n; i++) {
 			T agent = list.get(i);
+			
+			int oldSum = (int)sum;
 			
 			// update cumulated probability
 			sum += closure.getProbability(agent);
 			
 			// set individual probability to 1 if there is a change of the integer part of the cumulated probability, 0 otherwise
-			if (sum == Math.rint(sum)) 
-				closure.align(agent, 1.0);				
-			else 
-				closure.align(agent, 0.0);				
+			if ((int)sum != oldSum) { 
+				closure.align(agent, 1.0);
+			}
+			else { 
+				closure.align(agent, 0.0);
+			}
 		}
 		
 	}

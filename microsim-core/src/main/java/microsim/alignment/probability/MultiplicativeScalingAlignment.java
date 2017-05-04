@@ -1,13 +1,10 @@
 package microsim.alignment.probability;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-
-import microsim.engine.SimulationEngine;
 
 public class MultiplicativeScalingAlignment<T> extends AbstractProbabilityAlignment<T> {
 

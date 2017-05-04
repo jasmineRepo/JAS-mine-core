@@ -1,7 +1,6 @@
 package microsim.alignment.probability;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +35,11 @@ public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 			map.put(agent, new Double(p-r));
 		}
 		map = sortByComparator(map, false); // true for ascending order.			//Returns a LinkedHashMap, that maintains the order of insertion.
+		
 		int i = 0;
 		for (T agent : map.keySet()) {
-			if (i<targetShare*n) { 
+			
+			if (i <= targetShare*n) { 
 				closure.align(agent, 1.0);
 			}
 			else { 
