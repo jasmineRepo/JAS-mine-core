@@ -9,6 +9,7 @@ import java.util.Set;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
+import microsim.statistics.regression.RegressionColumnNames;
 
 import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.keyvalue.MultiKey;
@@ -27,6 +28,10 @@ public class RegressionUtils {
 		return event(eventClass.getEnumConstants(), prob, SimulationEngine.getRnd());		
 	}
 	
+	public static <T> T event(Class<T> eventClass, double[] weight, boolean checkWeightSum) {
+		return event(eventClass.getEnumConstants(), weight, SimulationEngine.getRnd(), checkWeightSum);		
+	}
+	
 	/**
 	 * You must provide a vector of events (any type of object) and relative
 	 * weights which sum must be equal to 1.0.
@@ -42,19 +47,53 @@ public class RegressionUtils {
 		return event(events, prob, SimulationEngine.getRnd());		
 	}
 	
+	public static <T> T event(T[] events, double[] weight, boolean checkWeightSum) {
+		return event(events, weight, SimulationEngine.getRnd(), checkWeightSum);		
+	}
+
 	public static <T> T event(Map<T, Double> map) {
 		return event(map, SimulationEngine.getRnd());
 	}
 	
+	public static <T> T event(Map<T, Double> map, boolean checkWeightSum) {
+		return event(map, SimulationEngine.getRnd(), checkWeightSum);
+	}
+
 	public static <T> T event(T[] events, double[] prob, Random rnd) {
+		return event(events, prob, rnd, true);
+	}
+	
+	/**
+	 * Returns an event determined randomly from a set of events and weights. Note that these weights do not
+	 * necessarily have to sum to 1, as the method can convert the weights into 
+	 * probabilities by calculating their relative proportions.  If the user desires that an exception is 
+	 * thrown if the weights do not sum to 1, please set checkProbSum to true.
+	 * 
+	 * @param events - an array of events of type T
+	 * @param weights - an array of doubles from which the probabilities are calculated (by dividing the weights by the sum of weights). 
+	 * @param rnd - Random number generator
+	 * @param checkWeightSum - Boolean toggle, which if true means that the method will throw an exception if the weights do not add to 1. 
+	 * If false, the method will calculate the probabilities associated to the weights and use these in the random sampling of the event.
+	 *
+	 * @return - the randomly chosen event
+	 */
+	public static <T> T event(T[] events, double[] weights, Random rnd, boolean checkWeightSum) {
 		
 		double x = 0.0;
-		for (int i = 0; i < prob.length; i++) {
-			x += prob[i];
+		for (int i = 0; i < weights.length; i++) {
+			x += weights[i];
 		}
 		
-		if (Math.abs(x - 1.0) > EPSILON ) 				//If IllegalArgumentException is too often called, i.e. precision is unnecesarily high, consider increasing value of EPSILON 
-			throw new IllegalArgumentException("Choice's weights must sum 1.0. Current vector" + prob + " sums " + x);
+		if (checkWeightSum) {			//Enforce the condition that the weights must sum to 1 (within some small error tolerance).
+			if (Math.abs(x - 1.0) > EPSILON )			//If IllegalArgumentException is too often called, i.e. precision is unnecesarily high, consider increasing value of EPSILON 
+				throw new IllegalArgumentException("Choice's weights must sum 1.0. Current vector" + weights + " sums " + x);
+		}
+		else {						//Calculate the associated probabilities by dividing the weights by the sum of weights.
+			//Convert weights into probabilities by 'normalising' them
+			for	(int i = 0; i < weights.length; i++) {
+				weights[i] /= x;
+			}
+		}
 		
 		double toss = rnd.nextDouble();
 		
@@ -62,13 +101,14 @@ public class RegressionUtils {
 		int i = 0;
 		while (toss >= x)
 		{
-			x += prob[i];
+			x += weights[i];
 			i++;					
 		}
 		
 		return events[i-1];			
 	}
 	
+		
 	public static boolean event(double prob) {
 		return SimulationEngine.getRnd().nextDouble() < prob;		
 	}
@@ -87,6 +127,10 @@ public class RegressionUtils {
 	 * the values, it will be very slow to call it in a loop, as the events[] and prob[] need to be 
 	 * extracted each time this method is called.  Better to use the other method 
 	 * (event(T[], Double[]) and do the extracting of the map outside of the loop!
+	 * 
+	 * If you want to do sampling without replacement, then you should use the 
+	 * event(Map<T, Double> map, Random rnd, boolean checkWeightSum) method instead, setting checkWeightSum to false
+	 * 
 	 * @param map
 	 * @param rnd
 	 * @return the event chosen
@@ -104,6 +148,36 @@ public class RegressionUtils {
 			prob[i] = ((Number)map.get(key)).doubleValue();		//This ensures events and prob arrays are aligned by indices.
 		}
 		return event(events, prob, rnd);
+	}
+	
+	/**
+	 * 
+	 * Useful for sampling without replacement whenever the checkWeightSum flag is set to false, 
+	 * as new probabilities are calculated each time this method is called.
+	 * 
+	 * If checkWeightSum flag is set to true, which signifies that the map's values are
+	 * weights that sum to 1, this method will be comparatively slower to call 
+	 * in a loop compared to other available methods, as the events[] and prob[] need to be 
+	 * extracted each time this method is called.  Better to use the other method 
+	 * (event(T[], Double[]) and do the extracting of the map outside of the loop!
+	 * 
+	 * @param map - contains events as keys and weights as values.  These weights will be normalised to derive probabilities.
+	 * @param rnd
+	 * @return the event chosen
+	 * 
+	 * @author Ross Richardson
+	 */
+	public static <T> T event(Map<T, Double> map, Random rnd, boolean checkWeightSum) {	 
+		@SuppressWarnings("unchecked")					//Conversion from set of T to array of T, so conversion should not need checking
+		T[] events = (T[]) map.keySet().toArray();
+		
+		double[] prob = new double[events.length];
+
+		for(int i = 0; i < events.length; i++) {
+			T key = events[i];					
+			prob[i] = ((Number)map.get(key)).doubleValue();		//This ensures events and prob arrays are aligned by indices.
+		}
+		return event(events, prob, rnd, checkWeightSum);
 	}
 	
 	/**
