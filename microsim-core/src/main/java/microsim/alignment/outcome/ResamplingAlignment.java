@@ -35,7 +35,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList
+	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -49,7 +49,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList
+	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -155,7 +155,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList
+	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -169,7 +169,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList
+	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
