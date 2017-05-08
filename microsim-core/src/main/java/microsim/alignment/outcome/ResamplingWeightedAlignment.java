@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import microsim.agent.Weighting;
-import microsim.alignment.outcome.AbstractOutcomeAlignment;
-import microsim.alignment.outcome.AlignmentOutcomeClosure;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 import microsim.statistics.regression.RegressionUtils;
@@ -143,6 +141,8 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	//Note, the list argument here is already filtered for the relevant agents in the align(...) methods.
 	public void doAlignment(List<T> list, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
+//		System.out.println("Starting Resampling Alignment.  This may take some time, please wait...");
+		
 		Collections.shuffle(list, SimulationEngine.getRnd());
 
 		int avgResampleAttemptsPerAgent = 20;
@@ -174,12 +174,13 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 				
 		// compute difference between simulation and target
 		double delta = sum - targetNumber;
-		if(delta == 0.) {		//If already meeting alignment target, do not need to align.  We need this here, as for delta = 0 case, maxResamplingAttempts can still be assigned a value of -1 (by default when align method without maxResamplingAttempts argument is called).  Then count = 0 is > maxResamplingAttempts, and the warning at the bottom is called unnecessarily.   
+		if(delta == 0.) {		//If already meeting alignment target, do not need to align.  We need this here, as for delta = 0 case, maxResamplingAttempts can still be assigned a value of -1 (by default when align method without maxResamplingAttempts argument is called).  Then count = 0 is > maxResamplingAttempts, and the warning at the bottom is called unnecessarily.
+//			System.out.println("No need for alignment as delta is ," + delta);
 			return;
 		}
 		
 		int count = 0;
-		T agentSmallestButTooLargeWeight = null;			//Store the agent with the smallest weight that is just too big to be used 
+		T agentSmallestButTooLargeWeight = null;			//Store the agent with the smallest weight that is too big to be used 
 		
 		// if too many positive outcomes (delta is positive)
 		if(delta > 0.) {
@@ -196,6 +197,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					if (!closure.getOutcome(agent)) {
 						delta -= weight;
 						count = 0;
+						trueAgentMap.remove(agent);
 					}
 				}
 				else {
@@ -205,6 +207,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					else if(agentSmallestButTooLargeWeight.getWeighting() > agent.getWeighting()) {
 						agentSmallestButTooLargeWeight = agent;		//Replace with agent that has smaller weight (that is still just too big to be used)
 					}
+					trueAgentMap.remove(agent);		//Agent is too big to be resampled normally, only at the end if it brings delta closer to zero.  Therefore, we should not still include it in the map to be sampled as it cannot be resampled, so it just wastes time to potentially try it again and again!
 				}
 			} 
 			if(agentSmallestButTooLargeWeight != null) {
@@ -237,6 +240,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					if (closure.getOutcome(agent)) {
 						delta += weight;
 						count = 0;
+						falseAgentMap.remove(agent);
 					}
 				}
 				else {
@@ -246,6 +250,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					else if(agentSmallestButTooLargeWeight.getWeighting() > agent.getWeighting()) {
 						agentSmallestButTooLargeWeight = agent;		//Replace with agent that has smaller weight (that is still just too big to be used)
 					}
+					falseAgentMap.remove(agent);		//Agent is too big to be resampled normally, only at the end if it brings delta closer to zero.  Therefore, we should not still include it in the map to be sampled as it cannot be resampled, so it just wastes time to potentially try it again and again!
 				}
 			} 
 			if(agentSmallestButTooLargeWeight != null) {
@@ -274,7 +279,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 							+ "not enough of the population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
-		System.out.println("final delta is ," + delta);
+//		System.out.println("final delta is ," + delta);
 		
 	}
 
