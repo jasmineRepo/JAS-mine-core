@@ -13,7 +13,7 @@ import org.apache.commons.collections.Predicate;
 /**
  * Binary alignment methods. Acknowledgements: Partly based on
  * "Evaluating Binary Alignment Methods in Microsimulation Models", by Jinjing
- * Li and Cathal O�Donoghue, Journal of Artificial Societies and Social
+ * Li and Cathal O'Donoghue, Journal of Artificial Societies and Social
  * Simulation, 2014 (http://jasss.soc.surrey.ac.uk/17/1/15/15.pdf)
  * 
  * 
@@ -22,27 +22,27 @@ import org.apache.commons.collections.Predicate;
  * called to modify that variable, possibly making use of a specific process of
  * the agents.
  * 
- * Hence: 1) ALIGNMENT OF PROBABILITIES: this requires a process is specified
+ * ALIGNMENT OF PROBABILITIES: this requires a process is specified
  * that computes individual probabilities of the occurrence of a given event.
  * Alignment is then called to modify those probabilities. A second process is
  * specified to determine the occurrence of the event given the (modified)
- * probabilities. INPUTS: agentList: the list of agents; variableName: the name
- * of the variable containing the probability of the event; targetShare or
- * targetNumber: the share or number of positive outcomes in the population to
- * be aligned, to be used as target; method: the alignment method to be used.
- * 
- * 2) ALIGNMENT OF OUTCOMES: this requires a single process is specified that
- * computes the probability of an event and the determines its occurrence.
- * INPUTS: agentList: the list of agents; variableName: the name of the variable
- * containing the probability of the event; process: the name of the process to
- * be used by the alignment method to modify the variable at the individual
- * level; targetShare or targetNumber: the share or number of positive outcomes
- * in the population to be aligned, to be used as target; method: the alignment
- * method to be used.
+ * probabilities. 
+ *
+ * @param agentList - a list of agents to potentially be aligned
+ * @param filter - filters the agentList so that only the relevant sub-population 
+ * 	of agents is aligned
+ * @param closure - specifies the method returning the unaligned probability 
+ * 	of the positive outcome for the agent and the method that samples the aligned 
+ *  probabilities to specify the outcome.
+ * @param targetShare - a target share of the relevant sub-population 
+ *  (specified as a proportion of the filtered population) for which the outcome 
+ *  (defined by the AlignmentProbabilityClosure) must be true.
+ * @param <T> - the Type parameter usually representing the agent class.
  * 
  * @author Matteo Richiardi This version: July 2014
  * 
  * @param <T>
+ * 
  */
 public abstract class AbstractProbabilityAlignment<T> {
 	
