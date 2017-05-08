@@ -38,7 +38,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface
+	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -52,7 +52,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface
+	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -100,7 +100,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface
+	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -114,7 +114,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface
+	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
