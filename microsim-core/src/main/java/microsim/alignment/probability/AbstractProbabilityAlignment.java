@@ -28,26 +28,41 @@ import org.apache.commons.collections.Predicate;
  * specified to determine the occurrence of the event given the (modified)
  * probabilities. 
  *
- * @param agentList - a list of agents to potentially be aligned
- * @param filter - filters the agentList so that only the relevant sub-population 
- * 	of agents is aligned
- * @param closure - specifies the method returning the unaligned probability 
- * 	of the positive outcome for the agent and the method that samples the aligned 
- *  probabilities to specify the outcome.
- * @param targetShare - a target share of the relevant sub-population 
- *  (specified as a proportion of the filtered population) for which the outcome 
- *  (defined by the AlignmentProbabilityClosure) must be true.
- * @param <T> - the Type parameter usually representing the agent class.
  * 
  * @author Matteo Richiardi This version: July 2014
  * 
- * @param <T>
+ * @param <T> - the Type parameter usually representing the agent class.
  * 
  */
 public abstract class AbstractProbabilityAlignment<T> {
-	
+
+	/**
+	 * Method to implement alignment.
+	 * 
+	 * @param agentList - a list of agents to potentially be aligned
+	 * @param filter - filters the agentList so that only the relevant sub-population 
+	 * 	of agents is aligned
+	 * @param closure - specifies the method returning the unaligned probability 
+	 * 	of the positive outcome for the agent and the method that samples the aligned 
+	 *  probabilities to specify the outcome.
+	 * @param targetShare - a target share of the relevant sub-population 
+	 *  (specified as a proportion of the filtered population) for which the outcome 
+	 *  (defined by the AlignmentProbabilityClosure) must be true.
+	 */
 	public abstract void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare);
 
+	/**
+	 * 
+	 * Sorting of objects of type T (usually the agents)
+	 * by an associated Double number. This method is used in 
+	 * the SBD and SBDL alignment algorithms.
+	 * 
+	 * @param unsortedMap
+	 * @param ascendingOrder - if true, the method returns a map ordered 
+	 * 	by the Double value increasing, otherwise the map will be ordered
+	 * 	by the Double value decreasing. 
+	 * @return - the map of type T objects sorted by the Double numbers. 
+	 */
 	protected Map<T, Double> sortByComparator(Map<T, Double> unsortedMap,
 			final boolean ascendingOrder) {
 
