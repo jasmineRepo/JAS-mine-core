@@ -1,17 +1,18 @@
 package microsim.alignment.multi;
 
 import java.util.List;
-//import java.util.Collections;
-//import java.util.Comparator;
-//import java.util.LinkedHashMap;
-//import java.util.LinkedList;
-//import java.util.Map;
-//import java.util.Map.Entry;
 
 import org.apache.commons.collections.Predicate;
 
 /**
- * Multiple choice alignment methods.
+ * Multiple choice alignment methods, where there are in general many
+ * (> 2) possible outcomes/states to align.  Note that binary alignment
+ * (i.e. only two choices of state, such as true/false, 
+ * transition/don't transition, male/female, alive/dead, etc.)  
+ * can still be achieved using these methods for multiple alignment, 
+ * however there are also other (legacy) options for Binary alignment 
+ * (see microsim.alignment.probability package to align probabilities
+ * or microsim.alignment.outcome package to align outcomes).
  * 
  * 
  * General principle of operation of this class: a) A variable is 
