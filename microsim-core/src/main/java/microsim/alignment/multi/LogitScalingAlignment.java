@@ -1,25 +1,21 @@
-package microsim.alignment.probability;
+package microsim.alignment.multi;
 
 import java.util.ArrayList;
 import java.util.List;
-import microsim.alignment.probability.AbstractProbabilityAlignment;
-import microsim.alignment.probability.AlignmentProbabilityClosure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
 
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International Journal of Microsimulation (2016) 9(3) 89-102), 
- * but for agents with binary choices rather than the general case of 'A' choices.  For use with multiple choices, use the
- * LogitScalingAlignment class instead.  For use with weighted agents (where the weighting of an agent corresponds to 
- * the number of individuals it represents, use the LogitScalingBinaryWeightedAlignment (for binary choices) or
- * the LogitScalingWeightedAlignment class (for multiple choices) instead.
+ * for the general case of 'A' choices.  For use with weighted agents (where the weighting of an agent corresponds to 
+ * the number of individuals it represents, use the LogitScalingWeightedAlignment instead.
  * 
  * @author Ross Richardson
  *
  * @param <T>
  */
-public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment<T> {
+public class LogitScalingAlignment<T> extends AbstractMultiProbabilityAlignment<T> {
 
 	/**
 	 * 
@@ -39,7 +35,7 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 	 * 
 	 */
 	@Override
-	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
+	public void align(List<T> agentList, Predicate filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare) {
 		
 		final int maxNumberIterations = 100;		//The maximum number of iterations until the iterative loop in the alignment algorithm terminates.  The resulting probabilities at that time are then used.
 		final double precision = 1.e-5;				//The appropriate value here depends on the precision of the probabilities.  If the probabilities are stated to x decimal places, then EPSILON should be 1.e-x.
@@ -61,23 +57,32 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 	 * @param maxNumberIterations - The maximum number of iterations of the aligned probabilities before termination.  
 	 * The probabilities derived will be used as aligned probabilities, although if the maximum number of iterations is reached,
 	 *  it is possible that the mean of the probabilities has not converged to the alignment targetShare.
-	 * @param precision - The allowed error between the mean of the alignment probabilities and the targetShare.  
-	 * 	When the mean of the probabilities has converged to the targetShare within this precision, the algorithm will stop 
+	 * @param precision - the largest accepted difference between two iterations of the average (mean) aligned probability.  
+	 * 	When the average aligned probability iteration has converged to a value within this precision, the algorithm will stop 
 	 * 	iterating (assuming the number of iterations has not exceeded the maxNumberIterations parameter) and the resultant 
-	 * 	probabilities should be considered the aligned probabilities.
+	 * 	probabilities should be considered the true aligned probabilities.
 	 * @param enableWarnings - If set to true, warnings will be sent to the System.out if the alignment has not converged within 
 	 * 	the desired precision. If set to false, warnings will not be sent to the System.out.
 	 * 
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
-		if (targetShare < 0. || targetShare > 1.) {
-			throw new IllegalArgumentException("target probability in LogitScalingBinaryAlignment.align() method must lie in [0,1]");
+	public void align(List<T> agentList, Predicate filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
+
+		int numOptions = targetShare.length;			//The length of the targetShare corresponds to the number of possible choices or outcomes of the event (the 'A' in Stephensen's paper)
+		double targetSum = 0.;
+		for(int choice = 0; choice < numOptions; choice++) {
+			if (targetShare[choice] < 0. || targetShare[choice] > 1.) {
+				throw new IllegalArgumentException("Each targetShare element in LogitScalingAlignment.align() method must lie in [0,1]");
+			}
+			targetSum += targetShare[choice];		//If targetShare[choice] was negative, would have already thrown the exception above, so no need to check here again.
+		}
+		if (targetSum > 1.) {
+			throw new IllegalArgumentException("Sum of targetShare outcomes in LogitScalingAlignment.align() must be less than or equal to 1");
 		}
 		if (maxNumberIterations < 1) {
-			throw new IllegalArgumentException("maxNumberIterations in LogitScalingBinaryAlignment.align() method must be at least 1");
+			throw new IllegalArgumentException("maxNumberIterations in LogitScalingAlignment.align() method must be at least 1");
 		} 
 		if (precision <= 0.) {
-			throw new IllegalArgumentException("precision in LogitScalingBinaryAlignment.align() method must be greater than 0");
+			throw new IllegalArgumentException("precision in LogitScalingAlignment.align() method must be greater than 0");
 		}
 
 		List<T> list = new ArrayList<T>();		
@@ -87,55 +92,83 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 			list.addAll(agentList);
 		
 		int n = list.size();
-		double target = targetShare * (double)n;
+		double[] target = new double[numOptions];
+		for(int choice = 0; choice < numOptions; choice++) {
+			target[choice] = targetShare[choice] * (double)n;
+		}
 		double allowedError = precision * (double)n;		//precision refers to the share of the sub-population aligned, allowedError refers to the target number, so is scaled up by n.
-		
-		double[] prob = new double[list.size()];					//Array of probabilities that will be adjusted by iteration
-		double[] notProb = new double[list.size()];					//The complement probabilities (i.e. probabilities of the alternative choice), that will also be adjusted by iteration
+
+		//2-dimensional array of probabilities that will be adjusted by iteration.  
+		//The goal of the alignment algorithm is for the sum of each column (iterate over the array's first index)
+		//to equal the corresponding target, while the sum of each row (iterate over the array's second index) to 
+		//equal 1 (i.e. the sum of state probabilities, where one of the states must be true).
+		double[][] prob = new double[list.size()][numOptions];		
 		
 		// compute total expected number of simulated positive outcomes
 		for (int i=0; i<n; i++) {
 			T agent = list.get(i);
-			prob[i] =  closure.getProbability(agent);		//Unaligned probabilities (to be aligned by the procedure).
-			notProb[i] = 1. - prob[i];
+			for(int choice = 0; choice < numOptions; choice++) {
+				prob[i][choice] =  closure.getProbability(agent)[choice];		//Unaligned probabilities (to be aligned by the procedure).
+			}
 		}
 
 		int count = 0;
 		double error = Double.MAX_VALUE;
+		double[] probSumOverAgents = new double[numOptions];
+		double[] previousProbSumOverAgents = new double[numOptions];
+		for(int choice = 0; choice < numOptions; choice++) {
+			probSumOverAgents[choice] = 0.;
+		}
 		while( (Math.abs(error) >= allowedError) && (count < maxNumberIterations) ) { 
 			
 			error = 0.;
-			double sum = 0.;
-			for(int i = 0; i < n; i++) {
-				sum += prob[i];
-			}
-			double gamma = target / sum;
-			double notGamma = (n - target) / (n - (target / gamma));		//If you do the maths, this is 'gamma' for the complementary (not) scenario.
+			double[] gamma = new double[numOptions];
 			
-			for(int i = 0; i < n; i++) {
+			for(int choice = 0; choice < numOptions; choice++) {
+				
+				previousProbSumOverAgents[choice] = probSumOverAgents[choice];	//Store previous iteration values (will compare iterations for convergence)	
+				probSumOverAgents[choice] = 0.;								//Reset values
+				
+				for(int agent = 0; agent < n; agent++) {
+					probSumOverAgents[choice] += prob[agent][choice];
+				}
+				gamma[choice] = target[choice] / probSumOverAgents[choice];
+				
+				probSumOverAgents[choice] = 0.;				//Reset for use in summing final probabilities for test of convergence
+			}
+			
+			for(int agent = 0; agent < n; agent++) {
 
-				//Gamma transform of the probabilities
-				prob[i] *= gamma;
-				notProb[i] *= notGamma;
-				double alpha = 1. / (prob[i] + notProb[i]);
+				double probSumOverChoices = 0;
+				for(int choice = 0; choice < numOptions; choice++) {
+					
+					//Gamma transform of the probabilities
+					prob[agent][choice] *= gamma[choice];
+					
+					probSumOverChoices += prob[agent][choice];
+				}
+				double alpha = 1. / probSumOverChoices;
 
 				//Alpha transform of the probabilities
-				prob[i] *= alpha;
-				notProb[i] *= alpha;
-				
-				//Calculate error based on difference from target: sum the probabilities, then subtract the target
-				error += prob[i];
+				for(int choice = 0; choice < numOptions; choice++) {
+					prob[agent][choice] *= alpha;
+					
+					probSumOverAgents[choice] += prob[agent][choice];
+				}
 				
 			}
-
-			error -= target;
+			
+			for(int choice = 0; choice < numOptions; choice++) {
+				error += Math.abs(probSumOverAgents[choice] - previousProbSumOverAgents[choice]);
+			}
+			error /= (double)numOptions;
 			count++;
 		}
 		
 		if( (error >= allowedError) && enableWarnings) {
-			System.out.println("WARNING: The LogitScalingBinaryAlignment.align() method terminated with an error of " 
+			System.out.println("WARNING: The LogitScalingAlignment.align() method terminated with an error of " 
 					+ (error/(double)n) + ", which has a greater magnitude than the precision bounds of +/-" + precision + ".  The number "
-					+ "of iterations was  " + count + ".  Check the results of the Logit Scaling Binary alignment to ensure that "
+					+ "of iterations was  " + count + ".  Check the results of the Logit Scaling alignment to ensure that "
 					+ "alignment is good enough for the purpose in question, or consider increasing the maximum number of iterations "
 					+ "or the precision!");
 		}

@@ -81,12 +81,15 @@ public class RegressionUtils {
 		
 		double x = 0.0;
 		for (int i = 0; i < weights.length; i++) {
+			if(weights[i] < 0.) {
+				throw new IllegalArgumentException("Negative weights (probabilities) are not allowed!  Check 'weights' array " + weights + " element number " + i + ", which currently has the value " + weights[i] + ".");
+			}
 			x += weights[i];
 		}
 		
 		if (checkWeightSum) {			//Enforce the condition that the weights must sum to 1 (within some small error tolerance).
-			if (Math.abs(x - 1.0) > EPSILON )			//If IllegalArgumentException is too often called, i.e. precision is unnecesarily high, consider increasing value of EPSILON 
-				throw new IllegalArgumentException("Choice's weights must sum 1.0. Current vector" + weights + " sums " + x);
+			if (Math.abs(x - 1.0) > EPSILON )			//If IllegalArgumentException is too often called, i.e. precision is unnecessarily high, consider increasing value of EPSILON 
+				throw new IllegalArgumentException("As checkWeightSum is set to true, the probability weights must sum to 1.  The current weights object " + weights + " has elements that sum to " + x + ".  Either ensure probability weights sum to 1, or set checkWeightSum to false so that the weights will be automatically normalised.");
 		}
 		else {						//Calculate the associated probabilities by dividing the weights by the sum of weights.
 			//Convert weights into probabilities by 'normalising' them
@@ -242,31 +245,54 @@ public class RegressionUtils {
 	 * @author Ross Richardson
 	 */
 	public static double eventPiecewiseConstant(double[] events, double[] prob, Random rnd) {
+		return eventPiecewiseConstant(events, prob, rnd, true);
+	}
+	
+	/**
+	 * Performs a linear interpolation on the (numerical) event domain of a piecewise constant probability distribution
+	 *  	
+	 * @param events : The discrete set of cuts characterising the domain of a piecewise constant probability distribution
+	 * @param weights : The discrete set of probabilities characterising a piecewise constant probability distribution
+	 * @param rnd : The random number generator
+	 * @param checkSumWeights : If true, will check weights elements sum to 1, otherwise they will be normalised (by dividing each element by the sum of the elements). 
+	 * @return : The value of the event drawn from a compact domain
+	 * 
+	 * @author Ross Richardson
+	 */
+	public static double eventPiecewiseConstant(double[] events, double[] weights, Random rnd, boolean checkSumWeights) {
 		
 		double x = 0.0;
-		for (int i = 0; i < prob.length; i++) {
-			x += prob[i];
+		for (int i = 0; i < weights.length; i++) {
+			if(weights[i] < 0.) {
+				throw new IllegalArgumentException("Negative weights (probabilities) are not allowed!  Check 'weights' array " + weights + " element number " + i + ", which currently has the value " + weights[i] + ".");
+			}
+			x += weights[i];
+		}
+	
+		if(checkSumWeights) {
+			if(x != 1.0) {		//Need total probability to sum to 1.0 exactly, otherwise there is the possibility that toss > sum of probs.
+				throw new IllegalArgumentException("As checkWeightSum is set to true, the probability weights must sum to 1.  The current weights object " + weights + " has elements that sum to " + x + ".  Either ensure probability weights sum to 1, or set checkWeightSum to false so that the weights will be automatically normalised.");
+			}
+		}
+		else {						//Calculate the associated probabilities by dividing the weights by the sum of weights.
+			//Convert weights into probabilities by 'normalising' them
+			for	(int i = 0; i < weights.length; i++) {
+				weights[i] /= x;
+			}
 		}
 		
-//		if (Math.abs(x - 1.0) > EPSILON ) 				//If IllegalArgumentException is too often called, i.e. precision is unnecesarily high, consider increasing value of EPSILON
-		if(x != 1.0)		//Need total probability to sum to 1.0, otherwise there is the possibility that toss > sum of probs.
-			throw new IllegalArgumentException("Choice's weights must sum 1.0. Current vector" + prob + " sums " + x);
-		
 		double toss = rnd.nextDouble();
-//		System.out.println("toss " + toss);
+
 		x = 0.0;
 		int i = 0;
 		while (toss >= x)
 		{
-//			System.out.println("i " + i + " x " + x + " events[i] " + events[i] + " prob[i] " + prob[i]);
-			x += prob[i];
+			x += weights[i];
 			i++;		
 		}
 		
 		//Linear interpolation of event domain
-		double event = events[i-1] + (events[i] - events[i-1]) * ((toss + prob[i-1] - x) / prob[i-1]);		//The expression in the last parentheses is derived from (toss - (x - prob[i-1])) / (x - (x - prob[i-1])), where x is the cumulative probability at the start of events[i] and (x - prob[i-1]) is the cumulative probability at the start of events[i-1]  
-		
-//		System.out.println("toss " + toss + " events[i-1] " + events[i-1] + " prob[i-1] " + prob[i-1] + " events[i] " + events[i] + " prob[i] " + prob[i] + " x " + x + " x-prob[i] " + (x - prob[i]) + " event " + event);
+		double event = events[i-1] + (events[i] - events[i-1]) * ((toss + weights[i-1] - x) / weights[i-1]);		//The expression in the last parentheses is derived from (toss - (x - prob[i-1])) / (x - (x - prob[i-1])), where x is the cumulative probability at the start of events[i] and (x - prob[i-1]) is the cumulative probability at the start of events[i-1]  
 		
 		return event;
 	}

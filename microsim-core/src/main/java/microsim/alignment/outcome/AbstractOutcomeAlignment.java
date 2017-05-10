@@ -5,11 +5,16 @@ import java.util.List;
 import org.apache.commons.collections.Predicate;
 
 /**
- * Binary alignment methods. Acknowledgements: Partly based on
+ * 
+ * Abstract class for BINARY OUTCOME alignment methods (for Binary
+ * probability alignment, see microsim.alignment.probability package;
+ * for Multiple choice probability alignment, see microsim.alignment.multi
+ * package). 
+ * 
+ * Acknowledgements: Partly based on
  * "Evaluating Binary Alignment Methods in Microsimulation Models", by Jinjing
  * Li and Cathal O�Donoghue, Journal of Artificial Societies and Social
  * Simulation, 2014 (http://jasss.soc.surrey.ac.uk/17/1/15/15.pdf)
- * 
  * 
  * General principle of operation of this class: a) Some variable is defined for
  * the agents (the variable can be a probability or an outcome). b) Alignment is

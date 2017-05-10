@@ -1,7 +1,9 @@
-package align.algorithms;
+package microsim.alignment.probability;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import microsim.agent.Weighting;
 import microsim.alignment.probability.AbstractProbabilityAlignment;
 import microsim.alignment.probability.AlignmentProbabilityClosure;
 import org.apache.commons.collections.CollectionUtils;
