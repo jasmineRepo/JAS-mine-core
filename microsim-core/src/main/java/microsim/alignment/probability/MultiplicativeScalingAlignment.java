@@ -10,9 +10,8 @@ public class MultiplicativeScalingAlignment<T> extends AbstractProbabilityAlignm
 
 	@Override
 	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
-		if (targetShare < 0 || targetShare > 1) {
-			System.err.println("target probability must lie in [0,1]");
-			System.exit(0);
+		if (targetShare < 0. || targetShare > 1.) {
+			throw new IllegalArgumentException("target probability must lie in [0,1]");
 		}
 		
 		List<T> list = new ArrayList<T>();		
