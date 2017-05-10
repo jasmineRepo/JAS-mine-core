@@ -102,16 +102,22 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 
 		int count = 0;
 		double error = Double.MAX_VALUE;
-		while( (Math.abs(error) >= allowedError) && (count < maxNumberIterations) ) { 
+		double sumProb = 0., sumNotProb = 0.;
+		double previousSumProb, previousSumNotProb;
+		while( (error >= allowedError) && (count < maxNumberIterations) ) { 
 			
-			error = 0.;
+			previousSumProb = sumProb;				//Save previous values to test convergence
+			previousSumNotProb = sumNotProb;		//Save previous values to test convergence
+			sumProb = 0.;							//Reset values to add up
+			sumNotProb = 0.;						//Reset values to add up
+			
 			double sum = 0.;
 			for(int i = 0; i < n; i++) {
 				sum += prob[i];
 			}
 			double gamma = target / sum;
 			double notGamma = (n - target) / (n - (target / gamma));		//If you do the maths, this is 'gamma' for the complementary (not) scenario.
-			
+				
 			for(int i = 0; i < n; i++) {
 
 				//Gamma transform of the probabilities
@@ -123,12 +129,17 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 				prob[i] *= alpha;
 				notProb[i] *= alpha;
 				
-				//Calculate error based on difference from target: sum the probabilities, then subtract the target
-				error += prob[i];
+				//To calculate convergence, we need the sum of the probabilities
+				sumProb += prob[i];
+				sumNotProb += notProb[i];	
 				
 			}
 
-			error -= target;
+			//To calculate convergence, we add the absolute difference between the sum of probabilities and the previous sum of probabilities for both prob and notProb states.
+			error = Math.abs(sumProb - previousSumProb) + Math.abs(sumNotProb - previousSumNotProb);
+			error /= 2.;		//2 options, so divide by two to be consistent with multiple choice case (and P. Stephensen's implementation of the termination condition)
+
+//			System.out.println("Count, " + count + ", precision, " + error/(double)n + ", targetShare, " + targetShare + ", aligned prob[0], " + prob[0]);
 			count++;
 		}
 		

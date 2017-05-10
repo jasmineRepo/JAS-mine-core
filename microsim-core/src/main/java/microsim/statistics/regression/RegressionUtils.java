@@ -113,11 +113,17 @@ public class RegressionUtils {
 	
 		
 	public static boolean event(double prob) {
-		return SimulationEngine.getRnd().nextDouble() < prob;		
+		if(prob < 0. || prob > 1.) {
+			throw new IllegalArgumentException("prob outside the valid interval [0,1] in RegressionUtils.event(rnd)!");
+		}
+		else return SimulationEngine.getRnd().nextDouble() < prob;		
 	}
 	
 	public static boolean event(double prob, Random rnd) {
-		return rnd.nextDouble() < prob;
+		if(prob < 0. || prob > 1.) {
+			throw new IllegalArgumentException("prob outside the valid interval [0,1] in RegressionUtils.event(prob, rnd)!");
+		}
+		else return rnd.nextDouble() < prob;
 	}
 	
 	/////////////////////////////////////////

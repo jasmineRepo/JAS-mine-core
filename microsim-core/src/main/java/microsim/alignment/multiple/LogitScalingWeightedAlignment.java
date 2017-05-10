@@ -132,7 +132,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 		for(int choice = 0; choice < numOptions; choice++) {
 			probSumOverAgents[choice] = 0.;
 		}
-		while( (Math.abs(error) >= allowedError) && (count < maxNumberIterations) ) { 
+		while( (error >= allowedError) && (count < maxNumberIterations) ) { 
 			
 			error = 0.;
 			double[] gamma = new double[numOptions];
