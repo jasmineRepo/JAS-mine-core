@@ -1,4 +1,4 @@
-package microsim.alignment.multi;
+package microsim.alignment.multiple;
 
 import java.util.List;
 
