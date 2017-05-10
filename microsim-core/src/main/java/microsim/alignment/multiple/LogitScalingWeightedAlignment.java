@@ -116,12 +116,8 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 
 			for(int choice = 0; choice < numOptions; choice++) {
 				prob[i][choice] =  closure.getProbability(agent)[choice] * weight;		//Unaligned probabilities (to be aligned by the procedure).
-				if(i == 0) {		//Just do for one agent, so as not to clutter output (all agents have same prob in the test)
-					System.out.print(", prob[" + choice + "], " + prob[i][choice]/agent.getWeighting());
-				}
 			}
 		}
-		System.out.print('\n');
 
 		double[] target = new double[numOptions];
 		for(int choice = 0; choice < numOptions; choice++) {
@@ -179,11 +175,6 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 				error += Math.abs(probSumOverAgents[choice] - previousProbSumOverAgents[choice]);
 			}
 			error /= (double)numOptions;
-			System.out.print("count, " + count + ", precision, " + error/(double)total);
-			for(int i = 0; i < numOptions; i++) {
-				System.out.print(", prob[" + i + "], " + prob[0][i] / list.get(0).getWeighting());
-			}
-			System.out.print('\n');
 			count++;
 		}
 		
