@@ -121,7 +121,7 @@ public class ExportCSV {
         	if(!fAlreadyExists)
         	{
 				File dir = new File(directory);
-				dir.mkdir();
+				dir.mkdirs();
 				f.createNewFile();
         	}
     	    bufferWriter = new BufferedWriter(new FileWriter(f, true));
