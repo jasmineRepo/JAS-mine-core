@@ -40,7 +40,7 @@ public class DatabaseUtils {
 	public static Experiment createExperiment(EntityManager entityManager, Experiment experiment, Object... models) throws IllegalArgumentException,
 			IllegalAccessException {
 	
-		if (SimulationEngine.getInstance().isSilentMode())
+		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return experiment;
 		
 		EntityTransaction tx = entityManager.getTransaction();
@@ -77,7 +77,7 @@ public class DatabaseUtils {
 	public static void snap(EntityManager em, Long run, Double time, Object target)
 			throws Exception {
 		
-		if (SimulationEngine.getInstance().isSilentMode())
+		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return;
 		
 		final Field[] targetFields = target.getClass().getDeclaredFields();
@@ -143,7 +143,7 @@ public class DatabaseUtils {
 	public static void snap(EntityManager em, Long run, Double time,
 			Collection<?> targetCollection) throws Exception {
 
-		if (SimulationEngine.getInstance().isSilentMode())
+		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return;
 		
 		if (targetCollection != null && targetCollection.size() > 0) {
@@ -247,7 +247,7 @@ public class DatabaseUtils {
 	 *         initialiazion.
 	 */
 	public static EntityManager getEntityManger(boolean autoUpdate) {
-		if (SimulationEngine.getInstance().isSilentMode())
+		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
 		if (entityManagerFactory == null) {
@@ -337,7 +337,7 @@ public class DatabaseUtils {
 	}
 
 	public static EntityManager getOutEntityManger(String persistenceUnitName) {
-		if (SimulationEngine.getInstance().isSilentMode())
+		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
 		if (outEntityManagerFactory == null) {

@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
- * @author Michele Sonnessa
+ * @author Michele Sonnessa 
  *         <p>
  */
 public class SimulationEngine extends Thread {
@@ -83,13 +83,33 @@ public class SimulationEngine extends Thread {
 
 	private boolean runningStatus = false;
 
-	/** Abilita o disabilita la scrittura del collector */
-	private boolean silentMode = false;
+	/** If set to true during the build phase of a simulation, 
+	 * the simulation run will not be connected to an input / output database.
+	 * This may speed up the building and execution of the simulation, however the relational 
+	 * database management features provided by JAS-mine cannot then be used and data cannot 
+	 * be persisted to the output database. Any data should be exported to CSV files instead.  
+	 * If an attempt is made to import data from an input database during the simulation, an
+	 * exception will be thrown. 
+	 * 
+	 * In older versions of JAS-mine, it was possible to control this field on the fly via the 
+	 * JAS-mine GUI, so all data persistence could be enabled or disabled during the simulation.  
+	 * This was only possible when the turnOffDatabaseConnection was disabled (set to false) during the 
+	 * build phase of the simulation (before execution of the simulation).  However, this option has now
+	 * been removed from the GUI to avoid misuse by inexperienced users who might attempt to 
+	 * import / export data from / from the database after building the simulation with 
+	 * turnOffDatabaseConnection set to true, which, as the database connection is not established, 
+	 * will not work and may result in an exception being thrown.
+	 * 
+	 * It is still possible to set this field programmatically, for example, in the Start class of 
+	 * a standard JAS-mine project (e.g. created using the JAS-mine Plugin for Eclipse IDE),
+	 * using the Simulation Engine's setTurnOffDatabaseConnection() method. */
+	private boolean turnOffDatabaseConnection = false;
 	
-	/** Quando costruisco un modello se è disabilitato silent mode viene creato il db. Durante
-	 * il run posso dinamicamente abilitare o disabilitare. Nel caso invece sia partito in silentMode
-	 * il db non esiste e quindi il flag non può essere cambiato. */
-	private boolean silentModeAvailable = true;
+	/** 
+	 * (Quando costruisco un modello se è disabilitato silent mode viene creato il db. Durante
+	 * il run posso dinamicamente abilitare o disabilitare. Nel caso invece sia partito in turnOffDatabaseConnection
+	 * il db non esiste e quindi il flag non può essere cambiato.) */
+	private boolean turnOffDatabaseConnectionAvailable = true;
 	
 	private ClassLoader classLoader = null;
 	
@@ -163,17 +183,17 @@ public class SimulationEngine extends Thread {
 		
 	}
 
-	public boolean isSilentMode() {
-		return silentMode;
+	public boolean isTurnOffDatabaseConnection() {
+		return turnOffDatabaseConnection;
 	}
 
-	public void setSilentMode(boolean silentMode) {
-		if (silentMode && ! silentModeAvailable)
+	public void setTurnOffDatabaseConnection(boolean turnOffDatabaseConnection) {
+		if (turnOffDatabaseConnection && ! turnOffDatabaseConnectionAvailable)
 			return;
 		
-		this.silentMode = silentMode;
-//		ExperimentManager.getInstance().copyInputFolderStructure = ! silentMode;
-		ExperimentManager.getInstance().saveExperimentOnDatabase = ! silentMode;
+		this.turnOffDatabaseConnection = turnOffDatabaseConnection;
+//		ExperimentManager.getInstance().copyInputFolderStructure = ! turnOffDatabaseConnection;
+		ExperimentManager.getInstance().saveExperimentOnDatabase = ! turnOffDatabaseConnection;
 	}
 
 	public Class<?> getBuilderClass() {
@@ -188,8 +208,8 @@ public class SimulationEngine extends Thread {
 		this.experimentBuilder = experimentBuilder;
 	}
 
-	public boolean isSilentModeAvailable() {
-		return silentModeAvailable;
+	public boolean isTurnOffDatabaseConnectionAvailable() {
+		return turnOffDatabaseConnectionAvailable;
 	}
 
 	@Deprecated
@@ -386,7 +406,7 @@ public class SimulationEngine extends Thread {
 	public void buildModels() {
 		currentExperiment = ExperimentManager.getInstance().createExperiment(multiRunId);
 		
-		silentModeAvailable = (! silentMode);
+		turnOffDatabaseConnectionAvailable = (! turnOffDatabaseConnection);
 		
 		notifySimulationListeners(SystemEventType.Build);
 		
@@ -442,7 +462,7 @@ public class SimulationEngine extends Thread {
 		System.gc();
 //		currentRunNumber = 0;		//Ross: Why do we need to do this?
 
-		silentModeAvailable = true;
+		turnOffDatabaseConnectionAvailable = true;
 		
 		return cls;
 	}
