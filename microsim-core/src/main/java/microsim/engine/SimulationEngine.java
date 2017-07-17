@@ -11,7 +11,7 @@ import java.util.Random;
 
 import microsim.data.ExperimentManager;
 import microsim.data.db.Experiment;
-import microsim.event.EventList;
+import microsim.event.EventQueue;
 import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
@@ -20,7 +20,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.log4j.Logger;
 
 /**
- * The simulation engine. The engine keeps a reference to an EventList object to
+ * The simulation engine. The engine keeps a reference to an EventQueue object to
  * manage temporal sequence of events. Every object of the running simulation
  * can schedule events at a specified time point and the engine will notify to
  * it at the right time. The SimEngine stores a list of windows created by
@@ -71,7 +71,7 @@ public class SimulationEngine extends Thread {
 	/**
 	 * @supplierCardinality 1
 	 */
-	private EventList eventList;
+	private EventQueue eventList;
 	private List<SimulationManager> models;
 	private Map<String, SimulationManager> modelMap;
 	private boolean modelBuild = false;
@@ -134,7 +134,7 @@ public class SimulationEngine extends Thread {
 	 *            class.
 	 */
 	protected SimulationEngine() {
-		eventList = new EventList();
+		eventList = new EventQueue();
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();
@@ -294,11 +294,11 @@ public class SimulationEngine extends Thread {
 	}
 
 	/**
-	 * Return a reference to the current EventList.
+	 * Return a reference to the current EventQueue.
 	 * 
 	 * @return The event list.
 	 */
-	public EventList getEventList() {
+	public EventQueue getEventList() {
 		return eventList;
 	}
 
@@ -334,7 +334,7 @@ public class SimulationEngine extends Thread {
 	
 	public void reset() {
 		pause();
-		eventList = new EventList();
+		eventList = new EventQueue();
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();

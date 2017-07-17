@@ -6,9 +6,10 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * Annotate variables of the simulation manager automatically managed by JAS-mine gui
- * to ask parameters to simulation user.  A GUIparameter can be modified at run-time.
- * Was previously called ModelParmameter but name changed as this name was misleading.
+ * Annotate variables of the simulation manager to automatically display on the 
+ * GUI (Graphical User Interface).  A GUIparameter can be modified at run-time.
+ * Was previously called ModelParmameter but the name was changed as it was considered
+ * misleading.
  * 
  * @author ross richardson
  */

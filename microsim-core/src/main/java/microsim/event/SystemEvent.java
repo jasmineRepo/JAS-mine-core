@@ -9,7 +9,7 @@ import microsim.exception.SimulationException;
  * There are some special events that engine is able to understand.
  * For instance, you can schedule the end of simulation using a system event.
  * <br><i> SystemEvent e = new SystemEvent(Sim.EVENT_SIMULATION_END);</i><br>
- * eventList.schedule(100, e);
+ * eventQueue.schedule(100, e);
  * <i>
  * The above code make the engine stop at 100. When this event happens
  * the simulationEnd() method of the current running models is called.

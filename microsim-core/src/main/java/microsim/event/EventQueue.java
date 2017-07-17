@@ -8,8 +8,8 @@ import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
 
 /**
- * The event list manages a time ordered list of events. It is based on a priority
- * queue. At every simulation step the head of the list is taken and fired. This
+ * The eventQueue manages a time ordered queue of events. It is based on a priority
+ * queue. At every simulation step the head of the queue is taken and fired. This
  * class extends a thread, because it runs independently from other processes.
  * When activated it runs the simulation.
  * 
@@ -40,14 +40,14 @@ import microsim.exception.SimulationRuntimeException;
  * @author Michele Sonnessa and Ross Richardson
  *         <p>
  */
-public class EventList {
+public class EventQueue {
 	/** The action type passed to step listeners. The int value is 10000. */
 	public static final int EVENT_LIST_STEP = 10000;
 
 	private static double SIMULATION_TIMEOUT = 100000;
 
-	protected Queue<Event> eventList;			//Ross - changing eventList from a linked list to a priority queue in order to improve time complexity
-//	protected Iterator<Event> iterator;// = eventList.iterator(); 	 //Define below - note this is no longer a list iterator!
+	protected Queue<Event> eventQueue;			//Ross - changing eventQueue from a linked list to a priority queue in order to improve time complexity
+//	protected Iterator<Event> iterator;// = eventQueue.iterator(); 	 //Define below - note this is no longer a list iterator!
 
 	/**
 	 * @supplierCardinality 1
@@ -63,26 +63,26 @@ public class EventList {
 	 **/
 	/* #SimEvent lnkSimEvent; */
 
-	/** Build new event list with TIME_TICKS time unit. */
-	public EventList() { 
-		eventList = new PriorityQueue<Event>(10);
+	/** Build new event queue with TIME_TICKS time unit. */
+	public EventQueue() { 
+		eventQueue = new PriorityQueue<Event>(10);
 		time = 0;
 		// stepListeners = new LinkedList<ISimEventListener>();
 	}
 
-	/** Build new event list inheriting parameters from another EventList. */
-	public EventList(EventList previousEventList) {
+	/** Build new event queue inheriting parameters from another EventQueue. */
+	public EventQueue(EventQueue previousEventQueue) {
 		this();
 
-		if (previousEventList != null) {
-			time = previousEventList.time;
+		if (previousEventQueue != null) {
+			time = previousEventQueue.time;
 			//stepListeners = previousEventList.stepListeners;			
 		}
 	}
 
-	/** Empty the event list and set up time for a new simulation. */
+	/** Empty the eventQueue and set up time for a new simulation. */
 	public void clear() {
-		eventList.clear();
+		eventQueue.clear();
 		// stepListeners.clear();
 		time = 0;
 	}
@@ -109,11 +109,11 @@ public class EventList {
 		return time;
 	}
 
-	/**
-	 * Add an event listener to the listeners list. When an object implementing
-	 * ISimEventListener iterface enters this register at each simulation step
-	 * it will be informed.
-	 */
+//	/**
+//	 * Add an event listener to the listeners list. When an object implementing
+//	 * ISimEventListener iterface enters this register at each simulation step
+//	 * it will be informed.
+//	 */
 //	public void addEventListener(ISimEventListener listener) {
 //		stepListeners.add(listener);
 //	}
@@ -126,11 +126,11 @@ public class EventList {
 	/** Make one simulation step. 
 	 * @throws SimulationRuntimeException */
 	public synchronized void step() throws SimulationException {
-		if(eventList.isEmpty()) {
+		if(eventQueue.isEmpty()) {
 			return;
 		}
 
-		Event event = eventList.poll();
+		Event event = eventQueue.poll();
 
 		time = event.getTime();
 
@@ -150,12 +150,12 @@ public class EventList {
 	 * @throws SimulationException 
 	 */
 	public void simulate() throws SimulationException {
-		while (eventList.size() > 0 && time < SIMULATION_TIMEOUT)
+		while (eventQueue.size() > 0 && time < SIMULATION_TIMEOUT)
 			step();
 	}
 
 	protected void scheduleEvent(Event event) {
-		eventList.add(event);			//Should automatically be fitted into a valid position in the priority queue by simply using the add method.
+		eventQueue.add(event);			//Should automatically be fitted into a valid position in the priority queue by simply using the add method.
 	}
 
 	/**
@@ -167,9 +167,9 @@ public class EventList {
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
+	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
 	 */
-	public EventList scheduleOnce(Event event, double atTime, int withOrdering) {
+	public EventQueue scheduleOnce(Event event, double atTime, int withOrdering) {
 		event.setTimeOrderingAndLoopPeriod(atTime, withOrdering, 0);
 		scheduleEvent(event);
 		
@@ -185,11 +185,11 @@ public class EventList {
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
+	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
 	 * @param timeBetweenEvents
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 */
-	public EventList scheduleRepeat(Event event, double atTime, int withOrdering, double timeBetweenEvents) {
+	public EventQueue scheduleRepeat(Event event, double atTime, int withOrdering, double timeBetweenEvents) {
 		event.setTimeOrderingAndLoopPeriod(atTime, withOrdering, timeBetweenEvents);
 		scheduleEvent(event);
 		
@@ -203,7 +203,7 @@ public class EventList {
 	 * - all events scheduled using this method are set with a default ordering of 0.
 	 * In this instance, if events e1 and e2 are scheduled for the same time (i.e. e1.time == e2.time) using this method, 
 	 * there is no way of ensuring that, for example, e2 is fired before e1 - the actual order these same-time events is 
-	 * determined by the order in which they are added to the EventList.
+	 * determined by the order in which they are added to the EventQueue.
 	 * 
 	 * This method is still included in the JAS-mine libraries for backwards compatibility with JAS2 models, however it is preferable to use
 	 * scheduleOnce(Event, double, int) or scheduleRepeating(Event, double, int, double), where the order of same-time events can be fully specified 
@@ -215,7 +215,7 @@ public class EventList {
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 */
 	@Deprecated
-	public EventList schedule(Event event, double atTime, double timeBetweenEvents) {
+	public EventQueue schedule(Event event, double atTime, double timeBetweenEvents) {
 		event.setTimeOrderingAndLoopPeriod(atTime, 0, timeBetweenEvents);
 		scheduleEvent(event);
 		
@@ -229,7 +229,7 @@ public class EventList {
 	 * - all events scheduled using this method are set with a default ordering of 0.
 	 * In this instance, if events e1 and e2 are scheduled for the same time (i.e. e1.time == e2.time) using this method, 
 	 * there is no way of ensuring that, for example, e2 is fired before e1 - the actual order these same-time events is 
-	 * determined by the order in which they are added to the EventList.
+	 * determined by the order in which they are added to the EventQueue.
 	 * 
 	 * This method is still included in the JAS-mine libraries for backwards compatibility with JAS2 models, however it is preferable to use
 	 * scheduleOnce(Event, double, int) or scheduleRepeating(Event, double, int, double), where the order of same-time events can be fully specified 
@@ -239,16 +239,16 @@ public class EventList {
 	 *            The time when event will be fired for the first time.
 	 */
 	@Deprecated
-	public EventList schedule(Event event, double atTime) {
+	public EventQueue schedule(Event event, double atTime) {
 		event.setTimeOrderingAndLoopPeriod(atTime, 0, 0.);
 		scheduleEvent(event);
 		
 		return this;
 	}
 
-	/** Remove from event list the given event. */
+	/** Remove from event queue the given event. */
 	public void unschedule(Event event) {
-		eventList.remove(event);
+		eventQueue.remove(event);
 	}
 
 	
@@ -260,7 +260,7 @@ public class EventList {
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
 	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
 	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventList) will be fired first.
+	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
 	 * @param withLoop
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 * 
@@ -275,9 +275,9 @@ public class EventList {
 		return event;
 	}
 
-	/** Return event list as array of Object. */
+	/** Return event queue as Event array. */
 	public Event[] getEventArray() {
-		return eventList.toArray(new Event[] {});
+		return eventQueue.toArray(new Event[] {});
 	}
 	
 }
