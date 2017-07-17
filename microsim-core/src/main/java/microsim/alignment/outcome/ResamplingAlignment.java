@@ -2,6 +2,7 @@ package microsim.alignment.outcome;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,13 +36,13 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
-		align(agentList, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
+		align(agents, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
@@ -49,7 +50,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -57,7 +58,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
 		
 		if(targetShare > 1.) {
 			throw new IllegalArgumentException("ResamplingAlignment targetShare is greater than 1 (meaning 100%)!  This is impossible.");
@@ -67,9 +68,9 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 
 		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
@@ -155,13 +156,13 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
-		align(agentList, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
+		align(agents, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
@@ -169,7 +170,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * random, and resampling it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -177,9 +178,9 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
-		if(targetNumber > agentList.size()) {
+		if(targetNumber > agents.size()) {
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach.");
 		} else if(targetNumber < 0) {
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is negative!  This is impossible to reach.");
@@ -187,9 +188,9 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 		
 		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();

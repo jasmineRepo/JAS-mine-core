@@ -2,6 +2,7 @@ package microsim.alignment.outcome;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,13 +39,13 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
-		align(agentList, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
+		align(agents, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
@@ -52,7 +53,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -60,7 +61,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
 
 		if(targetShare > 1.) {
 			throw new IllegalArgumentException("ResamplingWeightedAlignment targetShare is larger than 100% of the population)!  This is impossible to reach.");
@@ -71,9 +72,9 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 		
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 
 		double total = 0.;
 		
@@ -100,13 +101,13 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
-		align(agentList, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
+		align(agents, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
 	/**
@@ -114,7 +115,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agentList - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -122,7 +123,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
 		if(targetNumber < 0) {
 			throw new IllegalArgumentException("ResamplingWeightedAlignment targetNumber is negative!  This is impossible to reach.");
@@ -130,9 +131,9 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 		
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 		
 		doAlignment(list, closure, targetNumber, maxResamplingAttempts);
 		

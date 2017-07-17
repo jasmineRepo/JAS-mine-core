@@ -1,6 +1,7 @@
 package microsim.alignment.probability;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import microsim.alignment.probability.AbstractProbabilityAlignment;
 import microsim.alignment.probability.AlignmentProbabilityClosure;
@@ -32,19 +33,19 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 	 *  please use the method: 
 	 *  align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings)
 	 *  
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - collection of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentProbabilityClosure that specifies how to define the (unaligned) probability of the agent and how to implement the result of the aligned probability. 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the mean of the aligned probabilities (defined by the AlignmentProbabilityClosure) must equal
 	 * 
 	 */
 	@Override
-	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
 		
 		final int maxNumberIterations = 100;		//The maximum number of iterations until the iterative loop in the alignment algorithm terminates.  The resulting probabilities at that time are then used.
 		final double precision = 1.e-5;				//The appropriate value here depends on the precision of the probabilities.  If the probabilities are stated to x decimal places, then EPSILON should be 1.e-x.
 		
-		align(agentList, filter, closure, targetShare, maxNumberIterations, precision, true);		//Set default max number of iterations as 100 (the paper claims convergence is quick, of the order of 10s).  If you want to set manually, use the other align() method.
+		align(agents, filter, closure, targetShare, maxNumberIterations, precision, true);		//Set default max number of iterations as 100 (the paper claims convergence is quick, of the order of 10s).  If you want to set manually, use the other align() method.
 	}
 	
 	
@@ -52,7 +53,7 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 	 * 
 	 * Aligns a sub-population of objects using Logit Scaling alignment.
 	 * 
-	 * @param agentList - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
+	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class)
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentProbabilityClosure that specifies how to define the (unaligned) probability of the 
 	 * 	agent and how to implement the result of the aligned probability. 
@@ -69,7 +70,7 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 	 * 	the desired precision. If set to false, warnings will not be sent to the System.out.
 	 * 
 	 */
-	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
 		if (targetShare < 0. || targetShare > 1.) {
 			throw new IllegalArgumentException("target probability in LogitScalingBinaryAlignment.align() method must lie in [0,1]");
 		}
@@ -82,9 +83,9 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 		
 		int n = list.size();
 		double target = targetShare * (double)n;

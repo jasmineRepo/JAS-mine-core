@@ -38,7 +38,7 @@ import microsim.exception.SimulationException;
  * @author Michele Sonnessa
  *         <p>
  */
-public class CollectionTargetEvent extends AbstractEvent {
+public class CollectionTargetEvent extends Event {
 
 	protected Enum<?> eventType;
 	private Method methodInvoker;

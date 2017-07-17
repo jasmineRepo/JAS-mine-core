@@ -40,7 +40,7 @@ import microsim.exception.SimulationException;
  * @author Michele Sonnessa
  *         <p>
  */
-public class EventGroup extends AbstractEvent {
+public class EventGroup extends Event {
 	private List<Event> actions;
 
 	/** Build a new group event. */

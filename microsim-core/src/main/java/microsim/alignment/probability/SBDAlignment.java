@@ -1,6 +1,7 @@
 package microsim.alignment.probability;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,16 +14,16 @@ import org.apache.commons.collections.Predicate;
 public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 		
 	@Override
-	public void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
+	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
 		if (targetShare < 0. || targetShare > 1.) {
 			throw new IllegalArgumentException("target probability must lie in [0,1]");
 		}
 		
 		List<T> list = new ArrayList<T>();		
 		if (filter != null)
-			CollectionUtils.select(agentList, filter, list);
+			CollectionUtils.select(agents, filter, list);
 		else
-			list.addAll(agentList);
+			list.addAll(agents);
 		
 		int n = list.size();
 		

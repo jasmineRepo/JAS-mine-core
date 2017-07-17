@@ -1,5 +1,6 @@
 package microsim.alignment.probability;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -43,7 +44,7 @@ public abstract class AbstractProbabilityAlignment<T> {
 	/**
 	 * Method to implement alignment.
 	 * 
-	 * @param agentList - a list of agents to potentially be aligned
+	 * @param agents - a collection of agents to potentially be aligned
 	 * @param filter - filters the agentList so that only the relevant sub-population 
 	 * 	of agents is aligned
 	 * @param closure - specifies the method returning the unaligned probability 
@@ -53,7 +54,7 @@ public abstract class AbstractProbabilityAlignment<T> {
 	 *  (specified as a proportion of the filtered population) for which the outcome 
 	 *  (defined by the AlignmentProbabilityClosure) must be true.
 	 */
-	public abstract void align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare);
+	public abstract void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare);
 
 	/**
 	 * 

@@ -33,7 +33,7 @@ import microsim.exception.SimulationException;
  * @author Michele Sonnessa
  * <p>
  */
-public class SystemEvent extends AbstractEvent
+public class SystemEvent extends Event
 {
 
   SystemEventType type;

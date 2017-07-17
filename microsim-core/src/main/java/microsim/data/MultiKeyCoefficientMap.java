@@ -236,4 +236,14 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {
 		return valuesClone;
 	}
 	
+	/**
+	 * Returns a deep clone of the MultiKeyCoefficientMap object
+	 * 
+	 * @author Ross Richardson
+	 */
+	@Override
+	public MultiKeyCoefficientMap clone() {
+		return new MultiKeyCoefficientMap(this.getKeysNames(), this.getValuesNames());
+	}
+	
 }

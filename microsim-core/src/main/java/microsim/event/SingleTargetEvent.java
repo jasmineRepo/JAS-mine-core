@@ -37,7 +37,7 @@ import microsim.exception.SimulationException;
  * @author Michele Sonnessa
  *         <p>
  */
-public class SingleTargetEvent extends AbstractEvent {
+public class SingleTargetEvent extends Event {
 
 	protected Enum<?> eventType;
 	protected Method methodInvoker;
