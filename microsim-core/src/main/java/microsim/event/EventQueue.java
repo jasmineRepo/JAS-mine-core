@@ -14,10 +14,10 @@ import microsim.exception.SimulationRuntimeException;
  * When activated it runs the simulation.
  * 
  * <p>
- * Title: JAS
+ * Title: JAS-mine
  * </p>
  * <p>
- * Description: Java Agent-based Simulation library
+ * Description: Java Agent-based Simulation library. Modelling In a Networked Environment.
  * </p>
  * <p>
  * Copyright (C) 2002 Michele Sonnessa and Ross Richardson
