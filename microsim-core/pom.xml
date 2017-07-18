@@ -6,13 +6,13 @@
 	</properties>
 	<groupId>com.github.jasmineRepo</groupId>
 	<artifactId>JAS-mine-core</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<build>
 		<plugins>
 			<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>3.2</version>
+		        <version>3.6.1</version>
 		        <configuration> <!-- Compile java 8 compatible bytecode -->
 		          <source>1.8</source>
 		          <target>1.8</target>
