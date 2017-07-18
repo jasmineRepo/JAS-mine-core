@@ -6,8 +6,8 @@ import java.util.List;
 
 import microsim.agent.Weighting;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 
 /**
@@ -42,7 +42,7 @@ public class LogitScalingBinaryWeightedAlignment<T extends Weighting> extends Ab
 	 * 
 	 */
 	@Override
-	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
 		
 		final int maxNumberIterations = 100;		//The maximum number of iterations until the iterative loop in the alignment algorithm terminates.  The resulting probabilities at that time are then used.
 		final double precision = 1.e-5;				//The appropriate value here depends on the precision of the probabilities.  If the probabilities are stated to x decimal places, then EPSILON should be 1.e-x.
@@ -73,7 +73,7 @@ public class LogitScalingBinaryWeightedAlignment<T extends Weighting> extends Ab
 	 * 	the desired precision. If set to false, warnings will not be sent to the System.out.
 	 * 
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
 		if (targetShare < 0. || targetShare > 1.) {
 			throw new IllegalArgumentException("target probability in LogitScalingBinaryWeightedAlignment.align() method must lie in [0,1]");
 		}

@@ -1,19 +1,19 @@
 package microsim.collection;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 
 public class Aggregate {
 
-	public static void applyToFilter(Collection<?> collection, Predicate predicate, Closure closure) {
-		@SuppressWarnings("rawtypes")
-		final List<?> filtered = new ArrayList();
-		org.apache.commons.collections.CollectionUtils.select(collection, predicate, filtered);
-		org.apache.commons.collections.CollectionUtils.forAllDo(filtered, closure);
+	public static <T> void applyToFilter(Iterable<T> collection, Predicate<T> predicate, Closure<T> closure) {
+		final List<T> filtered = new ArrayList<T>();
+		CollectionUtils.select(collection, predicate, filtered);
+		IterableUtils.forEach(filtered, closure);
 	}
-
+	
 }

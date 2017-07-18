@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 /**
  * Abstract class for BINARY PROBABILITY alignment methods (for Binary
@@ -54,7 +54,7 @@ public abstract class AbstractProbabilityAlignment<T> {
 	 *  (specified as a proportion of the filtered population) for which the outcome 
 	 *  (defined by the AlignmentProbabilityClosure) must be true.
 	 */
-	public abstract void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare);
+	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare);
 
 	/**
 	 * 

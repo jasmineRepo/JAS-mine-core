@@ -42,7 +42,7 @@ public class TimeChecker {
 		if (disabled)
 			return false;
 			
-		double t = SimulationEngine.getInstance().getEventList().getTime();
+		double t = SimulationEngine.getInstance().getEventQueue().getTime();
 		if (t == lastUpdateTime)
 			return true;
 		else

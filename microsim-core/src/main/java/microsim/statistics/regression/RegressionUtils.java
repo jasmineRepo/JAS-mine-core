@@ -11,8 +11,8 @@ import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
 import microsim.statistics.regression.RegressionColumnNames;
 
-import org.apache.commons.collections.MapIterator;
-import org.apache.commons.collections.keyvalue.MultiKey;
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;

@@ -1,7 +1,7 @@
 package microsim.alignment.multiple;
 
 import java.util.Collection;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 /**
  * Multiple choice alignment methods, where there are in general many
@@ -33,7 +33,7 @@ public abstract class AbstractMultiProbabilityAlignment<T> {
 	
 	/**
 	 * 
-	 * @param agents - a list of agents to potentially be aligned
+	 * @param agents - a collection of agents to potentially be aligned
 	 * @param filter - filters the agentList so that only the relevant sub-population 
 	 * 	of agents is aligned
 	 * @param closure - specifies the method returning the unaligned probabilities 
@@ -44,6 +44,6 @@ public abstract class AbstractMultiProbabilityAlignment<T> {
 	 *  (defined by the AlignmentMultiProbabilityClosure) must be true.
 	 * 
 	 */
-	public abstract void align(Collection<T> agents, Predicate filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare);
+	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare);
 
 }

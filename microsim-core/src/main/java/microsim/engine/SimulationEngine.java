@@ -71,7 +71,7 @@ public class SimulationEngine extends Thread {
 	/**
 	 * @supplierCardinality 1
 	 */
-	private EventQueue eventList;
+	private EventQueue eventQueue;
 	private List<SimulationManager> models;
 	private Map<String, SimulationManager> modelMap;
 	private boolean modelBuild = false;
@@ -134,7 +134,7 @@ public class SimulationEngine extends Thread {
 	 *            class.
 	 */
 	protected SimulationEngine() {
-		eventList = new EventQueue();
+		eventQueue = new EventQueue();
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();
@@ -296,10 +296,10 @@ public class SimulationEngine extends Thread {
 	/**
 	 * Return a reference to the current EventQueue.
 	 * 
-	 * @return The event list.
+	 * @return The event queue.
 	 */
-	public EventQueue getEventList() {
-		return eventList;
+	public EventQueue getEventQueue() {
+		return eventQueue;
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class SimulationEngine extends Thread {
 	 * @return The current time object.
 	 */
 	public double getTime() {
-		return eventList.getTime();
+		return eventQueue.getTime();
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class SimulationEngine extends Thread {
 	
 	public void reset() {
 		pause();
-		eventList = new EventQueue();
+		eventQueue = new EventQueue();
 		models = new ArrayList<SimulationManager>();
 		modelMap = new HashMap<String, SimulationManager>();
 		randomSeed = System.currentTimeMillis();
@@ -369,7 +369,7 @@ public class SimulationEngine extends Thread {
 	/** Stop the simulation, dispose everything and the quit the JVM. */
 	public void quit() {
 		pause();
-		eventList = null;
+		eventQueue = null;
 		for (SimulationManager model : models) {
 			model.dispose();
 		}
@@ -380,7 +380,7 @@ public class SimulationEngine extends Thread {
 
 	/**
 	 * Notify the engine to manage a SimModel. This method is mandatory to let a
-	 * model work. The current event list is joined to the given model.
+	 * model work. The current event queue is joined to the given model.
 	 * 
 	 * @param model
 	 *            The model to be added.
@@ -445,7 +445,7 @@ public class SimulationEngine extends Thread {
 	 * @return The list of disposed models.
 	 */
 	public synchronized Class<?>[] disposeModels() {
-		eventList.clear();
+		eventQueue.clear();
 
 		modelBuild = false;
 
@@ -475,7 +475,7 @@ public class SimulationEngine extends Thread {
 		disposeModels();
 		currentRunNumber = k + 1;
 
-		eventList.clear();
+		eventQueue.clear();
 		
 		setRandomSeed(randomSeed);
 		
@@ -509,7 +509,7 @@ public class SimulationEngine extends Thread {
 	 */
 	public void end() {
 		pause();
-		eventList.clear();
+		eventQueue.clear();
 		performAction(SystemEventType.End);
 	}
 
@@ -573,7 +573,7 @@ public class SimulationEngine extends Thread {
 		if (!modelBuild)
 			buildModels();
 
-		eventList.step();
+		eventQueue.step();
 		notifySimulationListeners(SystemEventType.Step);
 		yield();		
 	}

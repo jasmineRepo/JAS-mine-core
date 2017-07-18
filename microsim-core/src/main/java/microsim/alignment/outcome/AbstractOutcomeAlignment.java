@@ -1,7 +1,7 @@
 package microsim.alignment.outcome;
 
 import java.util.Collection;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 /**
  * 
@@ -46,8 +46,8 @@ import org.apache.commons.collections.Predicate;
  */
 public abstract class AbstractOutcomeAlignment<T> {
 
-	public abstract void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts);
+	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts);
 	
-	public abstract void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts);
+	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts);
 	
 }

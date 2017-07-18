@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 public class MultiplicativeScalingAlignment<T> extends AbstractProbabilityAlignment<T> {
 
 	@Override
-	public void align(Collection<T> agents, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
 		if (targetShare < 0. || targetShare > 1.) {
 			throw new IllegalArgumentException("target probability must lie in [0,1]");
 		}

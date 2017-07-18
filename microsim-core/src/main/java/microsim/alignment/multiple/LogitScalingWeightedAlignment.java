@@ -3,8 +3,9 @@ package microsim.alignment.multiple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 import microsim.agent.Weighting;
 
@@ -40,7 +41,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 	 * 
 	 */
 	@Override
-	public void align(Collection<T> agents, Predicate filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare) {
 		
 		final int maxNumberIterations = 100;		//The maximum number of iterations until the iterative loop in the alignment algorithm terminates.  The resulting probabilities at that time are then used.
 		final double precision = 1.e-5;				//The appropriate value here depends on the precision of the probabilities.  If the probabilities are stated to x decimal places, then EPSILON should be 1.e-x.
@@ -71,7 +72,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 	 * 	the desired precision. If set to false, warnings will not be sent to the System.out.
 	 * 
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentMultiProbabilityClosure<T> closure, double[] targetShare, int maxNumberIterations, double precision, boolean enableWarnings) {
 
 		int numOptions = targetShare.length;			//The length of the targetShare corresponds to the number of possible choices or outcomes of the event (the 'A' in Stephensen's paper)
 		double targetSum = 0.;

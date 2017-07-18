@@ -12,8 +12,8 @@ import microsim.statistics.IDoubleSource;
 import microsim.statistics.IObjectSource;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.MapIterator;
-import org.apache.commons.collections.keyvalue.MultiKey;
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.keyvalue.MultiKey;
 
 public class LinearRegression implements ILinearRegression {
 	

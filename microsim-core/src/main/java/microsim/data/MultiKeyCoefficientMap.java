@@ -3,9 +3,9 @@ package microsim.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
-import org.apache.commons.collections.map.AbstractHashedMap;
-import org.apache.commons.collections.map.MultiKeyMap;
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.AbstractHashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 public class MultiKeyCoefficientMap extends MultiKeyMap {
 
@@ -133,7 +133,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {
 					throw new IllegalArgumentException("Wrong number of key parameters");			
 				case 2:
 					if (keyValues[0] instanceof MultiKey)		//Ross: If we don't do this check, a new MultiKey of a MultiKey is created unnecessarily, which then leads to a null pointer exception as the MultKeyCoefficientMap does not have a key entry of the type MultiKey(MultiKey()). 
-						super.put(keyValues[0], keyValues[1]);
+						super.put((MultiKey) keyValues[0], keyValues[1]);
 					else {
 						super.put(new MultiKey(new Object[] { keyValues[0] }), keyValues[1]);
 					}

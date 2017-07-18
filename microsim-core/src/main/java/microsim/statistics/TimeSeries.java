@@ -196,18 +196,18 @@ public class TimeSeries implements EventListener, IUpdatableSource {
 
 	/** Update all the contained time series and the current time. */
 	public void updateSource() {
-		if (SimulationEngine.getInstance().getEventList().getTime() == lastTimeUpdate)
+		if (SimulationEngine.getInstance().getEventQueue().getTime() == lastTimeUpdate)
 			return;
 
 		Iterator<Series> it = series.iterator();
 		while (it.hasNext())
 			it.next().updateSource();
 
-		absTimes.add(SimulationEngine.getInstance().getEventList().getTime());
+		absTimes.add(SimulationEngine.getInstance().getEventQueue().getTime());
 		descTimes.add(""
-				+ SimulationEngine.getInstance().getEventList().getTime());
+				+ SimulationEngine.getInstance().getEventQueue().getTime());
 
-		lastTimeUpdate = SimulationEngine.getInstance().getEventList()
+		lastTimeUpdate = SimulationEngine.getInstance().getEventQueue()
 				.getTime();
 	}
 

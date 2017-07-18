@@ -1,8 +1,8 @@
 package microsim.collection;
 
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections4.Closure;
 
-public abstract class AverageClosure implements Closure {
+public abstract class AverageClosure<T> implements Closure<T> {
 
 	protected double sum = 0.0;
 

@@ -9,8 +9,8 @@ import java.util.List;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 /**
  * Align the population by resampling.  This involves picking an agent from the relevant collection of agents at (uniform) 
@@ -41,7 +41,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, double targetShare) {
 		align(agents, filter, closure, targetShare, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
@@ -58,7 +58,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts) {
 		
 		if(targetShare > 1.) {
 			throw new IllegalArgumentException("ResamplingAlignment targetShare is greater than 1 (meaning 100%)!  This is impossible.");
@@ -161,7 +161,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, int targetNumber) {
 		align(agents, filter, closure, targetNumber, -1);		//No maximum Resampling Attempts specified, so pass a negative number to be handled appropriately within the method.
 	}
 	
@@ -178,7 +178,7 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
 	 */
-	public void align(Collection<T> agents, Predicate filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
 		
 		if(targetNumber > agents.size()) {
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is larger than the population size!  This is impossible to reach.");
