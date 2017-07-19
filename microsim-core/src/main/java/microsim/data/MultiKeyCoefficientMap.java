@@ -5,15 +5,23 @@ import java.util.Map;
 
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.AbstractHashedMap;
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
-public class MultiKeyCoefficientMap extends MultiKeyMap {
+public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable {
 
 	private static final long serialVersionUID = 5049597007431364596L;
 
 	protected String[] keys;
 	protected Map<String, Integer> valuesMap;
 	
+	/**
+	 * Creates an empty new MultiKeyCoefficientMap with the names of the keys and 
+	 * values categories specified by String[] keys and String[] values arguments.
+	 * 
+	 * @param keys - a String array listing the names of the categories of keys
+	 * @param values - a String array listing the names of the categories of values
+	 */
 	public MultiKeyCoefficientMap(String[] keys, String[] values) {
 		super();
 		this.keys = keys;
@@ -28,6 +36,15 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {
 			throw new IllegalArgumentException("Keys array cannot be null");		
 	}
 
+	/**
+	 * Creates a new MultiKeyCoefficientMap with values stored in map, and with 
+	 * the names of the keys and values categories specified by String[] keys 
+	 * and String[] values arguments.
+	 * 
+	 * @param map - contains the values of the MultiKeyCoefficientMap.
+	 * @param keys - a String array listing the names of the categories of keys
+	 * @param values - a String array listing the names of the categories of values
+	 */
 	public MultiKeyCoefficientMap(AbstractHashedMap map, String[] keys, String[] values) {
 		super(map);
 		this.keys = keys;
@@ -237,13 +254,14 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {
 	}
 	
 	/**
-	 * Returns a deep clone of the MultiKeyCoefficientMap object
+	 * Returns a deep clone copy of the MultiKeyCoefficientMap object
 	 * 
 	 * @author Ross Richardson
 	 */
 	@Override
 	public MultiKeyCoefficientMap clone() {
-		return new MultiKeyCoefficientMap(this.getKeysNames(), this.getValuesNames());
+		HashedMap mapClone = new HashedMap(this.decorated());
+		return new MultiKeyCoefficientMap(mapClone, this.getKeysNames(), this.getValuesNames());
 	}
 	
 }
