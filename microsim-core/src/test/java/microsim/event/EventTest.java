@@ -173,6 +173,9 @@ public class EventTest
 	 */
 	public void testOrdering()
     {
+		
+		EventQueue.setSimulationTimeout(10000);
+
     	EventQueue eventQueue;
     	List<Event> events; // the ordered list of events in the order we think they ought to happen
     	eventQueue = new EventQueue();
@@ -215,9 +218,7 @@ public class EventTest
 			
 		} catch (SimulationException e) {
 			e.printStackTrace();
-		}
-		
-		
+		}		
 
     }
 	
@@ -266,8 +267,6 @@ public class EventTest
 		}		
 		
 		System.out.println("*** END TEST OF ORDERING BY TIME AND ORDERING FIELDS ***");
-
-
     }
 	
 	/**
@@ -332,7 +331,10 @@ public class EventTest
 		List<Double> firings = myEvent.getFirings();
 		assertTrue(firings.size() == 11);
 		System.out.println(myEvent + " fired " + firings.size() + " time(s).");
-		assertTrue(Double.compare(firings.get(4),5.0) == 0);
+		System.out.println("Firings were at :" + firings);
+		
+		assertTrue(Double.compare(firings.get(5),5.0) == 0);
+		assertFalse(Double.compare(firings.get(6),7.0) == 0);
 		System.out.println("*** END SIMPLE TEST OF RECURRING EVENTS ***");
 		
     }
