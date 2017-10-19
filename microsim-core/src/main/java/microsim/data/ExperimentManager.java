@@ -9,6 +9,7 @@ import java.sql.Date;
 import microsim.data.db.DatabaseUtils;
 import microsim.data.db.Experiment;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -55,35 +56,40 @@ public class ExperimentManager {
 	public void copy(String fileName, String outFolder) throws Exception {
 		File sourceFile = new File(fileName);
 		File outDir = new File(outFolder);
-		if (! outDir.exists())
-			outDir.mkdirs();
-		
 		File destFile = new File(outFolder + File.separator + sourceFile.getName());
-		if (!destFile.exists()) {
-	        destFile.createNewFile();
-	    }
-
-	    FileChannel source = null;
-	    FileChannel destination = null;
-	    try {
-	        source = new FileInputStream(sourceFile).getChannel();
-	        destination = new FileOutputStream(destFile).getChannel();
-
-	        // previous code: destination.transferFrom(source, 0, source.size());
-	        // to avoid infinite loops, should be:
-	        long count = 0;
-	        long size = source.size();              
-	        while((count += destination.transferFrom(source, count, size-count))<size);
-	    }
-	    finally {
-	        if (source != null) {
-	            source.close();
-	        }
-	        if (destination != null) {
-	            destination.close();
-	        }
-	    }
-		
+		if(sourceFile.isDirectory()) {
+			FileUtils.copyDirectory(sourceFile, destFile);		//Now use Apache Commons IO
+		}
+		else {
+			if (! outDir.exists())
+				outDir.mkdirs();
+			
+			
+			if (!destFile.exists()) {
+		        destFile.createNewFile();
+		    }
+	
+		    FileChannel source = null;
+		    FileChannel destination = null;
+		    try {
+		        source = new FileInputStream(sourceFile).getChannel();
+		        destination = new FileOutputStream(destFile).getChannel();
+	
+		        // previous code: destination.transferFrom(source, 0, source.size());
+		        // to avoid infinite loops, should be:
+		        long count = 0;
+		        long size = source.size();              
+		        while((count += destination.transferFrom(source, count, size-count))<size);
+		    }
+		    finally {
+		        if (source != null) {
+		            source.close();
+		        }
+		        if (destination != null) {
+		            destination.close();
+		        }
+		    }
+		}		
 	}
 
 	
