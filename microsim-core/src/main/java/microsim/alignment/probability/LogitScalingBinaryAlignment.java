@@ -147,10 +147,11 @@ public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment
 		
 		if( (error >= allowedError) && enableWarnings) {
 			System.out.println("WARNING: The LogitScalingBinaryAlignment.align() method terminated with an error of " 
-					+ (error/(double)n) + ", which has a greater magnitude than the precision bounds of +/-" + precision + ".  The number "
-					+ "of iterations was  " + count + ".  Check the results of the Logit Scaling Binary alignment to ensure that "
+					+ (error/(double)n) + ", which has a greater magnitude than the precision bounds of +/-" + precision + ".  The size of "
+					+ " the filtered agent collection is " + n + " and the number of iterations was  " + count + ".  Check the results of the Logit Scaling Binary alignment to ensure that "
 					+ "alignment is good enough for the purpose in question, or consider increasing the maximum number of iterations "
 					+ "or the precision!");
+			new Exception().printStackTrace();
 		}
 
 		// Correct individual probabilities with the aligned probabilities, prob[i]
