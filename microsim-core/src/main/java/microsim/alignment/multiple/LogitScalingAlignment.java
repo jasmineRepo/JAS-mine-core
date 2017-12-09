@@ -9,7 +9,7 @@ import org.apache.commons.collections4.Predicate;
 
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International Journal of Microsimulation (2016) 9(3) 89-102), 
- * for the general case of 'A' choices.  For use with weighted agents (where the weighting of an agent corresponds to 
+ * for the general case of 'A' choices.  For use with weighted agents (where the weight of an agent corresponds to 
  * the number of individuals it represents, use the LogitScalingWeightedAlignment instead.
  * 
  * @author Ross Richardson

@@ -13,7 +13,7 @@ import org.apache.commons.collections4.Predicate;
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International Journal of Microsimulation (2016) 9(3) 89-102), 
  * but for agents with binary choices rather than the general case of 'A' choices.  For use with multiple choices, use the
- * LogitScalingAlignment class instead.  For use with weighted agents (where the weighting of an agent corresponds to 
+ * LogitScalingAlignment class instead.  For use with weighted agents (where the weight of an agent corresponds to 
  * the number of individuals it represents, use the LogitScalingBinaryWeightedAlignment (for binary choices) or
  * the LogitScalingWeightedAlignment class (for multiple choices) instead.
  * 

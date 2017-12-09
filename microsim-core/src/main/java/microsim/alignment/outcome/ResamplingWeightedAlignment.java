@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import microsim.agent.Weighting;
+import microsim.agent.Weight;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 import microsim.statistics.regression.RegressionUtils;
@@ -26,7 +26,7 @@ import org.apache.commons.collections4.Predicate;
  * 
  * @author Ross Richardson
  */
-public class ResamplingWeightedAlignment<T extends EventListener & Weighting> extends AbstractOutcomeAlignment<T> {
+public class ResamplingWeightedAlignment<T extends EventListener & Weight> extends AbstractOutcomeAlignment<T> {
 
 
 	//-----------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -53,7 +53,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -81,13 +81,13 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 		// compute total number of simulated positive outcomes
 		for (int i = 0; i < list.size(); i++) {
 			T agent = list.get(i);
-			double weighting = agent.getWeighting();
-			total += weighting;
+			double weight = agent.getWeight();
+			total += weight;
 		}		
 		
 		double targetNumber = targetShare * total;
 		
-		doAlignment(list, closure, (int)targetNumber, maxResamplingAttempts);		
+		doAlignment(list, closure, targetNumber, maxResamplingAttempts);		
 		
 	}
 	
@@ -101,7 +101,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the default maximum number of attempts to resample has been reached (which is 20 attempts per agent on average). 
 	 * 
-	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
 	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
@@ -115,10 +115,10 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	 * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
 	 * either the alignment target is reached, or the maximum number of attempts to resample has been reached, as specified by the maxResamplingAttempts parameter. 
 	 * 
-	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * @param agents - a list of agents to potentially be resampled; the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentOutcomeClosure that specifies how to define the outcome of the agent and how to resample it 
-	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true
+	 * @param targetNumber - the target number of the filtered population for which the outcome (defined by the AlignmentOutcomeClosure) must be true	//XXX: Should ideally be a double, because now agents are weighted.  However, interace requires an int here.
 	 * @param maxResamplingAttempts - the maximum number of attempts to resample before terminating the alignment (this is in case the resampling (as defined by the AlignmentOutcomeClosure) is unable to alter
 	 *  the outcomes of enough agents, due to the nature of the sub-population and the definition of the outcome (i.e. if agents' attributes are so far away from a binary outcome threshold boundary, that the
 	 *   probability of enough of them switching to the desired outcome is vanishingly small).  
@@ -140,7 +140,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 	}
 		
 	//Note, the list argument here is already filtered for the relevant agents in the align(...) methods.
-	public void doAlignment(List<T> list, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts) {
+	public void doAlignment(List<T> list, AlignmentOutcomeClosure<T> closure, double targetNumber, int maxResamplingAttempts) {
 		
 //		System.out.println("Starting Resampling Alignment.  This may take some time, please wait...");
 		
@@ -155,20 +155,20 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 		// compute total number of simulated positive outcomes
 		for (int i=0; i< list.size(); i++) {
 			T agent = list.get(i);
-			double weighting = agent.getWeighting();
-			if(weighting <= 0.) {
-				throw new IllegalArgumentException("Weighting cannot be zero or negative in ResamplingWeightedAlignment!");
+			double weight = agent.getWeight();
+			if(weight <= 0.) {
+				throw new IllegalArgumentException("Weight cannot be zero or negative in ResamplingWeightedAlignment!");
 			}
-			total += weighting;
+			total += weight;
 			if(closure.getOutcome(agent)) {
-				sum += weighting;
-				trueAgentMap.put(agent, weighting);
+				sum += weight;
+				trueAgentMap.put(agent, weight);
 			} 
 			else {
-				falseAgentMap.put(agent, weighting);
+				falseAgentMap.put(agent, weight);
 			}
 		}
-		
+	
 		if(targetNumber > total) {
 			throw new IllegalArgumentException("ResamplingWeightedAlignment target is larger than the population size (over 100% of the population)!  This is impossible to reach.");
 		}
@@ -188,12 +188,12 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 			if(maxResamplingAttempts < trueAgentMap.size()) {			//This will catch the case where maxResamplingAttempts is not included in the arguments.  Also it provides a lower bound for the user to specify, which is the size of the subset of the population whose outcomes need changing.  Anything less, and the number is automatically enlarged (in the line below).
 				maxResamplingAttempts = avgResampleAttemptsPerAgent * trueAgentMap.size();	//This creates a default value of 20 times the size of the subset of the population to be resampled in order to move the delta towards 0.  Therefore, in order to improve delta, a member of the population undergoing alignment will be resampled up to a maximum of 20 times on average in order to change their outcome, before the alignment algorithm will give up and terminate.  
 			}
-			while ( (delta > 0.) && (count < maxResamplingAttempts) ) {
+			while ( (delta > 0.) && (count < maxResamplingAttempts) && !trueAgentMap.isEmpty() ) {
 //				System.out.println("count, " + count + ", maxCount, " + maxResamplingAttempts + ", delta, " + delta + ", sum, " + (delta + targetNumber) + ", targetNumber, " + targetNumber);
 				count++;
-				T agent = RegressionUtils.event(trueAgentMap, SimulationEngine.getRnd(), false);		//This makes sample probability proportional to weighting (which are the values of the trueAgentMap)
-				double weight = agent.getWeighting();
-				if(delta >= weight) {					//Agent has small enough weighting to be allowed to make the change.
+				T agent = RegressionUtils.event(trueAgentMap, SimulationEngine.getRnd(), false);		//This makes sample probability proportional to weight (which are the values of the trueAgentMap)
+				double weight = agent.getWeight();
+				if(delta >= weight) {					//Agent has small enough weight to be allowed to make the change.
 					closure.resample(agent);
 					if (!closure.getOutcome(agent)) {
 						delta -= weight;
@@ -205,20 +205,20 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					if(agentSmallestButTooLargeWeight == null) {
 						agentSmallestButTooLargeWeight = agent;
 					}
-					else if(agentSmallestButTooLargeWeight.getWeighting() > agent.getWeighting()) {
+					else if(agentSmallestButTooLargeWeight.getWeight() > agent.getWeight()) {
 						agentSmallestButTooLargeWeight = agent;		//Replace with agent that has smaller weight (that is still just too big to be used)
 					}
 					trueAgentMap.remove(agent);		//Agent is too big to be resampled normally, only at the end if it brings delta closer to zero.  Therefore, we should not still include it in the map to be sampled as it cannot be resampled, so it just wastes time to potentially try it again and again!
 				}
 			} 
 			if(agentSmallestButTooLargeWeight != null) {
-				if(Math.abs( delta - agentSmallestButTooLargeWeight.getWeighting() ) < delta ) {		//Allow resampling of smallest agent that is too big if it would bring delta closer to zero
+				if(Math.abs( delta - agentSmallestButTooLargeWeight.getWeight() ) < delta ) {		//Allow resampling of smallest agent that is too big if it would bring delta closer to zero
 					int countLast = 0;
 					while(countLast < avgResampleAttemptsPerAgent) {				//Allow several attempts to resample - on average the same as all the other randomly chosen agents above
 						countLast++;
 						closure.resample(agentSmallestButTooLargeWeight);
 						if(!closure.getOutcome(agentSmallestButTooLargeWeight)) {
-							delta -= agentSmallestButTooLargeWeight.getWeighting();
+							delta -= agentSmallestButTooLargeWeight.getWeight();
 							break;
 						}
 					}
@@ -231,12 +231,12 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 			if(maxResamplingAttempts < falseAgentMap.size()) {			//This will catch the case where maxResamplingAttempts is not included in the arguments.  Also it provides a lower bound for the user to specify, which is the size of the subset of the population whose outcomes need changing.  Anything less, and the number is automatically enlarged (in the line below).
 				maxResamplingAttempts = avgResampleAttemptsPerAgent * falseAgentMap.size();	//This creates a default value of 20 times the size of the subset of the population to be resampled in order to move the delta towards 0.  Therefore, in order to improve delta, a member of the population undergoing alignment will be resampled up to a maximum of 20 times on average in order to change their outcome, before the alignment algorithm will give up and terminate.  
 			}
-			while ( (delta < 0.) && (count < maxResamplingAttempts) ) {
+			while ( (delta < 0.) && (count < maxResamplingAttempts) && !falseAgentMap.isEmpty() ) {
 //				System.out.println("count, " + count + ", maxCount, " + maxResamplingAttempts + ", delta, " + delta + ", sum, " + (delta + targetNumber) + ", targetNumber, " + targetNumber);
 				count++;
-				T agent = RegressionUtils.event(falseAgentMap, SimulationEngine.getRnd(), false);		//This makes sample probability proportional to weighting (which are the values of the falseAgentMap)
-				double weight = agent.getWeighting();
-				if(-delta >= weight) {					//Agent has small enough weighting to be allowed to make the change.
+				T agent = RegressionUtils.event(falseAgentMap, SimulationEngine.getRnd(), false);		//This makes sample probability proportional to weight (which are the values of the falseAgentMap)
+				double weight = agent.getWeight();
+				if(-delta >= weight) {					//Agent has small enough weight to be allowed to make the change.
 					closure.resample(agent);
 					if (closure.getOutcome(agent)) {
 						delta += weight;
@@ -248,20 +248,20 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weighting> ex
 					if(agentSmallestButTooLargeWeight == null) {
 						agentSmallestButTooLargeWeight = agent;
 					}
-					else if(agentSmallestButTooLargeWeight.getWeighting() > agent.getWeighting()) {
+					else if(agentSmallestButTooLargeWeight.getWeight() > agent.getWeight()) {
 						agentSmallestButTooLargeWeight = agent;		//Replace with agent that has smaller weight (that is still just too big to be used)
 					}
 					falseAgentMap.remove(agent);		//Agent is too big to be resampled normally, only at the end if it brings delta closer to zero.  Therefore, we should not still include it in the map to be sampled as it cannot be resampled, so it just wastes time to potentially try it again and again!
 				}
 			} 
 			if(agentSmallestButTooLargeWeight != null) {
-				if(Math.abs( delta + agentSmallestButTooLargeWeight.getWeighting() ) < -delta ) {		//Allow resampling of smallest agent that is too big if it would bring delta closer to zero
+				if(Math.abs( delta + agentSmallestButTooLargeWeight.getWeight() ) < -delta ) {		//Allow resampling of smallest agent that is too big if it would bring delta closer to zero
 					int countLast = 0;
 					while(countLast < avgResampleAttemptsPerAgent) {				//Allow several attempts to resample - on average the same as all the other randomly chosen agents above
 						countLast++;
 						closure.resample(agentSmallestButTooLargeWeight);
 						if(closure.getOutcome(agentSmallestButTooLargeWeight)) {
-							delta += agentSmallestButTooLargeWeight.getWeighting();
+							delta += agentSmallestButTooLargeWeight.getWeight();
 							break;
 						}
 					}
