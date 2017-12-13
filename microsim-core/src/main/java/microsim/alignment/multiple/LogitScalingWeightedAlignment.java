@@ -7,20 +7,20 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 
-import microsim.agent.Weighting;
+import microsim.agent.Weight;
 
 
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International Journal of Microsimulation (2016) 9(3) 89-102), 
- * for the general case of 'A' choices and agents who implement the Weighting interface, so that the weighting of each agent 
- * represents the number of individuals it represents.  If the agents do not implement the Weighting interface, 
+ * for the general case of 'A' choices and agents who implement the Weight interface, so that the Weight of each agent 
+ * represents the number of individuals it represents.  If the agents do not implement the Weight interface, 
  * use the LogitScalingAlignment class instead.
  * 
  * @author Ross Richardson
  *
  * @param <T>
  */
-public class LogitScalingWeightedAlignment<T extends Weighting> extends AbstractMultiProbabilityAlignment<T> {
+public class LogitScalingWeightedAlignment<T extends Weight> extends AbstractMultiProbabilityAlignment<T> {
 
 	/**
 	 * 
@@ -34,7 +34,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 	 *  align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings)
 	 *  
 	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class); 
-	 * 	the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * 	the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentProbabilityClosure that specifies how to define the (unaligned) probability of the agent and how to implement the result of the aligned probability. 
 	 * @param targetShare - the target share of the relevant sub-population (specified as a proportion of the filtered population) for which the mean of the aligned probabilities (defined by the AlignmentProbabilityClosure) must equal
@@ -55,7 +55,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 	 * Aligns a sub-population of objects using Logit Scaling alignment.
 	 * 
 	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class); 
-	 * 	the agent class must implement the Weighting interface by providing a getWeighting() method.  In the case of the alignment algorithm, getWeighting() must return a positive value.
+	 * 	the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.
 	 * @param filter - filters the agentList so that only the relevant sub-population of agents is sampled
 	 * @param closure - AlignmentProbabilityClosure that specifies how to define the (unaligned) probability of the 
 	 * 	agent and how to implement the result of the aligned probability. 
@@ -99,7 +99,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 			list.addAll(agents);
 		
 		int n = list.size();
-		double total = 0.;			//The total weighting, i.e. will sum the weighting of each agent in the sub-population to be aligned.
+		double total = 0.;			//The total Weight, i.e. will sum the Weight of each agent in the sub-population to be aligned.
 
 		//2-dimensional array of probabilities that will be adjusted by iteration.  
 		//The goal of the alignment algorithm is for the sum of each column (iterate over the array's first index)
@@ -110,9 +110,9 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 		// compute total expected number of simulated positive outcomes
 		for (int i=0; i<n; i++) {
 			T agent = list.get(i);
-			double weight = agent.getWeighting();
+			double weight = agent.getWeight();
 			if(weight <= 0.) {
-				throw new IllegalArgumentException("Weighting cannot be zero or negative in ResamplingWeightedAlignment!");
+				throw new IllegalArgumentException("Weight cannot be zero or negative in ResamplingWeightedAlignment!");
 			}
 			total += weight;
 
@@ -125,7 +125,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 		for(int choice = 0; choice < numOptions; choice++) {
 			target[choice] = targetShare[choice] * total;
 		}
-		double allowedError = precision * total;		//precision refers to the share of the sub-population aligned, allowedError refers to the target, so is scaled up by the total weighting of the sub-population.
+		double allowedError = precision * total;		//precision refers to the share of the sub-population aligned, allowedError refers to the target, so is scaled up by the total Weight of the sub-population.
 		
 		int count = 0;
 		double error = Double.MAX_VALUE;
@@ -162,7 +162,7 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 					
 					probSumOverChoices += prob[agent][choice];
 				}
-				double alpha = list.get(agent).getWeighting() / probSumOverChoices;			//Because probs are scaled by the agent's weight already, the sum of probs over the possible choices = agent.getWeighting() instead of 1.  Therefore, we need to use the agent's weight in the numerator here.
+				double alpha = list.get(agent).getWeight() / probSumOverChoices;			//Because probs are scaled by the agent's weight already, the sum of probs over the possible choices = agent.getWeight() instead of 1.  Therefore, we need to use the agent's weight in the numerator here.
 
 				//Alpha transform of the probabilities
 				for(int choice = 0; choice < numOptions; choice++) {
@@ -182,17 +182,18 @@ public class LogitScalingWeightedAlignment<T extends Weighting> extends Abstract
 		
 		if( (error >= allowedError) && enableWarnings) {
 			System.out.println("WARNING: The LogitScalingWeightedAlignment.align() method terminated with an error of " 
-					+ (error/(double)total) + ", which has a greater magnitude than the precision bounds of +/-" + precision + ".  The number "
-					+ "of iterations was  " + count + ".  Check the results of the Logit Scaling Weighted alignment to ensure that "
+					+ (error/(double)total) + ", which has a greater magnitude than the precision bounds of +/-" + precision + ".  The size of "
+					+ " the filtered agent collection is " + n + " and the number of iterations was  " + count + ".  Check the results of the Logit Scaling Weighted alignment to ensure that "
 					+ "alignment is good enough for the purpose in question, or consider increasing the maximum number of iterations "
 					+ "or the precision!");
+			new Exception().printStackTrace();
 		}
 
 		// Correct individual probabilities with the aligned probabilities, prob[i]
 		for (int i=0; i<n; i++) {
 			T agent = list.get(i);
 			for(int choice = 0; choice < numOptions; choice++) {
-				prob[i][choice] /= agent.getWeighting();			//As prob was previously scaled up by weight, need to scale down here to 'renormalise'.
+				prob[i][choice] /= agent.getWeight();			//As prob was previously scaled up by weight, need to scale down here to 'renormalise'.
 			}
 			closure.align(agent, prob[i]);			
 		}

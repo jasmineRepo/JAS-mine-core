@@ -20,3 +20,5 @@ microsim.statistics
 microsim.statistics.functions
 microsim.statistics.reflectors
 microsim.statistics.regression
+microsim.statistics.weighted
+microsim.statistics.weighted.functions
