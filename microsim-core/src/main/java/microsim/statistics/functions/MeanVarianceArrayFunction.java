@@ -84,6 +84,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 			mean = sum / (double) count;
 			variance = (sumOfSquares - mean * sum) / (double) count; 		//This is a population variance as it is the variance of the array's data.
 		}		
+		System.out.println("count " + count + ", mean " + mean + ", variance " + variance);
 	}
 	
 	/* (non-Javadoc)

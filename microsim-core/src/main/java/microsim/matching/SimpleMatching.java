@@ -68,9 +68,9 @@ public class SimpleMatching<T> implements MatchingAlgorithm<T> {
 				}			
 			});
 			
-			for(Pair<Double, T> p: listToSort) {
-				System.out.println("Score: " + p.getFirst());
-			}
+//			for(Pair<Double, T> p: listToSort) {
+//				System.out.println("Score: " + p.getFirst());
+//			}
 			if(!listToSort.isEmpty()) {		//If no potential partners, move on to the next agent1
 				T partner = listToSort.get(0).getSecond();
 				matching.match(agent1, partner);
