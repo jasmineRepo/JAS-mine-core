@@ -1,7 +1,5 @@
 package microsim.statistics.weighted;
 
-import microsim.agent.Weight;
-
 //package microsim.statistics.weighted;
 
 /**
