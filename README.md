@@ -10,7 +10,7 @@ JAS-mine allows to separate data representation and management, which is automat
 
 It has built-in utilities for communicating with an underlying relational database. In addition, the platform provides standard tools which are frequently used both in agent-based modelling and dynamic microsimulations, like design of experiments (DOE), run-time monitoring and visualization with plots and graphs (GUI), I/O communication, statistical analysis.
 
-This repository contains the core libraries, for the gui libraries see https://github.com/jasmineRepo/JAS-mine-gui.
+This repository contains the core libraries, for the gui libraries see https://github.com/jasmineRepo/JAS-mine-gui.  See https://github.com/jasmineRepo for a list of JAS-mine projects including demonstration models.
 
 See www.jas-mine.net for more details.
 
