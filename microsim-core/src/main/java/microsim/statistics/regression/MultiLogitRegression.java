@@ -187,9 +187,17 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public <E extends Enum<E>> double getLogitTransformOfScore(T event, IDoubleSource iDblSrc, Class<E> Regressors) {
-		final double score = LinearRegression.computeScore(maps.get(event), iDblSrc, Regressors);
-		return (double) 1 / (1 + Math.exp(- score));		
-	}
+      MultiKeyCoefficientMap map = maps.get(event);
+      double score;
+      if(map.getKeysNames().length == 1) {
+          score = LinearRegression.computeScore(map, iDblSrc, Regressors, true);            //No additional conditioning regression keys used, so no need to check for them
+      }
+      else {
+          score = LinearRegression.computeScore(map, iDblSrc, Regressors);        //Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the IObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
+      }
+
+      return (double) 1 / (1 + Math.exp(- score));
+  } 
 	
 	public <E extends Enum<E>> T eventType(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {		
 		Map<T, Double> probs = new HashMap<T, Double>();
