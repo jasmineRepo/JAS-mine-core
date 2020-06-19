@@ -191,7 +191,6 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public <E extends Enum<E>> double getProbitTransformOfScore(T event, IDoubleSource iDblSrc, Class<E> Regressors) {
-//      final double score = LinearRegression.computeScore(maps.get(event), iDblSrc, Regressors);
       MultiKeyCoefficientMap map = maps.get(event);
       double score;
       if(map.getKeysNames().length == 1) {
