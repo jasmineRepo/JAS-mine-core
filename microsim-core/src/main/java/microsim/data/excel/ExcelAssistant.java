@@ -97,6 +97,7 @@ public class ExcelAssistant {
 			//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1 in loop index bounds.
 			for (int i = startLine; i <= Math.min(worksheet.getLastRowNum(), endLine - 1); i++) {	
 				Row row = worksheet.getRow(i);
+				if (row==null) continue;
 				Object[] keyValueVector = null;
 				if (valueColumns == 1) {					
 					keyValueVector = new Object[keyColumns + valueColumns];
