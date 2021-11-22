@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.persistence.Column;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
@@ -128,7 +129,7 @@ public class ExportCSV {
         	if(!fAlreadyExists)
         	{
 	    	    //Create Header line for .csv file
-	    	  	bufferWriter.append("run" + delimiter + "time" + delimiter + "id" + delimiter);
+	    	  	bufferWriter.append("run" + delimiter + "time" + delimiter + "id_" + filename + delimiter);
         	}
         	
     	    //Create alphabetically sorted (except for run, time and id key) list of fields including private and inherited fields that belong to the target class.
@@ -142,9 +143,25 @@ public class ExportCSV {
     	    	Transient transientAnnotation = field.getAnnotation(Transient.class);
     	    	if(transientAnnotation == null) {			//Ignore the field if it has the 'Transient' annotation, just like when exporting the data to the output database
     	    		if(field.getType().isPrimitive() || Number.class.isAssignableFrom(field.getType()) || field.getType().equals(String.class)|| field.getType().equals(Boolean.class) || field.getType().isEnum() || field.getType().equals(Character.class)) {
-    	    			String name = field.getName();
+
+						String name = field.getName();
+
+						/*
+    	    			// PB 22/11/2021: if variable has @Column annotation, it would be better to output the name specified in the annotation, instead of the simple name of the variable. But the variables are obtained on the basis of their name, not the annotation, so this doesn't currently work.
+						Column annotation = field.getAnnotation(Column.class);
+						if (annotation != null) {
+							Column columnAnnotation = (Column) annotation;
+							name = columnAnnotation.name();
+							if (name == null) {
+								name = field.getName(); // If annotation name was null, revert to the simple variable name
+							}
+						}
+						*/
+
+
     	    			if(!name.equals("serialVersionUID")) {
-    	    				nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately).  Also ignores serialVersionUID value.
+    	    			//	nonTransientFieldNames.add(field.getName());	//Exclude references to general Objects, including PanelEntityKeys (handle id separately).  Also ignores serialVersionUID value.
+							nonTransientFieldNames.add(name); // PB: Add name kept in "name" variable, instead of field.getName() which gets the simple name.
     	    			}
     	    		}
     	    	}
