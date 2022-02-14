@@ -1,34 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<groupId>com.github.jasmineRepo</groupId>
 	<artifactId>JAS-mine-core</artifactId>
-	<version>4.0.11</version>
+	<version>5.0.0-alpha</version>
 	<build>
 		<plugins>
 			<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>3.6.1</version>
-		        <configuration> <!-- Compile java 8 compatible bytecode -->
-		          <source>1.8</source>
-		          <target>1.8</target>
+		        <version>3.9.0</version>
+		        <configuration> <!-- Compile JAVA 17 compatible bytecode -->
+		          <source>17</source>
+		          <target>17</target>
 		        </configuration>
 		      </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14</version>
+				<version>3.0.0-M5</version>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>true</skipTests>  <!-- Remove after tests have been added -->
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.3.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -55,96 +56,77 @@
 	        <extension>
 	            <groupId>org.apache.maven.wagon</groupId>
 	            <artifactId>wagon-ssh</artifactId>
-	            <version>2.4</version>
+	            <version>3.5.1</version> <!-- See deprecation notice. TODO find where used and replace -->
 	        </extension>
 	    </extensions>		
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.0</version> <!-- Outdated, replace?-->
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>1.0.0.Final</version>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.1.10.Final</version>
+			<version>5.6.5.Final</version>  <!-- 6.0.0 is on its way --> <!-- JPA 3.0-->
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>20030211.134440</version>
+			<version>1.9.4</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
+			<groupId>commons-logging</groupId> <!-- Old -ish, replace?-->
 			<artifactId>commons-logging</artifactId>
 			<version>1.2</version>
 		</dependency>            		
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.12</version>
+			<version>5.2.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.poi</groupId>
 		    <artifactId>poi-ooxml</artifactId>
-		    <version>3.12</version>
+		    <version>5.2.0</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
-		</dependency>
-		 -->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-collections4</artifactId>
-		    <version>4.1</version>
+		    <version>4.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.3.170</version>
+			<version>2.1.210</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>3.3</version>
+			<version>3.6.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
-		    <version>2.5</version>
-		</dependency>				
-		<!-- dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>2.2.9</version>
-		</dependency -->
-		<!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
+		    <version>2.11.0</version>
+		</dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.12.0</version>
+            <version>2.12.2</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.24.1-GA</version>
+            <version>3.28.0-GA</version>
         </dependency>
 		
 	</dependencies>

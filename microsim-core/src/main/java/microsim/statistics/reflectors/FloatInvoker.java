@@ -4,10 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.IFloatSource;
-
-import org.apache.log4j.Logger;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
@@ -41,7 +42,7 @@ import org.apache.log4j.Logger;
  *         <p>
  */
 public class FloatInvoker implements IFloatSource {
-	private static Logger log = Logger.getLogger(FloatInvoker.class);
+	private static Logger log = Logger.getLogger(FloatInvoker.class.toString());
 
 	protected Method method;
 	protected Field field;
@@ -90,11 +91,11 @@ public class FloatInvoker implements IFloatSource {
 		field = ReflectionUtils.searchField(trgClass, fieldName);
 
 		if (field == null)
-			log.error("FloatInvoker: Field " + fieldName + " of object "
+			log.log(Level.SEVERE, "FloatInvoker: Field " + fieldName + " of object "
 					+ target + " does not exist.");
 
 		if (field.getType() != Float.TYPE)
-			log.error("FloatInvoker: Field " + fieldName + " of object "
+			log.log(Level.SEVERE, "FloatInvoker: Field " + fieldName + " of object "
 					+ target + " must return a float value!");
 	}
 
@@ -103,11 +104,11 @@ public class FloatInvoker implements IFloatSource {
 		method = ReflectionUtils.searchMethod(trgClass, methodName);
 
 		if (method == null)
-			log.error("FloatInvoker: Method " + methodName + " of object "
+			log.log(Level.SEVERE, "FloatInvoker: Method " + methodName + " of object "
 					+ target + " does not exist.");
 
 		if (method.getReturnType() != Float.TYPE)
-			log.error("FloatInvoker: Method " + methodName + " of object "
+			log.log(Level.SEVERE, "FloatInvoker: Method " + methodName + " of object "
 					+ target + " must return a float value!");
 	}
 
@@ -141,11 +142,10 @@ public class FloatInvoker implements IFloatSource {
 						+ target + " raised the following error:\n");
 			message.append(ie.getMessage());
 			ie.printStackTrace();
-			log.error(message.toString());
-
+			log.log(Level.SEVERE, message.toString());
 		} catch (IllegalAccessException iae) {
 			iae.printStackTrace();
-			log.error("");
+			log.log(Level.SEVERE, "");
 		}
 		return 0.0f;
 	}

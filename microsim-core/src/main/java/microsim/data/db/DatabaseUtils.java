@@ -1,34 +1,30 @@
 package microsim.data.db;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jakarta.persistence.*;
+
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
 
 import microsim.annotation.GUIparameter;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 
-import org.apache.log4j.Logger;
-import org.hibernate.ejb.Ejb3Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-
-@SuppressWarnings("deprecation")
 public class DatabaseUtils {
 
-	private static Logger log = Logger.getLogger(DatabaseUtils.class);
+	private static final Logger log = Logger.getLogger(DatabaseUtils.class.toString());
 
-	private static EntityManagerFactory entityManagerFactory = null;
+	private static EntityManagerFactory emf = null;
 	private static EntityManagerFactory outEntityManagerFactory = null;
 
 	public static String databaseInputUrl = null;
@@ -37,7 +33,8 @@ public class DatabaseUtils {
 		
 	public static Long autoincrementSeed = 1000000L;
 	
-	public static Experiment createExperiment(EntityManager entityManager, Experiment experiment, Object... models) throws IllegalArgumentException,
+	public static Experiment createExperiment(EntityManager entityManager,
+											  Experiment experiment, Object... models) throws IllegalArgumentException,
 			IllegalAccessException {
 	
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
@@ -46,13 +43,12 @@ public class DatabaseUtils {
 		EntityTransaction tx = entityManager.getTransaction();
 		tx.begin();
 
-		experiment.parameters = new ArrayList<ExperimentParameter>();
+		experiment.parameters = new ArrayList<>();
 
 		for (Object model : models) {
 			Field[] fields = model.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				GUIparameter modelParamter = field
-						.getAnnotation(GUIparameter.class);
+				GUIparameter modelParamter = field.getAnnotation(GUIparameter.class);
 				if (modelParamter != null) {
 					field.setAccessible(true);
 					ExperimentParameter parameter = new ExperimentParameter();
@@ -127,15 +123,15 @@ public class DatabaseUtils {
 	}
 
 	public static void snap(Object target) throws Exception {
-		snap(DatabaseUtils.getOutEntityManger(), 
-				new Long(SimulationEngine.getInstance().getCurrentRunNumber()),
+		snap(DatabaseUtils.getOutEntityManger(),
+				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
 				SimulationEngine.getInstance().getTime(),
 				target);
 	}
 	
 	public static void snap(Collection<?> targetCollection) throws Exception {
-		snap(DatabaseUtils.getOutEntityManger(), 
-				new Long(SimulationEngine.getInstance().getCurrentRunNumber()),
+		snap(DatabaseUtils.getOutEntityManger(),
+				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
 				SimulationEngine.getInstance().getTime(),
 				targetCollection);
 	}
@@ -244,83 +240,62 @@ public class DatabaseUtils {
 	 * Singleton of hibernate session factory
 	 * 
 	 * @return The static session factory. If null something went wrong during
-	 *         initialiazion.
+	 *         initialization.
 	 */
 	public static EntityManager getEntityManger(boolean autoUpdate) {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
-		if (entityManagerFactory == null) {
+		if (emf == null) {
 			try {
-				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
+				Map<String, String> configOverrides = new HashMap<>();
 				if (autoUpdate) 
 					configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
+				if (databaseInputUrl != null)
+					configOverrides.put("hibernate.connection.url", databaseInputUrl);
 
-				Ejb3Configuration cfg = new Ejb3Configuration();
-				Ejb3Configuration configured = cfg.configure("sim-model",
-						configOverrides);
-
-				if (databaseInputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[input-path\\]", databaseInputUrl);
-					connectionUrl = connectionUrl.replace("[input-path]", databaseInputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-				
-				// configured.buildMappings();
-				// configured.setListener("flush-entity", new
-				// OutputFlushEntityEventListener());
-
-				// Mappings mappings =
-				// configured.getHibernateConfiguration().createMappings();
-
-				entityManagerFactory = configured.buildEntityManagerFactory();
+				emf = Persistence.createEntityManagerFactory("sim-model", configOverrides);
 
 			} catch (Throwable ex) {
-				log.fatal("Initial EntityManagerFactory creation failed." + ex);
+				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
 				if (ex instanceof PersistenceException)
-					log.fatal(((PersistenceException) ex).getCause());
+					log.log(Level.SEVERE, ex.getCause().toString());
 				throw new ExceptionInInitializerError(ex);
 			}
 		}
 
-		return entityManagerFactory.createEntityManager();
+		return emf.createEntityManager();
 	}
 
 	public static void inputSchemaUpdateEntityManger() {
-		if (entityManagerFactory == null) {
+		if (emf == null) {
 			try {
-				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
+				Map<String, String> configOverrides = new HashMap<>();
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
+				if (databaseInputUrl != null)
+					configOverrides.put("hibernate.connection.url", databaseInputUrl);
 
-				Ejb3Configuration cfg = new Ejb3Configuration();
-				Ejb3Configuration configured = cfg.configure("sim-model",
-						configOverrides);
-				
-				if (databaseInputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[input-path\\]", databaseInputUrl);
-					connectionUrl = connectionUrl.replace("[input-path]", databaseInputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-						
-				
-				new SchemaExport(configured.getHibernateConfiguration()).create(false, true);							
 
-				EntityManager em = configured.buildEntityManagerFactory().createEntityManager();
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
+				MetadataSources metadata = new MetadataSources(serviceRegistry);
+				EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+				SchemaExport schemaExport = new SchemaExport();
+				schemaExport.create(enumSet, metadata.buildMetadata());
+
+				EntityManager em = Persistence.createEntityManagerFactory("sim-model",
+						configOverrides).createEntityManager();
+
 				EntityTransaction tx = em.getTransaction();
 				tx.begin();
 				em.flush();
 				tx.commit();
 								
 			} catch (Throwable ex) {
-				log.fatal("Initial EntityManagerFactory creation failed." + ex);
+				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
 				if (ex instanceof PersistenceException)
-					log.fatal(((PersistenceException) ex).getCause());
+					log.log(Level.SEVERE, ex.getCause().toString());
 				throw new ExceptionInInitializerError(ex);
 			}
 		}
@@ -343,36 +318,26 @@ public class DatabaseUtils {
 		if (outEntityManagerFactory == null) {
 			try {
 				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
+				Map<String, String> configOverrides = new HashMap<>();
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
-				// configOverrides.put("hibernate.ejb.interceptor.session_scoped",
-				// "it.zero11.microsim.db.PanelTargetInterceptor");
-				
-				Ejb3Configuration configured = new Ejb3Configuration()
-						.configure(persistenceUnitName, configOverrides);
+				if (databaseOutputUrl != null)
+					configOverrides.put("hibernate.connection.url", databaseOutputUrl);
 
-				if (databaseOutputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[output-path\\]", databaseOutputUrl);
-					connectionUrl = connectionUrl.replace("[output-path]", databaseOutputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-				
-				configured.addAnnotatedClass(Experiment.class);
-				configured.addAnnotatedClass(ExperimentParameter.class);
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
+				MetadataSources metadata = new MetadataSources(serviceRegistry)
+												.addAnnotatedClass(Experiment.class)
+												.addAnnotatedClass(ExperimentParameter.class);
+				EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+				SchemaUpdate schemaUpdate = new SchemaUpdate();
+				schemaUpdate.execute(enumSet, metadata.buildMetadata());  // TODO check this part
 
-				// run the schema update.
-				new SchemaUpdate(configured.getHibernateConfiguration())
-						.execute(true, true);
-
-				outEntityManagerFactory = configured
-						.buildEntityManagerFactory();
+				outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides);
 
 			} catch (Throwable ex) {
-				log.fatal("Initial EntityManagerFactory creation failed." + ex);
+				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
 				if (ex instanceof PersistenceException)
-					log.fatal(((PersistenceException) ex).getCause());
+					log.log(Level.SEVERE, ex.getCause().toString());
 				throw new ExceptionInInitializerError(ex);
 			}
 		}
@@ -385,8 +350,7 @@ public class DatabaseUtils {
 	}
 
 	public static List<?> loadTable(EntityManager entityManager, Class<?> clazz) {
-		final Query query = entityManager.createQuery("from "
-				+ clazz.getSimpleName() + " rec");
+		final Query query = entityManager.createQuery("from " + clazz.getSimpleName() + " rec");
 		return query.getResultList();
 	}
 

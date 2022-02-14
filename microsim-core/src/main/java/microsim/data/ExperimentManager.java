@@ -6,11 +6,13 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.sql.Date;
 
+import org.apache.commons.io.FileUtils;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import microsim.data.db.DatabaseUtils;
 import microsim.data.db.Experiment;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 /**
  * Singleton. Utility used to create ana manage experiment setup.
@@ -22,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class ExperimentManager {
 
-	private static final Logger log = Logger.getLogger(ExperimentManager.class);
+	private static final Logger log = Logger.getLogger(ExperimentManager.class.toString());
 	
 	/** The flag determines if the tool must copy input resources into output folder. */
 	public boolean copyInputFolderStructure = true;
@@ -146,11 +148,11 @@ public class ExperimentManager {
 	
 	public Experiment setupExperiment(Experiment experiment, Object... models) throws Exception {
 		final String outFolder = experiment.getOutputFolder() + File.separator + "input";
-		
-		log.debug("Setting up experiment " + experiment.runId);
+
+		log.log(Level.INFO, "Setting up experiment " + experiment.runId);
 		
 		if (copyInputFolderStructure) {
-			log.debug("Copying folder structure");
+			log.log(Level.INFO, "Copying folder structure");
 			
 //			File inputDBFile = new File(experiment.inputFolder + File.separator + inputDatabaseName);
 //			if (inputDBFile.exists())
@@ -162,7 +164,7 @@ public class ExperimentManager {
 				for (String file : files) {
 //					if (! file.equals("input.odb") && ! file.startsWith("."))
 					if (! file.startsWith(".")) {
-						log.debug("Copying " + file + " to output folder");
+						log.log(Level.INFO, "Copying " + file + " to output folder");
 						copy(inputDir + File.separator + file, outFolder);
 					}
 				}
@@ -173,7 +175,7 @@ public class ExperimentManager {
 		}
 		
 		if (saveExperimentOnDatabase) {
-			log.debug("Creating experiment on output database");
+			log.log(Level.INFO, "Creating experiment on output database");
 			File dbFile = new File(experiment.getOutputFolder() + File.separator + "database");
 			if (! dbFile.exists())
 				dbFile.mkdir();
@@ -184,7 +186,7 @@ public class ExperimentManager {
 			DatabaseUtils.databaseOutputUrl = experiment.getOutputFolder() + File.separator + "database" + File.separator + "out";
 				
 			experiment = DatabaseUtils.createExperiment(DatabaseUtils.getOutEntityManger(), experiment, models);
-			log.debug("Created experiment with id " + experiment.id);
+			log.log(Level.INFO, "Created experiment with id " + experiment.id);
 		}
 		return experiment;
 	}

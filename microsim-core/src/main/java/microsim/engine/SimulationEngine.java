@@ -1,5 +1,6 @@
 package microsim.engine;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,15 +10,17 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.math3.random.RandomGenerator;
+
 import microsim.data.ExperimentManager;
 import microsim.data.db.Experiment;
 import microsim.event.EventQueue;
 import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
-
-import org.apache.commons.math3.random.RandomGenerator;
-import org.apache.log4j.Logger;
 
 /**
  * The simulation engine. The engine keeps a reference to an EventQueue object to
@@ -58,7 +61,7 @@ import org.apache.log4j.Logger;
  */
 public class SimulationEngine extends Thread {
 
-	private static Logger log = Logger.getLogger(SimulationEngine.class);
+	private static final Logger log = Logger.getLogger(SimulationEngine.class.toString());
 	
 	private int eventThresold = 0;
 
@@ -272,11 +275,9 @@ public class SimulationEngine extends Thread {
 	public void setup() {
 		if (builderClass != null)
 			try {
-				((ExperimentBuilder) builderClass.newInstance()).buildExperiment(this);
-			} catch (InstantiationException e) {
-				log.error(e.getMessage());
-			} catch (IllegalAccessException e) {
-				log.error(e.getMessage());
+				((ExperimentBuilder) builderClass.getDeclaredConstructor().newInstance()).buildExperiment(this);
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+				log.log(Level.SEVERE, e.getMessage());
 			}
 		else if (experimentBuilder != null)
 			experimentBuilder.buildExperiment(this);
@@ -575,7 +576,7 @@ public class SimulationEngine extends Thread {
 
 		eventQueue.step();
 		notifySimulationListeners(SystemEventType.Step);
-		yield();		
+		this.yield();
 	}
 
 	protected synchronized void notifySimulationListeners(SystemEventType event) {
@@ -592,7 +593,7 @@ public class SimulationEngine extends Thread {
 	public void run() {
 		// System.out.println("JAS enigne started at " + System.);
 		/*
-		 * while (true) { try { yield(); if (EVENT_TRESHOLD > 0)
+		 * while (true) { try { this.yield(); if (EVENT_TRESHOLD > 0)
 		 * sleep(EVENT_TRESHOLD); } catch (Exception e) {
 		 * System.out.println("Interrupt: " + e.getMessage()); }
 		 * 
@@ -614,11 +615,11 @@ public class SimulationEngine extends Thread {
 				try {
 					sleep(eventThresold);
 				} catch (Exception e) {
-					log.error("Interrupt: " + e.getMessage());
+					log.log(Level.SEVERE, "Interrupt: " + e.getMessage());
 				}
 			// this is now called in step() method.
 			else
-				yield();
+				this.yield();
 		}
 
 	}
