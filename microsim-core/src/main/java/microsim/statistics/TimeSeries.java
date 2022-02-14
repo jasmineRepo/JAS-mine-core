@@ -7,17 +7,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import microsim.engine.SimulationEngine;
-import microsim.event.CommonEventType;
-import microsim.event.EventListener;
-import microsim.reflection.ReflectionUtils;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.FloatArrayList;
 import cern.colt.list.IntArrayList;
 import cern.colt.list.LongArrayList;
+
+import microsim.engine.SimulationEngine;
+import microsim.event.CommonEventType;
+import microsim.event.EventListener;
+import microsim.reflection.ReflectionUtils;
 
 /**
  * It is a collection of series (data panel). It contains more series synching
@@ -51,7 +52,7 @@ import cern.colt.list.LongArrayList;
  *         <p>
  */
 public class TimeSeries implements EventListener, IUpdatableSource {
-	private static Logger log = Logger.getLogger(TimeSeries.class);
+	private static Logger log = Logger.getLogger(TimeSeries.class.toString());
 
 	/** A custom event identifier for perfomAction method. Save to disk. */
 	public static final int EVENT_SAVE = 1;
@@ -355,7 +356,7 @@ public class TimeSeries implements EventListener, IUpdatableSource {
 			out.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
-			log.error("Error saving " + path + ioe.getMessage());
+			log.log(Level.SEVERE, "Error saving " + path + ioe.getMessage());
 		}
 	}
 

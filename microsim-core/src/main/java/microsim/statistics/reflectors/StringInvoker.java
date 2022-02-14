@@ -6,10 +6,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.IStringSource;
-
-import org.apache.log4j.Logger;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
@@ -43,7 +44,7 @@ import org.apache.log4j.Logger;
  *         <p>
  */
 public class StringInvoker implements IStringSource {
-	private static Logger log = Logger.getLogger(StringInvoker.class);
+	private static Logger log = Logger.getLogger(StringInvoker.class.toString());
 	protected Method method;
 	protected Field field;
 	protected Object target;
@@ -91,11 +92,11 @@ public class StringInvoker implements IStringSource {
 		field = ReflectionUtils.searchField(trgClass, fieldName);
 
 		if (field == null)
-			log.error("StringInvoker: Field " + fieldName + " of object "
+			log.log(Level.SEVERE, "StringInvoker: Field " + fieldName + " of object "
 					+ target + " does not exist.");
 
 		if (field.getType() != String.class)
-			log.error("StringInvoker: Field " + fieldName + " of object "
+			log.log(Level.SEVERE, "StringInvoker: Field " + fieldName + " of object "
 					+ target + " must return a String value!");
 	}
 
@@ -104,11 +105,11 @@ public class StringInvoker implements IStringSource {
 		method = ReflectionUtils.searchMethod(trgClass, methodName);
 
 		if (method == null)
-			log.error("StringInvoker: Method " + methodName + " of object "
+			log.log(Level.SEVERE, "StringInvoker: Method " + methodName + " of object "
 					+ target + " does not exist.");
 
 		if (method.getReturnType() != String.class)
-			log.error("StringInvoker: Method " + methodName + " of object "
+			log.log(Level.SEVERE, "StringInvoker: Method " + methodName + " of object "
 					+ target + " must return a double value!");
 	}
 
@@ -140,11 +141,10 @@ public class StringInvoker implements IStringSource {
 						+ " raised the following error:\n");
 			message.append(ie.getMessage());
 			ie.printStackTrace();
-			log.error(message.toString());
-
+			log.log(Level.SEVERE, message.toString());
 		} catch (IllegalAccessException iae) {
 			iae.printStackTrace();
-			log.error("");
+			log.log(Level.SEVERE, "");
 		}
 		return "";
 	}

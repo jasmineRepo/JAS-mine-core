@@ -4,10 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.ILongSource;
-
-import org.apache.log4j.Logger;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
@@ -41,7 +42,7 @@ import org.apache.log4j.Logger;
  *         <p>
  */
 public class LongInvoker implements ILongSource {
-	private static Logger log = Logger.getLogger(LongInvoker.class);
+	private static Logger log = Logger.getLogger(LongInvoker.class.toString());
 	
 	protected Method method;
 	protected Field field;
@@ -90,11 +91,11 @@ public class LongInvoker implements ILongSource {
 		field = ReflectionUtils.searchField(trgClass, fieldName);
 
 		if (field == null)
-			log.error("LongInvoker: Field " + fieldName
+			log.log(Level.SEVERE, "LongInvoker: Field " + fieldName
 					+ " of object " + target + " does not exist.");
 
 		if (field.getType() != Long.TYPE)
-			log.error("LongInvoker: Field " + fieldName
+			log.log(Level.SEVERE, "LongInvoker: Field " + fieldName
 					+ " of object " + target + " must return a long value!");
 	}
 
@@ -103,11 +104,11 @@ public class LongInvoker implements ILongSource {
 		method = ReflectionUtils.searchMethod(trgClass, methodName);
 
 		if (method == null)
-			log.error("LongInvoker: Method " + methodName
+			log.log(Level.SEVERE, "LongInvoker: Method " + methodName
 					+ " of object " + target + " does not exist.");
 
 		if (method.getReturnType() != Long.TYPE)
-			log.error("LongInvoker: Method " + methodName
+			log.log(Level.SEVERE, "LongInvoker: Method " + methodName
 					+ " of object " + target + " must return a long value!");
 	}
 
@@ -141,11 +142,10 @@ public class LongInvoker implements ILongSource {
 						+ target + " raised the following error:\n");
 			message.append(ie.getMessage());
 			ie.printStackTrace();
-			log.error(message.toString());
-
+			log.log(Level.SEVERE, message.toString());
 		} catch (IllegalAccessException iae) {
 			iae.printStackTrace();
-			log.error("");
+			log.log(Level.SEVERE, "");
 		}
 		return 0L;
 	}
