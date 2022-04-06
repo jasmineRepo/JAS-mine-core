@@ -89,28 +89,6 @@ public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction im
 	}
 
 	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
-	 */
-	public void apply(float[] data, double[] weights) {
-		
-//		if(data.length != weights.length) {
-//		throw new IllegalArgumentException("Error - the length of the array of data does not match the length of the array of weights!");
-//	}
-	
-		weightedMean = 0.0;
-		if (data.length != 0) {
-		
-			double sum = 0.0;
-			double denominator = 0.;
-			for (int i = 0; i < data.length; i++) {
-				sum += data[i] * weights[i];
-				denominator += weights[i];
-			}
-			weightedMean = sum / denominator;
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(int[])
 	 */
 	public void apply(int[] data, double[] weights) {
