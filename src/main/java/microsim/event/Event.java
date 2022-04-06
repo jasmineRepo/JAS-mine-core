@@ -1,15 +1,24 @@
 package microsim.event;
 
+import lombok.Getter;
 import microsim.exception.SimulationException;
 
 public abstract class Event implements Comparable<Event> {
 
 	private static long eventCounter = Long.MIN_VALUE;
-	
-	protected double time;
-	protected int ordering;		//If two events have time fields with equal value, their ordering fields will determine the order in which the events are fired, with lower ordering values fired before high ordering values.  If ordering fields are also equal, the event that was scheduled first will be fired first in the schedule (determined comparing the eventNumber field).
-	private long eventNumber = eventCounter++;		//Designed to break randomness of cases when time and ordering of two events is the same.  In this case, the first event that was scheduled will be fired first in the schedule.
-	protected double loop;
+
+	/** Get the next firing absolute time. */
+	@Getter protected double time;
+	protected int ordering;
+	//If two events have time fields with equal value, their ordering fields will determine the order in which the
+	// events are fired, with lower ordering values fired before high ordering values.  If ordering fields are also
+	// equal, the event that was scheduled first will be fired first in the schedule (determined comparing the
+	// eventNumber field).
+	final private long eventNumber = eventCounter++;
+	//Designed to break randomness of cases when time and ordering of two events is the same.  In this case, the first
+	// event that was scheduled will be fired first in the schedule.
+	/** Get the loop length. */
+	@Getter protected double loop;
 
 	/** 
 	   * Set the time, ordering and loop period of the event
@@ -46,34 +55,19 @@ public abstract class Event implements Comparable<Event> {
 	public int compareTo(Event e) {
 		//Ross Richardson: See Joshua Bloch's Effective Java (2nd Ed.) page 65.  "For floating-point fields, use Double.compare..."
 		int compareDouble = Double.compare(time, e.getTime());
-		if(compareDouble > 0)
-			return 1;
-		if(compareDouble < 0)
-			return -1;
+		if(compareDouble > 0) return 1;
+		if(compareDouble < 0) return -1;
 		
 		//time and e.getTime() must be equal, so now check the ordering of events
-		if (ordering > e.getOrdering())
-			return 1;
-		if (ordering < e.getOrdering())
-			return -1;
+		if (ordering > e.getOrdering()) return 1;
+		if (ordering < e.getOrdering()) return -1;
 		
 		//time and ordering must be equal, so now check which event was scheduled first and return an int such that the first event is fired first.
-		if(eventNumber > e.eventNumber) {
-			return 1;
-		}
-		else if(eventNumber < e.eventNumber) {
-			return -1;
-		}
-		else throw new RuntimeException("Two events have the same eventNumber.  This should not be possible!\n" + Thread.currentThread().getStackTrace());
-				
-//		return 0;			//Time, ordering and eventNumber fields are equal - this should not be possible!
+		if(eventNumber > e.eventNumber) return 1;
+		if(eventNumber < e.eventNumber) return -1;
+		else throw new RuntimeException("Two events have the same eventNumber.  " +
+										"This should not be possible!\n" + Thread.currentThread().getStackTrace());
 
-		// Michele Sonnessa:
-		// NOTICE:
-		// The following instruction has not been used because comparing
-		// long values it is possible to overflow during the cast. It might
-		// result in a wrong sign.
-		// return ((SimEvent)o).getTime() - time;
 	}
 	
 	/** Schedule event at the next loop time. 
@@ -83,29 +77,11 @@ public abstract class Event implements Comparable<Event> {
 	public void setTimeAtNextLoop() {
 		time += loop;
 	}
-	
-	/** Get the next firing absolute time. */
-	public double getTime() {
-		return time;
-	}
-	
-//	/** Set the loop length. */
-//	public void setLoop(double newLoop) {
-//		loop = newLoop;
-//	}
 
-	/** Get the loop length. */
-	public double getLoop() {
-		return loop;
-	}
 	
 	/** Get the ordering of the event's next firing. */
 	public int getOrdering() {
 		return ordering;
 	}
-	
-//	/** Set the ordering of the event's next firing. */
-//	public void setOrdering(int ordering) {
-//		this.ordering = ordering;
-//	}
+
 }

@@ -6,16 +6,15 @@ package microsim.engine;
  */
 public interface SimulationManager {
 
-	public String getId();
+	String getId();
 	
-	public void setEngine(SimulationEngine engine);
+	void setEngine(SimulationEngine engine);
 	
-	public SimulationEngine getEngine();
+	SimulationEngine getEngine();
 	
-	public void buildObjects();
+	void buildObjects();
 	
-	public void buildSchedule();
+	void buildSchedule();
 	
-	public void dispose();
-	
+	void dispose();
 }

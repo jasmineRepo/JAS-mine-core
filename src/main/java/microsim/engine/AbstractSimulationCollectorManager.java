@@ -1,21 +1,16 @@
 package microsim.engine;
 
 
-public abstract class AbstractSimulationCollectorManager extends AbstractSimulationManager implements SimulationCollectorManager {
+import lombok.Getter;
+import lombok.Setter;
 
-	private SimulationManager simulationManager;
+public abstract class AbstractSimulationCollectorManager extends AbstractSimulationManager implements
+		SimulationCollectorManager {
+
+	@Setter @Getter private SimulationManager simulationManager;
 	
 	public AbstractSimulationCollectorManager(SimulationManager manager) {
 		super();
 		setManager(manager);
 	}
-
-	public void setManager(SimulationManager manager) {
-		simulationManager = manager;
-	}
-
-	public SimulationManager getManager() {
-		return simulationManager;
-	}
-
 }

@@ -1,35 +1,28 @@
 package microsim.engine;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Calendar;
 import java.util.Date;
 
 public class SimulationTimeManager {
 
-	private int dayTickUnit;
-	private Calendar calendar;
-	private Date initOfTime;
+	@Setter	@Getter private int dayTickUnit;
+	private final Calendar calendar;
+	private final Date initOfTime;
 	
 	public SimulationTimeManager(Date initOfTime, int dayTickUnit) {
-		super();
 		this.dayTickUnit = dayTickUnit;
 		this.initOfTime = initOfTime;
 		this.calendar = Calendar.getInstance();
 	}
 
 	public SimulationTimeManager(int year, int month, int day, int dayTickUnit) {
-		super();
 		this.dayTickUnit = dayTickUnit;
 		this.calendar = Calendar.getInstance();
 		calendar.set(year, month - 1, day);
 		this.initOfTime = calendar.getTime();		
-	}
-	
-	public int getDayTickUnit() {
-		return dayTickUnit;
-	}
-
-	public void setDayTickUnit(int dayTickUnit) {
-		this.dayTickUnit = dayTickUnit;
 	}
 	
 	public Date getRealDate(long simulatedTime) {

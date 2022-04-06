@@ -15,6 +15,4 @@ public abstract class Agent<T> implements EventListener {
 		t = null;
 		return (T) SimulationEngine.getInstance().getManager(t.getClass().getCanonicalName());
 	}
-
-	
 }

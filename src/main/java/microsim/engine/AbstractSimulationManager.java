@@ -1,18 +1,11 @@
 package microsim.engine;
 
-
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class AbstractSimulationManager implements SimulationManager {
 
-	private SimulationEngine engine;
-		
-	public void setEngine(SimulationEngine engine) {
-		this.engine = engine;
-	}
-
-	public SimulationEngine getEngine() {
-		return engine;
-	}
+	@Setter @Getter private SimulationEngine engine;
 
 	public abstract void buildObjects();
 	

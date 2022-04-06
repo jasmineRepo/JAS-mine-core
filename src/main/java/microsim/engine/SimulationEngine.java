@@ -1,18 +1,19 @@
 package microsim.engine;
 
+import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import microsim.data.ExperimentManager;
@@ -62,29 +63,43 @@ import microsim.exception.SimulationRuntimeException;
 public class SimulationEngine extends Thread {
 
 	private static final Logger log = Logger.getLogger(SimulationEngine.class.toString());
-	
-	private int eventThresold = 0;
 
-	private int currentRunNumber = 1;
+	/** Set the delay time beetween two simulation steps, ms. */
+	@Setter private int eventThresold = 0;
 
-	private Experiment currentExperiment = null;
+	@Setter @Getter private int currentRunNumber = 1;
 
-	private String multiRunId = null;
-	
+	@Getter private Experiment currentExperiment = null;
+
+	@Setter @Getter private String multiRunId = null;
+
 	/**
-	 * @supplierCardinality 1
+	 * Return a reference to the current EventQueue.
+	 *
+	 * @return The event queue.
 	 */
-	private EventQueue eventQueue;
+	@Getter private EventQueue eventQueue;
 	private List<SimulationManager> models;
 	private Map<String, SimulationManager> modelMap;
 	private boolean modelBuild = false;
 
-	private static Random rnd;
-	private long randomSeed;
+	/**
+	 * Return a reference to the current Random generator.
+	 *
+	 * @return The current random generator.
+	 */
+	@Getter private static Random rnd;
 
-	protected ArrayList<EngineListener> engineListeners;
+	/**
+	 * Return the current random seed.
+	 *
+	 * @return The current random seed.
+	 */
+	@Getter private long randomSeed;
 
-	private boolean runningStatus = false;
+	@Getter protected ArrayList<EngineListener> engineListeners;
+
+	@Getter private boolean runningStatus = false;
 
 	/** If set to true during the build phase of a simulation, 
 	 * the simulation run will not be connected to an input / output database.
@@ -106,44 +121,35 @@ public class SimulationEngine extends Thread {
 	 * It is still possible to set this field programmatically, for example, in the Start class of 
 	 * a standard JAS-mine project (e.g. created using the JAS-mine Plugin for Eclipse IDE),
 	 * using the Simulation Engine's setTurnOffDatabaseConnection() method. */
-	private boolean turnOffDatabaseConnection = false;
+	@Getter private boolean turnOffDatabaseConnection = false;
 	
 	/** 
 	 * (Quando costruisco un modello se è disabilitato silent mode viene creato il db. Durante
 	 * il run posso dinamicamente abilitare o disabilitare. Nel caso invece sia partito in turnOffDatabaseConnection
 	 * il db non esiste e quindi il flag non può essere cambiato.) */
-	private boolean turnOffDatabaseConnectionAvailable = true;
+	@Getter private boolean turnOffDatabaseConnectionAvailable = true;
 	
-	private ClassLoader classLoader = null;
+	@Setter @Getter private ClassLoader classLoader = null;
 	
 	private static SimulationEngine instance;	
 		
-	private Class<?> builderClass = null;
+	@Getter private Class<?> builderClass = null;
 	
-	private ExperimentBuilder experimentBuilder = null;
-	
-	/**
-	 * @link dependency
-	 * @stereotype use
-	 * @supplierRole 1..
-	 **/
-	/* #SimModel lnkSimModel; */
+	@Setter @Getter private ExperimentBuilder experimentBuilder = null;
 
 	/**
 	 * Build a new SimEngine with the given time unit.
-	 * 
-	 * @param timeUnit
+	 *
 	 *            The time uint id. See the public constants in the SimTime
 	 *            class.
 	 */
 	protected SimulationEngine() {
 		eventQueue = new EventQueue();
-		models = new ArrayList<SimulationManager>();
-		modelMap = new HashMap<String, SimulationManager>();
+		models = new ArrayList<>();
+		modelMap = new HashMap<>();
 		randomSeed = System.currentTimeMillis();
-//		rnd = new Random(randomSeed);
 		rnd = new RandomNumberGenerator(randomSeed);
-		engineListeners = new ArrayList<EngineListener>();
+		engineListeners = new ArrayList<>();
 		
 		instance = this;
 	}
@@ -158,36 +164,24 @@ public class SimulationEngine extends Thread {
 	 * @author Ross Richardson
 	 *
 	 */
-	class RandomNumberGenerator extends Random implements RandomGenerator {
+	static class RandomNumberGenerator extends Random implements RandomGenerator {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 5942825728562046996L;
+		@Serial private static final long serialVersionUID = 5942825728562046996L;
 
 		RandomNumberGenerator(long seed) {
 			super(seed);
 		}
 		
-		@Override
-		public void setSeed(int seed) {
+		@Override public void setSeed(int seed) {
 			setSeed((long)seed);
-			
 		}
 
-		@Override
-		public void setSeed(int[] seed) {
+		@Override public void setSeed(int[] seed) {
 			throw new RuntimeException("SimulationEngine's RandomNumberGenerator class "
 					+ "is derived from the Java.util.Random class, which doesn't "
 					+ "implement a constructor taking an int[] argument.  This method "
 					+ "should not be used!\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
-		
-		
-	}
-
-	public boolean isTurnOffDatabaseConnection() {
-		return turnOffDatabaseConnection;
 	}
 
 	public void setTurnOffDatabaseConnection(boolean turnOffDatabaseConnection) {
@@ -195,24 +189,7 @@ public class SimulationEngine extends Thread {
 			return;
 		
 		this.turnOffDatabaseConnection = turnOffDatabaseConnection;
-//		ExperimentManager.getInstance().copyInputFolderStructure = ! turnOffDatabaseConnection;
 		ExperimentManager.getInstance().saveExperimentOnDatabase = ! turnOffDatabaseConnection;
-	}
-
-	public Class<?> getBuilderClass() {
-		return builderClass;
-	}
-
-	public ExperimentBuilder getExperimentBuilder() {
-		return experimentBuilder;
-	}
-
-	public void setExperimentBuilder(ExperimentBuilder experimentBuilder) {
-		this.experimentBuilder = experimentBuilder;
-	}
-
-	public boolean isTurnOffDatabaseConnectionAvailable() {
-		return turnOffDatabaseConnectionAvailable;
 	}
 
 	@Deprecated
@@ -224,35 +201,13 @@ public class SimulationEngine extends Thread {
 	}
 
 	public static SimulationEngine getInstance() {
-		if (instance == null)
-			instance = new SimulationEngine();
-		
-		return instance;
-	}
-	
-	public int getCurrentRunNumber() {
-		return currentRunNumber;
-	}
-
-	public void setCurrentRunNumber(int currentRunNumber) {
-		this.currentRunNumber = currentRunNumber;
-	}
-
-	public Experiment getCurrentExperiment() {
-		return currentExperiment;
+		return instance == null ? new SimulationEngine() : instance;
 	}
 
 	public SimulationManager getManager(String id) {
 		return modelMap.get(id);
 	}
-	
-	public ClassLoader getClassLoader() {
-		return classLoader;
-	}
 
-	public void setClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
 
 	/**
 	 * Install a listener for events generated by the simulation engine.
@@ -266,10 +221,6 @@ public class SimulationEngine extends Thread {
 
 	public void removeEngineListener(EngineListener engineListener) {
 		engineListeners.remove(engineListener);
-	}
-
-	public ArrayList<EngineListener> getEngineListeners() {
-		return engineListeners;
 	}
 
 	public void setup() {
@@ -295,15 +246,6 @@ public class SimulationEngine extends Thread {
 	}
 
 	/**
-	 * Return a reference to the current EventQueue.
-	 * 
-	 * @return The event queue.
-	 */
-	public EventQueue getEventQueue() {
-		return eventQueue;
-	}
-
-	/**
 	 * Return a reference to the current SimTime.
 	 * 
 	 * @return The current time object.
@@ -313,20 +255,11 @@ public class SimulationEngine extends Thread {
 	}
 
 	/**
-	 * Return a reference to the current Random generator.
-	 * 
-	 * @return The current random generator.
-	 */
-	public static Random getRnd() {
-		return rnd;
-	}
-
-	/**
 	 * Make forSteps simulation steps.
 	 * 
 	 * @param forSteps
 	 *            The number of steps to be done.
-	 * @throws SimulationException
+	 * @throws SimulationException //TODO finish this
 	 */
 	public void step(int forSteps) throws SimulationException {
 		for (int i = 0; i < forSteps; i++)
@@ -336,10 +269,10 @@ public class SimulationEngine extends Thread {
 	public void reset() {
 		pause();
 		eventQueue = new EventQueue();
-		models = new ArrayList<SimulationManager>();
-		modelMap = new HashMap<String, SimulationManager>();
+		models = new ArrayList<>();
+		modelMap = new HashMap<>();
 		randomSeed = System.currentTimeMillis();
-		rnd = new RandomNumberGenerator(randomSeed);		
+		rnd = new RandomNumberGenerator(randomSeed);
 	}
 
 	/**
@@ -371,9 +304,7 @@ public class SimulationEngine extends Thread {
 	public void quit() {
 		pause();
 		eventQueue = null;
-		for (SimulationManager model : models) {
-			model.dispose();
-		}
+		for (SimulationManager model : models) model.dispose();
 		models.clear();
 		notifySimulationListeners(SystemEventType.Shutdown);
 		System.exit(0);
@@ -382,8 +313,7 @@ public class SimulationEngine extends Thread {
 	/**
 	 * Notify the engine to manage a SimModel. This method is mandatory to let a
 	 * model work. The current event queue is joined to the given model.
-	 * 
-	 * @param model
+	 *
 	 *            The model to be added.
 	 */
 	public SimulationManager addSimulationManager(SimulationManager simulationManager) {
@@ -395,7 +325,7 @@ public class SimulationEngine extends Thread {
 	}
 
 	public SimulationManager addSimulationManager(String managerClassName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		SimulationManager simulationManager = null;
+		SimulationManager simulationManager;
 		if (classLoader != null)
 			simulationManager = (SimulationManager) classLoader.loadClass(managerClassName).newInstance();
 		else
@@ -412,17 +342,16 @@ public class SimulationEngine extends Thread {
 		notifySimulationListeners(SystemEventType.Build);
 		
 		try {			
-			currentExperiment = ExperimentManager.getInstance().setupExperiment(currentExperiment, models.toArray(new SimulationManager[models.size()]));
+			currentExperiment = ExperimentManager.getInstance()
+							.setupExperiment(currentExperiment, models.toArray(new SimulationManager[models.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		if (modelBuild)
 			return;
-		
-		Iterator<SimulationManager> it = models.iterator();
-		while (it.hasNext()) {
-			final SimulationManager manager = it.next();
+
+		for (SimulationManager manager : models) {
 			manager.buildObjects();
 			manager.buildSchedule();
 		}
@@ -453,7 +382,7 @@ public class SimulationEngine extends Thread {
 		// Get models' class type and dispose
 		Class<?>[] cls = new Class[models.size()];
 		for (int i = 0; i < models.size(); i++) {
-			SimulationManager model = (SimulationManager) models.get(i);
+			SimulationManager model = models.get(i);
 			cls[i] = model.getClass();
 			model.dispose();
 		}
@@ -461,7 +390,6 @@ public class SimulationEngine extends Thread {
 		modelMap.clear();
 		
 		System.gc();
-//		currentRunNumber = 0;		//Ross: Why do we need to do this?
 
 		turnOffDatabaseConnectionAvailable = true;
 		
@@ -482,15 +410,6 @@ public class SimulationEngine extends Thread {
 		
 		notifySimulationListeners(SystemEventType.Restart);
 		setup();
-	}
-
-	/**
-	 * Return the current random seed.
-	 * 
-	 * @return The current random seed.
-	 */
-	public long getRandomSeed() {
-		return randomSeed;
 	}
 
 	/**
@@ -523,25 +442,17 @@ public class SimulationEngine extends Thread {
 	 */
 	public void performAction(SystemEventType actionType) {
 		switch (actionType) {
-			case Stop:
+			case Stop -> {
 				pause();
-				Iterator<SimulationManager> it = models.iterator();
-				while (it.hasNext())
-					it.next().dispose();
-				break;
-			case Restart:
-				rebuildModels();
-				break;
-			case Shutdown:
-				quit();
-				break;
-			default:
-				break;
+				for (SimulationManager model : models) model.dispose();
+			}
+			case Restart -> rebuildModels();
+			case Shutdown -> quit();
+			default -> {
+			}
 		}
 
-		for (ListIterator<EngineListener> it = engineListeners.listIterator(); it
-				.hasNext();)
-			it.next().onEngineEvent(actionType);
+		for (EngineListener engineListener : engineListeners) engineListener.onEngineEvent(actionType);
 	}
 
 	private synchronized void checkIdle() throws InterruptedException {
@@ -549,21 +460,11 @@ public class SimulationEngine extends Thread {
 			wait();
 	}
 
-	/** Return current simulation running status. */
-	public boolean getRunningStatus() {
-		return runningStatus;
-	}
-
 	/** Set current simulation running status. */
 	public void setRunningStatus(boolean running) {
 		runningStatus = running;
 		if (runningStatus)
 			resumeRun();
-	}
-
-	/** Set the delay time beetween two simulation steps. */
-	public void setEventTimeTreshold(int millis) {
-		eventThresold = millis;
 	}
 
 	private synchronized void resumeRun() {
@@ -622,19 +523,6 @@ public class SimulationEngine extends Thread {
 				this.yield();
 		}
 
-	}
-	
-	public Random getRandom() {
-//		return new Random(rnd.nextLong());
-		return rnd;
-	}
-
-	public String getMultiRunId() {
-		return multiRunId;
-	}
-
-	public void setMultiRunId(String multiRunId) {
-		this.multiRunId = multiRunId;
 	}
 
 }
