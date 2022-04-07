@@ -1,6 +1,5 @@
 package microsim.alignment.multiple;
 
-import jamjam.Mean;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static jamjam.Mean.*;
+import static jamjam.Mean.mean;
 import static jamjam.Sum.sum;
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
@@ -21,16 +20,10 @@ import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 
 /**
- *
- * Multiple choice alignment methods, where there is in general a set 'A' (>2) of possible outcomes/states to align.
- * This is an abstract class which can be applied to both weighted and non-weighted cases.
- *
- *
- * TODO replace/rework the passage below
- * Note that binary alignment (i.e. only two choices of state, such as true/false, transition/don't transition,
- * male/female, alive/dead, etc.) can still be achieved using these methods for multiple alignment,
- * however, there are also other (legacy) options for Binary alignment (see microsim.alignment.probability package to
- * align probabilities or microsim.alignment.outcome package to align outcomes).
+ * Multinomial alignment methods, where there is in general a set 'A' (>2) of possible outcomes/states to align.
+ * This algorithm is called *Logit Scaling* and is based on the minimization of the information loss (relative entropy).
+ * This is an abstract class which can be applied to both weighted and non-weighted cases. Additionally, it can be used
+ * in conventional binary alignment problems,
  *
  * @implSpec Getters are introduced with the purpose of documenting corresponding variables via lombok. This way, their
  *           meaning is not hidden in commented lines, but accessible with the help of Javadoc. Do *NOT* remove them.
@@ -44,7 +37,6 @@ import static java.lang.System.arraycopy;
  *      for Alignment in Microsimulation models, International Journal of Microsimulation (2016) 9(3) 89-102</a>
  */
 public abstract class AbstractLogitScalingAlignment<T> {
-    // TODO most of them have to be final, think of redesign
     /**
      * @return totalChoiceNumber The number of possible outcomes of a given event that is the length of
      *                           the {@code targetShare} parameter.
@@ -110,17 +102,13 @@ public abstract class AbstractLogitScalingAlignment<T> {
 
     /**
      * @return previousProbSumOverAgents An array of size {@link #getTotalChoiceNumber()}, containing sums of
-     *                                   probabilities over {@code agents} per choice at previous iteration. // TODO see Java 16 @return thing
+     *                                   probabilities over {@code agents} per choice at previous iteration.
      */
     @Getter(AccessLevel.PACKAGE) private double[] previousProbSumOverAgents;
 
     /**
-     * This method uses pre-set alignment parameters that define its precision (1.e-5) and the number of iterations
-     * (100), it further passes the parameters to the full {@link #align(Collection, Predicate,
-     * AlignmentMultiProbabilityClosure, double[]) align} method. The original publication claims the method convergence
-     * is quick, of the order of 10s. // TODO think a bit about this statement: old times, different machines.
-     * Use the {@link #align(Collection, Predicate, AlignmentMultiProbabilityClosure, double[]) align} method if these
-     * parameters are to be adjusted.
+     * General alignment procedure, it adjusts probabilities using all the provided parameters until the algorithm
+     * reaches the target precision/number of iterations.
      * @param agents A collection of agents of a given type. Most commonly, every agent is a person,
      *               however, this class does not limit its usage to humans only.
      * @param filter A filter to select a subpopulation from a given collection of {@code agents}.
@@ -140,6 +128,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
     final public void align(Collection<T> agents, Predicate<T> filter,
                             AlignmentMultiProbabilityClosure<T> closure, double @NonNull [] targetShare,
                             int maxNumberIterations, double precision, boolean warningsOn){
+
         totalChoiceNumber = targetShare.length;
 
         filteredAgentList = extractAgentList(agents, filter);
@@ -171,7 +160,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
         previousProbSumOverAgents = new double[totalChoiceNumber];
 
         while(error >= errorThreshold && count < maxNumberIterations) {
-            probabilityAdjustmentCycle(previousProbSumOverAgents, probSumOverAgents, targetShare, weights, tempAgents,
+            probabilityAdjustmentCycle(previousProbSumOverAgents, probSumOverAgents, target, weights, tempAgents,
                                        prob);
             error = recalculateProbabilityError(previousProbSumOverAgents, probSumOverAgents);
             count++;
@@ -244,8 +233,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param filter Null, or a predicate, one for all agents - to filter some of them out.
      * @return A filtered list of agents.
      */
-    final @NonNull List<T> extractAgentList(Collection<T> agents, @Nullable Predicate<T> filter){
-        // todo decompile the class and check nonnull vs notnull
+    final @NotNull List<T> extractAgentList(Collection<T> agents, @Nullable Predicate<T> filter){
         List<T> list = new ArrayList<>();
         if (filter != null)
             CollectionUtils.select(agents, filter, list);
@@ -322,7 +310,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      */
     final void correctProbabilities(AlignmentMultiProbabilityClosure<T> closure, List<T> fa, final double @NonNull [] w,
                                     final double @NonNull [][] probabilities){
-        for (val probability : probabilities) // todo decompile the code and check val vs var in loops
+        for (var probability : probabilities)
             if (probability == null)
                 throw new NullPointerException("A sub-array of probabilities is expected, but null was provided.");
         for (var i = 1; i < probabilities.length; i++)
@@ -345,17 +333,17 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * {@link #executeAlphaTransform}.
      * @param oldProbSum An array to store the sums of probabilities coming from the previous iteration.
      * @param newProbSum Current sums of probabilities.
-     * @param targetFraction // fixme
+     * @param targetSum Target sum of each column to match to.
      * @param w Weights of agents.
      * @param agentSizeArray A temporary array to store probabilities of the same size as {@code agents}.
      * @param probabilities Overall probabilities of the sub-population.
      * @throws NullPointerException When there is a {@code null} amongst provided (sub-)arrays.
      */
     final void probabilityAdjustmentCycle(final double @NonNull [] oldProbSum, final double @NonNull [] newProbSum,
-                                          final double @NonNull [] targetFraction, final double @NonNull [] w,
+                                          final double @NonNull [] targetSum, final double @NonNull [] w,
                                           final double @NonNull [] agentSizeArray,
                                           final double @NonNull [][] probabilities){
-        val gammaValues = generateGammaValues(oldProbSum, newProbSum, targetFraction, agentSizeArray, probabilities);
+        val gammaValues = generateGammaValues(oldProbSum, newProbSum, targetSum, agentSizeArray, probabilities);
 
         val probSumOverChoices = new double[w.length];
         for(var agentId = 0; agentId < w.length; agentId++)
@@ -371,7 +359,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * for further comparison to ensure that the method converges.
      * @param oldProbSum An array to store the sums of probabilities at the previous iteration.
      * @param newProbSum An array with current sums of probabilities.
-     * @param targetFraction The upscaled target share of the relevant sub-population // fixme this needs clarification
+     * @param targetSum Target sum of each column to match to.
      * @param agentSizeArray A temporary array to store probabilities per choice for every agent.
      * @param probabilities An array of size {@code agents x choices} containing all probabilities.
      * @return An array of gamma values.
@@ -384,14 +372,14 @@ public abstract class AbstractLogitScalingAlignment<T> {
      */
     final double @NotNull [] generateGammaValues(final double @NonNull [] oldProbSum,
                                                  final double @NonNull [] newProbSum,
-                                                 final double @NonNull [] targetFraction,
+                                                 final double @NonNull [] targetSum,
                                                  final double @NonNull [] agentSizeArray,
                                                  final double @NonNull [][] probabilities){
-        if (targetFraction.length <= 1 || agentSizeArray.length <= 1)
+        if (targetSum.length <= 1 || agentSizeArray.length <= 1)
             throw new IllegalArgumentException(format("The number of outcomes/agents is %d/%d, has to be " +
-                                                             "at least 2/2;", targetFraction.length,
+                                                             "at least 2/2;", targetSum.length,
                                                              agentSizeArray.length));
-        if (oldProbSum.length != newProbSum.length || oldProbSum.length != targetFraction.length)
+        if (oldProbSum.length != newProbSum.length || oldProbSum.length != targetSum.length)
             throw new InputMismatchException("Array size mismatch.");
         for (val probability : probabilities) {
             if (probability == null)
@@ -400,14 +388,14 @@ public abstract class AbstractLogitScalingAlignment<T> {
                 throw new InputMismatchException("Inconsistent array shape.");
         }
 
-        val gamma = new double[targetFraction.length];
+        val gamma = new double[targetSum.length];
 
-        arraycopy(newProbSum, 0, oldProbSum, 0, targetFraction.length);
+        arraycopy(newProbSum, 0, oldProbSum, 0, targetSum.length);
 
-        for(var choice = 0; choice < targetFraction.length; choice++) {
+        for(var choice = 0; choice < targetSum.length; choice++) {
             for (var agent = 0; agent < agentSizeArray.length; agent++)
                 agentSizeArray[agent] = probabilities[agent][choice];
-            gamma[choice] = targetFraction[choice] / sum(agentSizeArray);
+            gamma[choice] = targetSum[choice] / sum(agentSizeArray);
         }
         return gamma;
     }
