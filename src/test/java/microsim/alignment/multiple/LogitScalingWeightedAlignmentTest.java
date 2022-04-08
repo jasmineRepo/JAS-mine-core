@@ -1,6 +1,7 @@
 package microsim.alignment.multiple;
 
 import lombok.Setter;
+import lombok.val;
 import microsim.agent.Weight;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -103,9 +104,9 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void executeAlphaTransform() {
-        double[] probabilitiesSum = new double[1];
-        double[][] probabilities = new double[2][probabilitiesSum.length];
-        double[][] probabilitiesNull = new double[2][probabilitiesSum.length];
+        val probabilitiesSum = new double[1];
+        val probabilities = new double[2][probabilitiesSum.length];
+        val probabilitiesNull = new double[2][probabilitiesSum.length];
         probabilitiesNull[1] = null;
 
         assertAll("Should pass all sanity checks.",
@@ -138,6 +139,12 @@ class LogitScalingWeightedAlignmentTest {
                                 probabilitiesNull), "2d array contains null")
                 );
 
+            val ps = new double[]{0.3, 0.7};
+            val p = new double[][]{new double[]{1., 1.}, new double[]{1., 1.}};
+            val t = new LogitScalingWeightedAlignment<A>();
+            t.executeAlphaTransform(1, 2., ps, p);
+            assertArrayEquals(new double[][]{new double[]{1., 1.}, new double[]{2., 2.}}, p);
+            assertArrayEquals(new double[]{2.3, 2.7}, ps);
     }
 
     @Test
