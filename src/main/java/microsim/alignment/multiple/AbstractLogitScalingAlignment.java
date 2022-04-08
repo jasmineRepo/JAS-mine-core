@@ -20,7 +20,7 @@ import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 
 /**
- * Multinomial alignment methods, where there is in general a set 'A' (>2) of possible outcomes/states to align.
+ * Multinomial alignment methods, where there is in general a set 'A' (>=2) of possible outcomes/states to align.
  * This algorithm is called *Logit Scaling* and is based on the minimization of the information loss (relative entropy).
  * This is an abstract class which can be applied to both weighted and non-weighted cases. Additionally, it can be used
  * in conventional binary alignment problems.
@@ -67,7 +67,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
 
     /**
      * @return prob A 2D array of probabilities, every value represents an agent/outcome probability. The size is
-     *              defined as {@link #getAgentNumber()}x{@link #getTotalChoiceNumber()}. All values don't change during
+     *              defined as {@link #getAgentNumber()}x{@link #getTotalChoiceNumber()}. All values are updated during
      *              simulation.
      */
     @Getter(AccessLevel.PACKAGE) private double[][] prob;
@@ -133,6 +133,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
     final public void align(Collection<T> agents, Predicate<T> filter,
                             AlignmentMultiProbabilityClosure<T> closure, double @NonNull [] targetShare,
                             int maxNumberIterations, double precision, boolean warningsOn){
+        // todo sanity check - has to have at least two choices. Do we need it everywhere?
 
         totalChoiceNumber = targetShare.length;
 
@@ -214,8 +215,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
      *                                  {@code precision <= 0}, NaN, or Inf, any element of {@code weights} is
      *                                  {@code <= 0}, NaN, or Inf.
      */
-    final void validateInputData(double @NonNull [] targetShare, int maxNumberIterations, double precision,
-                                 double @NonNull [] weights){
+    final void validateInputData(final double @NonNull [] targetShare, final int maxNumberIterations,
+                                 final double precision, final double @NonNull [] weights){
         for (var v : targetShare)
             if (v < 0. || v > 1.)
                 throw new IllegalArgumentException("Each probability value must lie in [0,1].");
@@ -237,7 +238,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param filter Null, or a predicate, one for all agents - to filter some of them out.
      * @return A filtered list of agents.
      */
-    final @NotNull List<T> extractAgentList(Collection<T> agents, @Nullable Predicate<T> filter){
+    final @NotNull List<T> extractAgentList(final Collection<T> agents, final @Nullable Predicate<T> filter){
         List<T> list = new ArrayList<>();
         if (filter != null)
             CollectionUtils.select(agents, filter, list);
@@ -316,8 +317,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @throws InputMismatchException If {@code probabilities} is not a rectangular matrix; when {@code weights} do not
      *                                have the same size as {@code fa}.
      */
-    final void correctProbabilities(AlignmentMultiProbabilityClosure<T> closure, List<T> fa, final double @NonNull [] w,
-                                    final double @NonNull [][] probabilities){
+    final void correctProbabilities(final AlignmentMultiProbabilityClosure<T> closure, final List<T> fa,
+                                    final double @NonNull [] w, final double @NonNull [][] probabilities){
         for (var probability : probabilities)
             if (probability == null)
                 throw new NullPointerException("A sub-array of probabilities is expected, but null was provided.");
@@ -351,6 +352,10 @@ public abstract class AbstractLogitScalingAlignment<T> {
                                           final double @NonNull [] targetSum, final double @NonNull [] w,
                                           final double @NonNull [] agentSizeArray,
                                           final double @NonNull [][] probabilities){
+        for (val probability : probabilities)
+            if (probability == null)
+                throw new NullPointerException("A sub-array of probabilities is expected, but null was provided.");
+
         val gammaValues = generateGammaValues(oldProbSum, newProbSum, targetSum, agentSizeArray, probabilities);
 
         val probSumOverChoices = new double[w.length];
@@ -449,7 +454,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
     final void executeAlphaTransform(final int agentId, final double alphaValue,
                                      final double @NonNull [] probabilitiesSum,
                                      final double @NonNull [][] probabilities){
-        if (isInfinite(alphaValue) || isNaN(alphaValue) || alphaValue <= 0)
+        if (isInfinite(alphaValue) || isNaN(alphaValue) || alphaValue <= 0.)
             throw new IllegalArgumentException("Alpha value is out of acceptable range");
         if (agentId < 0)
             throw new ArrayIndexOutOfBoundsException("Array index can't be negative.");
