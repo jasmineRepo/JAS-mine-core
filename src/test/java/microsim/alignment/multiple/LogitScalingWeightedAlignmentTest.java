@@ -1,11 +1,11 @@
 package microsim.alignment.multiple;
 
 import lombok.Setter;
-import lombok.val;
 import microsim.agent.Weight;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.InputMismatchException;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,10 +103,41 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void executeAlphaTransform() {
+        double[] probabilitiesSum = new double[1];
+        double[][] probabilities = new double[2][probabilitiesSum.length];
+        double[][] probabilitiesNull = new double[2][probabilitiesSum.length];
+        probabilitiesNull[1] = null;
 
+        assertAll("Should pass all sanity checks.",
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 0., probabilitiesSum,
+                                probabilities), "alpha can't be 0. or negative."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.POSITIVE_INFINITY,
+                                probabilitiesSum, probabilities), "alpha can't be Infinity."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.NEGATIVE_INFINITY,
+                                probabilitiesSum, probabilities), "alpha can't be -Infinity."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.NaN,
+                                probabilitiesSum, probabilities), "alpha can't be NaN."),
+                () -> assertThrows(ArrayIndexOutOfBoundsException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(-1, 1., probabilitiesSum,
+                                probabilities), "Agent id can't be negative."),
+                () -> assertThrows(InputMismatchException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., new double[3],
+                                probabilities), "Input arrays have different sizes."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., probabilitiesSum,
+                                null), "One of the input arrays is null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., null, probabilities),
+                        "One of the input arrays is null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., probabilitiesSum,
+                                probabilitiesNull), "2d array contains null")
+                );
 
-        val q = new LogitScalingWeightedAlignment<A>();
-        //executeAlphaTransform();
     }
 
     @Test
