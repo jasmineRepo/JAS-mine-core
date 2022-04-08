@@ -23,13 +23,16 @@ import static java.lang.System.arraycopy;
  * Multinomial alignment methods, where there is in general a set 'A' (>2) of possible outcomes/states to align.
  * This algorithm is called *Logit Scaling* and is based on the minimization of the information loss (relative entropy).
  * This is an abstract class which can be applied to both weighted and non-weighted cases. Additionally, it can be used
- * in conventional binary alignment problems,
+ * in conventional binary alignment problems.
  *
- * @implSpec Getters are introduced with the purpose of documenting corresponding variables via lombok. This way, their
- *           meaning is not hidden in commented lines, but accessible with the help of Javadoc. Do *NOT* remove them.
+ * @implSpec Getters are introduced with the purpose of documenting corresponding variables via {@code lombok}. This
+ *           way, their meaning is not hidden in commented lines, but accessible with the help of Javadoc. Do *NOT*
+ *           remove them.
  *
  * @implNote The design of this class suboptimal at the moment to make all class implementations share as much code as
  *           possible. In particular, when agents have no weight, they all automatically get one that is equal to 1.
+ *           This code extends the original algorithm by adding the case of weighted samples. It also does add a filter
+ *           for the whole population to align only the relevant subpopulation.
  *
  * @param <T> The Type parameter usually representing the agent class.
  *
@@ -64,7 +67,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
 
     /**
      * @return prob A 2D array of probabilities, every value represents an agent/outcome probability. The size is
-     *              defined as {@link #getAgentNumber()}x{@link #getTotalChoiceNumber()}.
+     *              defined as {@link #getAgentNumber()}x{@link #getTotalChoiceNumber()}. All values don't change during
+     *              simulation.
      */
     @Getter(AccessLevel.PACKAGE) private double[][] prob;
 
@@ -75,12 +79,14 @@ public abstract class AbstractLogitScalingAlignment<T> {
     @Getter(AccessLevel.PACKAGE) private double total;
 
     /**
-     * @return name The new value.
+     * @return target The target share of the relevant subpopulation. Sums of the aligned probabilities must be equal
+     *                to these values.
      */
     @Getter(AccessLevel.PACKAGE) private double[] target;
 
     /**
-     * @return errorThreshold
+     * @return errorThreshold Cumulative error threshold of the iterative scheme. Calculated for the whole
+     *                        subpopulation.
      */
     @Getter(AccessLevel.PACKAGE) private double errorThreshold;
 
@@ -90,7 +96,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
     @Getter(AccessLevel.PACKAGE) private int count = 0;
 
     /**
-     * @return error Error of the method at each iteration.
+     * @return error Difference between actual and expected probabilities at each iteration.
      */
     @Getter(AccessLevel.PACKAGE) private double error = Double.MAX_VALUE;
 
@@ -112,12 +118,11 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param agents A collection of agents of a given type. Most commonly, every agent is a person,
      *               however, this class does not limit its usage to humans only.
      * @param filter A filter to select a subpopulation from a given collection of {@code agents}.
-     * @param closure An object that specifies how to define the (unaligned) probability of the agent
-     *                and how to implement the result of the aligned probability.
+     * @param closure An object that specifies how to get the (unaligned) probability of the agent and how to set the
+     *                result of the aligned probability.
      * @param targetShare The target share of the relevant subpopulation (specified as a proportion of {@code agents}
-     *                    filtered with {@code filter} population) for which the mean of the aligned probabilities
-     *                    (defined by the {@link microsim.alignment.probability.AlignmentProbabilityClosure}) must
-     *                    equal.
+     *                    filtered with {@code filter} population). Means of the aligned probabilities must be equal
+     *                    to these values.
      * @param maxNumberIterations The maximum number of iterations until the iterative loop in the alignment algorithm
      *                            terminates. The resulting probabilities at that time are then used
      * @param precision The appropriate value here depends on the precision of the probabilities. If the probabilities
@@ -181,9 +186,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param closure An object that specifies how to define the (unaligned) probability of the agent
      *                and how to implement the result of the aligned probability.
      * @param targetShare The target share of the relevant subpopulation (specified as a proportion of {@code agents}
-     *                    filtered with {@code filter} population) for which the mean of the aligned probabilities
-     *                    (defined by the {@link microsim.alignment.probability.AlignmentProbabilityClosure}) must
-     *                    equal.
+     *                    filtered with {@code filter} population). Means of the aligned probabilities must be equal
+     *                    to these values.
      */
     public void align(Collection<T> agents, Predicate<T> filter,
                       AlignmentMultiProbabilityClosure<T> closure, double[] targetShare) {
@@ -216,7 +220,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
             if (v < 0. || v > 1.)
                 throw new IllegalArgumentException("Each probability value must lie in [0,1].");
         if (sum(targetShare) > 1.)
-            throw new IllegalArgumentException("Sum of all outcomes must be less than or equal to 1");
+            throw new IllegalArgumentException("Sum of all outcomes must be less than or equal to 1"); // TODO check this requirement
         if (maxNumberIterations == 0)
             throw new IllegalArgumentException("The method has to go at least through one iteration.");
         if (precision <= 0. || isNaN(precision) || isInfinite(precision))
@@ -243,14 +247,17 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * Throws an error message if the resulting error of the method is above its expected value.
+     * Throws an error message when the method doesn't converge to the expected solution of the problem within a given
+     * range of iterations. This message is optional (conditional), however, additional sanity checks are introduced
+     * by default. If at least one of the input parameters is NaN of Inf, something went wrong earlier as these values
+     * make no numerical sense and should not be here in any case.
      * @param precisionValue The accuracy of the method.
      * @param warningsOn A boolean flag that switches on/off the warning message.
      * @param errorValue Actual error.
      * @param errorLevel Expected error.
      * @param sampleSize Number of agents.
      * @param iterations Total number of passed iterations at the moment of termination.
-     * @param totalAgentWeight The sum of all weights in a given sub-population.
+     * @param totalAgentWeight The sum of all weights in a given subpopulation.
      * @throws ArithmeticException When the main iterative condition is not satisfied; when double values are NaN, Inf.
      * @throws IllegalArgumentException When parameters are out of the acceptable range.
      */
@@ -279,7 +286,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * Calculates the absolute probability difference per choice, adds it up and normalizes.
+     * Calculates the absolute probability difference per choice, adds it up and normalizes. The resulting value is used
+     * as a measure of the algorithm's convergence.
      * @param oldSum Sums of probabilities at the previous iteration.
      * @param newSum Current sums of probabilities.
      * @return The normalized probability error between two iterations.
@@ -297,13 +305,13 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * Scales down {@link #getProb()} to 're-normalise', as it was previously scaled up by weight. Corrects individual
+     * Scales down {@link #getProb()} to 're-normalise', as it was previously scaled up by weight. Replaces individual
      * probabilities with the aligned probabilities {@link #getProb()}.
      * @param closure An instance of implementation of
      *                {@link microsim.alignment.multiple.AlignmentMultiProbabilityClosure}.
      * @param fa A list of filtered agents.
      * @param w Weights of agents.
-     * @param probabilities Probabilities of the sub-population.
+     * @param probabilities Probabilities of the subpopulation.
      * @throws NullPointerException When there is a {@code null} amongst provided (sub-)arrays.
      * @throws InputMismatchException If {@code probabilities} is not a rectangular matrix; when {@code weights} do not
      *                                have the same size as {@code fa}.
@@ -336,7 +344,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param targetSum Target sum of each column to match to.
      * @param w Weights of agents.
      * @param agentSizeArray A temporary array to store probabilities of the same size as {@code agents}.
-     * @param probabilities Overall probabilities of the sub-population.
+     * @param probabilities Overall probabilities of the subpopulation.
      * @throws NullPointerException When there is a {@code null} amongst provided (sub-)arrays.
      */
     final void probabilityAdjustmentCycle(final double @NonNull [] oldProbSum, final double @NonNull [] newProbSum,
@@ -401,7 +409,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * Gamma transform of the probabilities.
+     * Gamma transform of the probabilities. It scales all columns by corresponding elements of {@code gammaValues} in
+     * such a way that the total sum of every column matches the target value.
      * @param gammaValues An array with values of the {@code gamma} scaling parameter.
      * @param agentId The agent's index denoting its position in the array.
      * @param probabilities A 2d-array {@code agents x choices} of probabilities to be transformed.
@@ -425,7 +434,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * Alpha transform of the probabilities.
+     * Alpha transform of the probabilities. Each row gets multiplied by the corresponding coefficient {@code alpha} so
+     * that the sum of all elements in the row adds up exactly to 1.
      * @param alphaValue Value of the {@code alpha} scaling parameter.
      * @param agentId The agent's index denoting its position in the array.
      * @param probabilities An array of probabilities of size {@code agents x choices}.
