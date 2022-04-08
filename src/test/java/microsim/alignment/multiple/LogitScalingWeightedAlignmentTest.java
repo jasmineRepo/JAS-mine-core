@@ -10,6 +10,7 @@ import java.util.InputMismatchException;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LogitScalingWeightedAlignmentTest {
     static class A implements Weight{
@@ -100,6 +101,31 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void executeGammaTransform() {
+        val gv = new double[2];
+        val p = new double[2][2];
+        p[1] = null;
+
+        assertAll("Should pass all sanity checks.",
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, gv, p),
+                        "Array of probabilities can't contain null sub-array."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, null, p),
+                "Null check fails."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, gv, null),
+                "Second null check fails.")
+        );
+        assertThrows(ArrayIndexOutOfBoundsException.class,
+                () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(-1, gv, p),
+                "Array index/agent id can't be negative.");
+        assertThrows(InputMismatchException.class,
+                () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(0, new double[1], p),
+                "Dimensions of input arrays do not match.");
+
+        val t = new LogitScalingWeightedAlignment<A>();
+        assertEquals(10., t.executeGammaTransform(1, new double[]{2., 2.}, new double[][]{new double[]{3., 2.},
+                new double[]{3., 2.}}), "Calculations went wrong.");
     }
 
     @Test
@@ -143,8 +169,8 @@ class LogitScalingWeightedAlignmentTest {
             val p = new double[][]{new double[]{1., 1.}, new double[]{1., 1.}};
             val t = new LogitScalingWeightedAlignment<A>();
             t.executeAlphaTransform(1, 2., ps, p);
-            assertArrayEquals(new double[][]{new double[]{1., 1.}, new double[]{2., 2.}}, p);
-            assertArrayEquals(new double[]{2.3, 2.7}, ps);
+            assertArrayEquals(new double[][]{new double[]{1., 1.}, new double[]{2., 2.}}, p, "Incorrect calculations.");
+            assertArrayEquals(new double[]{2.3, 2.7}, ps, "Incorrect calculations.");
     }
 
     @Test
