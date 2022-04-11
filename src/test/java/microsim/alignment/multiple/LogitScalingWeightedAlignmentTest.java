@@ -73,6 +73,61 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void validateInputData() {
+        val stub = new double[]{1., 1.};
+        assertAll("Should pass all basic null checks.",
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(null, 2, 1., stub),
+                        "Target share null test fails."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(stub, 2, 1., null),
+                        "Weights null check fails.")
+        );
+
+        assertAll("Target values are in range.",
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0., 2.}, 2, 1.,
+                                stub), "One of elements is above 1."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{2., 0.}, 2, 1.,
+                                stub), "Changing the order of elements breaks initial data validation."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{-1., 0.}, 2, 1.,
+                                stub), "Testing negative elements fails.")
+                );
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new LogitScalingWeightedAlignment<A>().validateInputData(stub, 2, 1., stub),
+                "Non-normalized probabilities.");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 0, 1., stub),
+                "Incorrect number of iterations.");
+
+        assertAll("Precision values should be sane.",
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, -1.,
+                                stub), "Precision is negative."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2,
+                                Double.POSITIVE_INFINITY, stub), "Precision is infinite."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2,
+                                Double.NaN, stub), "Precision is NaN.")
+                );
+        assertAll("Weights should be sane.",
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                                new double[]{0., 1., 1.}), "Weight is zero."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                                new double[]{1., 0., 1.}), "Order of arguments has to be irrelevant."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                                new double[]{Double.POSITIVE_INFINITY, 1., 1.}), "Weight is off the charts."),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                                new double[]{Double.NaN, 1., 1.}), "Weight is NaN.")
+        );
     }
 
     @Test
