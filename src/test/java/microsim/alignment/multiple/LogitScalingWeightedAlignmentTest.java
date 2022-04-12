@@ -152,6 +152,70 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void generateGammaValues() {
+        val testOld = new double[3];
+        val testNew = new double[]{1., 1., 1.};
+        val testTarget = new double[]{1., 1.};
+        val testAgents = new double[]{1., 1.,};
+        val testProbabilities = new double[][]{new double[]{1., 1.}, new double[]{1., 1.}};
+
+        assertAll("Should pass all basic null checks.",
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(null, testNew, testTarget,
+                                testAgents, testProbabilities), "Old sum storage is null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, null, testTarget,
+                                testAgents, testProbabilities), "New sum storage is null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, null,
+                                testAgents, testProbabilities), "Target array is null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
+                                null, testProbabilities), "Temporary array is null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
+                                testAgents, null), "Probabilities are null.")
+                );
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[1],
+                        testAgents, testProbabilities), "Target array is too small.");
+        assertThrows(IllegalArgumentException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
+                        new double[1], testProbabilities), "Temporary array is too small.");
+
+        assertThrows(InputMismatchException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, new double[4], testTarget,
+                        testAgents, testProbabilities), "Sum storage size mismatch.");
+
+        assertThrows(InputMismatchException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[4],
+                        testAgents, testProbabilities), "Sum/target storage size mismatch.");
+
+        assertThrows(NullPointerException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
+                        testAgents, new double[][]{new double[]{1., 1.}, null}), "Null sub-arrays.");
+        assertThrows(NullPointerException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
+                        testAgents, new double[][]{null, new double[]{1., 1.}}),
+                "Null sub-arrays, reordering arguments breaks the check.");
+        assertThrows(InputMismatchException.class,
+                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
+                        new double[3], testProbabilities), "Uneven array of probabilities.");
+
+        new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3], new double[3],
+                new double[][]{new double[]{1., 1., 1}, new double[]{1., 1., 1}, new double[]{1., 1., 1.}});
+
+        assertArrayEquals(testNew, testOld, "Memory copy fails");
+        assertArrayEquals(testNew, new double[]{1., 1., 1.}, "Probabilities should not change.");
+
+        val t = new double[]{1., 1., 1., 1.};
+        val g = new LogitScalingWeightedAlignment<A>().generateGammaValues(new double[4], new double[4],
+                new double[]{1., 1., 1., 1.}, t, new double[][]{new double[]{1., 1., 1., 1.},
+                        new double[]{1., 1., 1., 1.}, new double[]{1., 2., 3., 4.}, new double[]{1., 2., 3., 4.}});
+
+        assertArrayEquals(t, new double[]{1., 1., 4., 4.}, "First step fails.");
+
+        assertArrayEquals(g, new double[]{1. / 4., 1. / 6., 1. / 8., 1. / 10.}, "gamma calculation fails.");
     }
 
     @Test
