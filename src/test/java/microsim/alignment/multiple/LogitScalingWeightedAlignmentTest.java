@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SuppressWarnings("ConstantConditions")
 class LogitScalingWeightedAlignmentTest {
     static class A implements Weight{
         @Setter private double weight;
@@ -148,6 +149,44 @@ class LogitScalingWeightedAlignmentTest {
 
     @Test
     void probabilityAdjustmentCycle() {
+        val t = new double[]{};
+        val t1 = new double[][]{};
+        assertAll("Should pass all basic null checks.",
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(null, t, t, t, t, t1),
+                        "old sum is null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, null, t, t, t, t1),
+                        "current sum is null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, null, t, t, t1),
+                        "targets are null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, null, t, t1),
+                        "weights are null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, null, t1),
+                        "temp array is null."),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t, null),
+                        "probabilities are null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t,
+                                new double[][]{null, new double[]{}}), "uneven array"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t,
+                                new double[][]{new double[]{}, null}), "reordered uneven rows.")
+        );// todo add a note about no size checks - they all happen in the internal functions.
+        val oldS = new double[4];
+        val newS = new double[]{1., 1., 1., 1.};
+        val target = new double[]{1., 1., 1., 1.};
+        val weights = new double[]{1., 2., 3., 4.};
+        val temp = new double[4];
+        val p = new double[][]{new double[]{1., 1., 1., 1.}, new double[]{1., 1., 1., 1.}, new double[]{1., 2., 3., 4.},
+                new double[]{1., 2., 3., 4.}};
+
+        new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(oldS, newS, target, weights, temp, p);
+        // todo finish this
     }
 
     @Test
