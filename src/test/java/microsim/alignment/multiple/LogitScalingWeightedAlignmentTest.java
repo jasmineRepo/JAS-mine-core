@@ -10,10 +10,11 @@ import java.util.InputMismatchException;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("ConstantConditions")
 class LogitScalingWeightedAlignmentTest {
+    LogitScalingWeightedAlignment<A> testClass = new LogitScalingWeightedAlignment<>();
+
     static class A implements Weight{
         @Setter private double weight;
         @Override public double getWeight() {
@@ -77,56 +78,53 @@ class LogitScalingWeightedAlignmentTest {
         val stub = new double[]{1., 1.};
         assertAll("Should pass all basic null checks.",
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(null, 2, 1., stub),
-                        "Target share null test fails."),
+                        () -> testClass.validateInputData(null, 2, 1., stub), "Target share null test fails."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(stub, 2, 1., null),
-                        "Weights null check fails.")
+                        () -> testClass.validateInputData(stub, 2, 1., null), "Weights null check fails.")
         );
 
         assertAll("Target values are in range.",
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0., 2.}, 2, 1.,
-                                stub), "One of elements is above 1."),
+                        () -> testClass.validateInputData(new double[]{0., 2.}, 2, 1., stub),
+                        "One of elements is above 1."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{2., 0.}, 2, 1.,
-                                stub), "Changing the order of elements breaks initial data validation."),
+                        () -> testClass.validateInputData(new double[]{2., 0.}, 2, 1., stub),
+                        "Changing the order of elements breaks initial data validation."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{-1., 0.}, 2, 1.,
-                                stub), "Testing negative elements fails.")
+                        () -> testClass.validateInputData(new double[]{-1., 0.}, 2, 1., stub),
+                        "Testing negative elements fails.")
                 );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new LogitScalingWeightedAlignment<A>().validateInputData(stub, 2, 1., stub),
-                "Non-normalized probabilities.");
+                () -> testClass.validateInputData(stub, 2, 1., stub), "Non-normalized probabilities.");
 
         assertThrows(IllegalArgumentException.class,
-                () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 0, 1., stub),
+                () -> testClass.validateInputData(new double[]{0.5, 0.5}, 0, 1., stub),
                 "Incorrect number of iterations.");
 
         assertAll("Precision values should be sane.",
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, -1.,
-                                stub), "Precision is negative."),
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, -1., stub),
+                        "Precision is negative."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2,
-                                Double.POSITIVE_INFINITY, stub), "Precision is infinite."),
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, Double.POSITIVE_INFINITY, stub),
+                        "Precision is infinite."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2,
-                                Double.NaN, stub), "Precision is NaN.")
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, Double.NaN, stub),
+                        "Precision is NaN.")
                 );
         assertAll("Weights should be sane.",
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
-                                new double[]{0., 1., 1.}), "Weight is zero."),
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, 1., new double[]{0., 1., 1.}),
+                        "Weight is zero."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
-                                new double[]{1., 0., 1.}), "Order of arguments has to be irrelevant."),
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, 1., new double[]{1., 0., 1.}),
+                        "Order of arguments has to be irrelevant."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, 1.,
                                 new double[]{Double.POSITIVE_INFINITY, 1., 1.}), "Weight is off the charts."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().validateInputData(new double[]{0.5, 0.5}, 2, 1.,
+                        () -> testClass.validateInputData(new double[]{0.5, 0.5}, 2, 1.,
                                 new double[]{Double.NaN, 1., 1.}), "Weight is NaN.")
         );
     }
@@ -153,29 +151,23 @@ class LogitScalingWeightedAlignmentTest {
         val t1 = new double[][]{};
         assertAll("Should pass all basic null checks.",
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(null, t, t, t, t, t1),
-                        "old sum is null"),
+                        () -> testClass.probabilityAdjustmentCycle(null, t, t, t, t, t1), "old sum is null"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, null, t, t, t, t1),
-                        "current sum is null"),
+                        () -> testClass.probabilityAdjustmentCycle(t, null, t, t, t, t1), "current sum is null"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, null, t, t, t1),
-                        "targets are null."),
+                        () -> testClass.probabilityAdjustmentCycle(t, t, null, t, t, t1), "targets are null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, null, t, t1),
-                        "weights are null"),
+                        () -> testClass.probabilityAdjustmentCycle(t, t, t, null, t, t1), "weights are null"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, null, t1),
-                        "temp array is null."),
+                        () -> testClass.probabilityAdjustmentCycle(t, t, t, t, null, t1), "temp array is null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t, null),
-                        "probabilities are null"),
+                        () -> testClass.probabilityAdjustmentCycle(t, t, t, t, t, null), "probabilities are null"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t,
-                                new double[][]{null, new double[]{}}), "uneven array"),
+                        () -> testClass.probabilityAdjustmentCycle(t, t, t, t, t, new double[][]{null, new double[]{}}),
+                        "uneven array"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(t, t, t, t, t,
-                                new double[][]{new double[]{}, null}), "reordered uneven rows.")
+                        () -> testClass.probabilityAdjustmentCycle(t, t, t, t, t, new double[][]{new double[]{}, null}),
+                        "reordered uneven rows.")
         );// todo add a note about no size checks - they all happen in the internal functions.
         val oldS = new double[4];
         val newS = new double[]{1., 1., 1., 1.};
@@ -185,7 +177,7 @@ class LogitScalingWeightedAlignmentTest {
         val p = new double[][]{new double[]{1., 1., 1., 1.}, new double[]{1., 1., 1., 1.}, new double[]{1., 2., 3., 4.},
                 new double[]{1., 2., 3., 4.}};
 
-        new LogitScalingWeightedAlignment<A>().probabilityAdjustmentCycle(oldS, newS, target, weights, temp, p);
+        testClass.probabilityAdjustmentCycle(oldS, newS, target, weights, temp, p);
         // todo finish this
     }
 
@@ -199,58 +191,58 @@ class LogitScalingWeightedAlignmentTest {
 
         assertAll("Should pass all basic null checks.",
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(null, testNew, testTarget,
-                                testAgents, testProbabilities), "Old sum storage is null."),
+                        () -> testClass.generateGammaValues(null, testNew, testTarget, testAgents, testProbabilities),
+                        "Old sum storage is null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, null, testTarget,
-                                testAgents, testProbabilities), "New sum storage is null."),
+                        () -> testClass.generateGammaValues(testOld, null, testTarget, testAgents, testProbabilities),
+                        "New sum storage is null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, null,
-                                testAgents, testProbabilities), "Target array is null."),
+                        () -> testClass.generateGammaValues(testOld, testNew, null, testAgents, testProbabilities),
+                        "Target array is null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
-                                null, testProbabilities), "Temporary array is null."),
+                        () -> testClass.generateGammaValues(testOld, testNew, testTarget, null, testProbabilities),
+                        "Temporary array is null."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
-                                testAgents, null), "Probabilities are null.")
+                        () -> testClass.generateGammaValues(testOld, testNew, testTarget, testAgents, null),
+                        "Probabilities are null.")
                 );
 
         assertThrows(IllegalArgumentException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[1],
-                        testAgents, testProbabilities), "Target array is too small.");
+                () -> testClass.generateGammaValues(testOld, testNew, new double[1], testAgents, testProbabilities),
+                "Target array is too small.");
         assertThrows(IllegalArgumentException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, testTarget,
-                        new double[1], testProbabilities), "Temporary array is too small.");
+                () -> testClass.generateGammaValues(testOld, testNew, testTarget, new double[1], testProbabilities),
+                "Temporary array is too small.");
 
         assertThrows(InputMismatchException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, new double[4], testTarget,
-                        testAgents, testProbabilities), "Sum storage size mismatch.");
+                () -> testClass.generateGammaValues(testOld, new double[4], testTarget, testAgents, testProbabilities),
+                "Sum storage size mismatch.");
 
         assertThrows(InputMismatchException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[4],
-                        testAgents, testProbabilities), "Sum/target storage size mismatch.");
+                () -> testClass.generateGammaValues(testOld, testNew, new double[4], testAgents, testProbabilities),
+                "Sum/target storage size mismatch.");
 
         assertThrows(NullPointerException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
-                        testAgents, new double[][]{new double[]{1., 1.}, null}), "Null sub-arrays.");
+                () -> testClass.generateGammaValues(testOld, testNew, new double[3], testAgents,
+                        new double[][]{new double[]{1., 1.}, null}), "Null sub-arrays.");
         assertThrows(NullPointerException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
-                        testAgents, new double[][]{null, new double[]{1., 1.}}),
+                () -> testClass.generateGammaValues(testOld, testNew, new double[3], testAgents,
+                        new double[][]{null, new double[]{1., 1.}}),
                 "Null sub-arrays, reordering arguments breaks the check.");
         assertThrows(InputMismatchException.class,
-                () -> new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3],
-                        new double[3], testProbabilities), "Uneven array of probabilities.");
+                () -> testClass.generateGammaValues(testOld, testNew, new double[3], new double[3], testProbabilities),
+                "Uneven array of probabilities.");
 
-        new LogitScalingWeightedAlignment<A>().generateGammaValues(testOld, testNew, new double[3], new double[3],
+        testClass.generateGammaValues(testOld, testNew, new double[3], new double[3],
                 new double[][]{new double[]{1., 1., 1}, new double[]{1., 1., 1}, new double[]{1., 1., 1.}});
 
         assertArrayEquals(testNew, testOld, "Memory copy fails");
         assertArrayEquals(testNew, new double[]{1., 1., 1.}, "Probabilities should not change.");
 
         val t = new double[]{1., 1., 1., 1.};
-        val g = new LogitScalingWeightedAlignment<A>().generateGammaValues(new double[4], new double[4],
-                new double[]{1., 1., 1., 1.}, t, new double[][]{new double[]{1., 1., 1., 1.},
-                        new double[]{1., 1., 1., 1.}, new double[]{1., 2., 3., 4.}, new double[]{1., 2., 3., 4.}});
+        val g = testClass.generateGammaValues(new double[4], new double[4], new double[]{1., 1., 1., 1.}, t,
+                new double[][]{new double[]{1., 1., 1., 1.}, new double[]{1., 1., 1., 1.}, new double[]{1., 2., 3., 4.},
+                        new double[]{1., 2., 3., 4.}});
 
         assertArrayEquals(t, new double[]{1., 1., 4., 4.}, "First step fails.");
 
@@ -265,23 +257,19 @@ class LogitScalingWeightedAlignmentTest {
 
         assertAll("Should pass all sanity checks.",
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, gv, p),
+                        () -> testClass.executeGammaTransform(1, gv, p),
                         "Array of probabilities can't contain null sub-array."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, null, p),
-                "Null check fails."),
+                        () -> testClass.executeGammaTransform(1, null, p), "Null check fails."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(1, gv, null),
-                "Second null check fails.")
+                        () -> testClass.executeGammaTransform(1, gv, null), "Second null check fails.")
         );
         assertThrows(ArrayIndexOutOfBoundsException.class,
-                () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(-1, gv, p),
-                "Array index/agent id can't be negative.");
+                () -> testClass.executeGammaTransform(-1, gv, p), "Array index/agent id can't be negative.");
         assertThrows(InputMismatchException.class,
-                () -> new LogitScalingWeightedAlignment<A>().executeGammaTransform(0, new double[1], p),
-                "Dimensions of input arrays do not match.");
+                () -> testClass.executeGammaTransform(0, new double[1], p), "Dimensions of input arrays do not match.");
 
-        val t = new LogitScalingWeightedAlignment<A>();
+        val t = testClass;
         assertEquals(10., t.executeGammaTransform(1, new double[]{2., 2.}, new double[][]{new double[]{3., 2.},
                 new double[]{3., 2.}}), "Calculations went wrong.");
     }
@@ -295,37 +283,37 @@ class LogitScalingWeightedAlignmentTest {
 
         assertAll("Should pass all sanity checks.",
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 0., probabilitiesSum,
-                                probabilities), "alpha can't be 0. or negative."),
+                        () -> testClass.executeAlphaTransform(1, 0., probabilitiesSum, probabilities),
+                        "alpha can't be 0. or negative."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.POSITIVE_INFINITY,
-                                probabilitiesSum, probabilities), "alpha can't be Infinity."),
+                        () -> testClass.executeAlphaTransform(1, Double.POSITIVE_INFINITY, probabilitiesSum,
+                                probabilities), "alpha can't be Infinity."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.NEGATIVE_INFINITY,
-                                probabilitiesSum, probabilities), "alpha can't be -Infinity."),
+                        () -> testClass.executeAlphaTransform(1, Double.NEGATIVE_INFINITY, probabilitiesSum,
+                                probabilities), "alpha can't be -Infinity."),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, Double.NaN,
-                                probabilitiesSum, probabilities), "alpha can't be NaN."),
+                        () -> testClass.executeAlphaTransform(1, Double.NaN, probabilitiesSum, probabilities),
+                        "alpha can't be NaN."),
                 () -> assertThrows(ArrayIndexOutOfBoundsException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(-1, 1., probabilitiesSum,
-                                probabilities), "Agent id can't be negative."),
+                        () -> testClass.executeAlphaTransform(-1, 1., probabilitiesSum, probabilities),
+                        "Agent id can't be negative."),
                 () -> assertThrows(InputMismatchException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., new double[3],
-                                probabilities), "Input arrays have different sizes."),
+                        () -> testClass.executeAlphaTransform(1, 1., new double[3], probabilities),
+                        "Input arrays have different sizes."),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., probabilitiesSum,
-                                null), "One of the input arrays is null"),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., null, probabilities),
+                        () -> testClass.executeAlphaTransform(1, 1., probabilitiesSum, null),
                         "One of the input arrays is null"),
                 () -> assertThrows(NullPointerException.class,
-                        () -> new LogitScalingWeightedAlignment<A>().executeAlphaTransform(1, 1., probabilitiesSum,
-                                probabilitiesNull), "2d array contains null")
+                        () -> testClass.executeAlphaTransform(1, 1., null, probabilities),
+                        "One of the input arrays is null"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> testClass.executeAlphaTransform(1, 1., probabilitiesSum, probabilitiesNull),
+                        "2d array contains null")
                 );
 
             val ps = new double[]{0.3, 0.7};
             val p = new double[][]{new double[]{1., 1.}, new double[]{1., 1.}};
-            val t = new LogitScalingWeightedAlignment<A>();
+            val t = testClass;
             t.executeAlphaTransform(1, 2., ps, p);
             assertArrayEquals(new double[][]{new double[]{1., 1.}, new double[]{2., 2.}}, p, "Incorrect calculations.");
             assertArrayEquals(new double[]{2.3, 2.7}, ps, "Incorrect calculations.");
