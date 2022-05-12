@@ -1,51 +1,18 @@
 package microsim.alignment.probability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static java.lang.StrictMath.log;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-
-import microsim.engine.SimulationEngine;
-
-public class SBDLAlignment<T> extends AbstractProbabilityAlignment<T> {
-
+/**
+ * @param <T> A class usually representing an agent.
+ * @see <a href="https://www.jasss.org/17/1/15.html">Jinjing Li and Cathal O'Donoghue, Evaluating Binary Alignment
+ * Methods in Microsimulation Models, Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
+ */
+public class SBDLAlignment<T> extends AbstractSortByDifferenceAlignment<T>{
 	@Override
-	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
-		if (targetShare < 0. || targetShare > 1.) {
-			throw new IllegalArgumentException("target probability must lie in [0,1]");
-		}
-		
-		List<T> list = new ArrayList<T>();		
-		if (filter != null)
-			CollectionUtils.select(agents, filter, list);
-		else
-			list.addAll(agents);
-		
-		int n = list.size();
-		
-		Map<T, Double> map = new HashMap<T, Double>();
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i);
-			double p = closure.getProbability(agent);
-			double r = SimulationEngine.getRnd().nextDouble();		
-			map.put(agent, new Double(Math.log(1/r-1)+Math.log(p/(1-p))));
-		}
-		map = sortByComparator(map, false); // true for ascending order			//Returns a LinkedHashMap, that maintains the order of insertion.
-		int i = 0;
-		for (T agent : map.keySet()) {
-			if (i <= targetShare*n) { 
-				closure.align(agent, 1.0);
-			}
-			else { 
-				closure.align(agent, 0.0);
-			}
-			i++;
-		}
-		
+	double[] generateSortingVariable(double[] pArray, double[] rArray){
+		double[] returnValues = new double[pArray.length];
+		for (var i = 0; i < pArray.length; i++)
+			returnValues[i] = log(1 / rArray[i] - 1) + log(pArray[i] / (1 - pArray[i]));
+		return returnValues;
 	}
-
 }
