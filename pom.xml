@@ -14,7 +14,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version>
+				<version>0.8.8</version>
 				<executions>
 					<execution>
 						<goals>
@@ -31,18 +31,18 @@
 				</executions>
 			</plugin>
 			<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>3.9.0</version>
-		        <configuration> <!-- Compile JAVA 17 compatible bytecode -->
-		          <source>17</source>
-		          <target>17</target>
-		        </configuration>
-		      </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration> <!-- Compile JAVA 18 compatible bytecode -->
+					<source>18</source>
+					<target>18</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
+				<version>3.0.0-M6</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -52,30 +52,30 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
-					  <manifest>
+						<manifest>
 						<mainClass>Start</mainClass>
-					  </manifest>
+						</manifest>
 					</archive>
 				</configuration>
 				<executions>
 				  <execution>
 					<id>make-assembly</id>
-                                        <!-- bind to the packaging phase -->
+					<!-- bind to the packaging phase -->
 					<phase>package</phase> 
 					<goals>
 						<goal>single</goal>
 					</goals>
 				  </execution>
-				</executions>				
+				</executions>
 			</plugin>
 		</plugins>
-	    <extensions>
-	        <extension>
-	            <groupId>org.apache.maven.wagon</groupId>
-	            <artifactId>wagon-ssh</artifactId>
-	            <version>3.5.1</version> <!-- See deprecation notice. TODO find where used and replace -->
-	        </extension>
-	    </extensions>		
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>3.5.1</version> <!-- See deprecation notice. TODO find where used and replace -->
+			</extension>
+		</extensions>
 	</build>
 	<dependencies>
 		<dependency>
@@ -92,12 +92,12 @@
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.0.0</version>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>5.6.7.Final</version>  <!-- 6.0.0 is on its way --> <!-- JPA 3.0-->
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>6.0.1.Final</version> <!-- JPA 3.0-->
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -108,27 +108,27 @@
 			<groupId>commons-logging</groupId> <!-- Old -ish, replace?-->
 			<artifactId>commons-logging</artifactId>
 			<version>1.2</version>
-		</dependency>            		
+		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>5.2.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.poi</groupId>
-		    <artifactId>poi-ooxml</artifactId>
-		    <version>5.2.2</version>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-collections4</artifactId>
-		    <version>4.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>2.1.210</version>
+			<version>2.1.212</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -137,24 +137,24 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.11.0</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
 		</dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.28.0-GA</version>
-        </dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.12.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.28.0-GA</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.22</version>
+			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -185,12 +185,12 @@
 		<dependency>
 			<groupId>org.nd4j</groupId>
 			<artifactId>nd4j-common</artifactId>
-			<version>1.0.0-M1.1</version>
+			<version>1.0.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.nd4j</groupId>
 			<artifactId>nd4j-perf</artifactId>
-			<version>0.9.1</version>
+			<version>1.0.0-alpha</version>
 			<scope>compile</scope><!-- read about this, how does it work-->
 		</dependency>
 
