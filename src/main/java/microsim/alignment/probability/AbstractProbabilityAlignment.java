@@ -1,26 +1,14 @@
 package microsim.alignment.probability;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.collections4.Predicate;
+
+import java.util.Collection;
 
 /**
  * Abstract class for BINARY PROBABILITY alignment methods (for Binary
  * outcome alignment, see microsim.alignment.outcome package;
  * for Multiple choice probability alignment, see microsim.alignment.multi
  * package).
- * 
- * Acknowledgements: Partly based on
- * "Evaluating Binary Alignment Methods in Microsimulation Models", by Jinjing
- * Li and Cathal O'Donoghue, Journal of Artificial Societies and Social
- * Simulation, 2014 (http://jasss.soc.surrey.ac.uk/17/1/15/15.pdf)
  * 
  * General principle of operation of this class: a) Some variable is defined for
  * the agents (the variable can be a probability or an outcome). b) Alignment is
@@ -37,7 +25,7 @@ import org.apache.commons.collections4.Predicate;
  * @author Matteo Richiardi This version: July 2014
  * 
  * @param <T> - the Type parameter usually representing the agent class.
- * 
+ *
  */
 public abstract class AbstractProbabilityAlignment<T> {
 
@@ -54,44 +42,6 @@ public abstract class AbstractProbabilityAlignment<T> {
 	 *  (specified as a proportion of the filtered population) for which the outcome 
 	 *  (defined by the AlignmentProbabilityClosure) must be true.
 	 */
-	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare);
-
-	/**
-	 * 
-	 * Sorting of objects of type T (usually the agents)
-	 * by an associated Double number. This method is used in 
-	 * the SBD and SBDL alignment algorithms.
-	 * 
-	 * @param unsortedMap
-	 * @param ascendingOrder - if true, the method returns a map ordered 
-	 * 	by the Double value increasing, otherwise the map will be ordered
-	 * 	by the Double value decreasing. 
-	 * @return - the map of type T objects sorted by the Double numbers. 
-	 */
-	protected Map<T, Double> sortByComparator(Map<T, Double> unsortedMap,
-			final boolean ascendingOrder) {
-
-		List<Entry<T, Double>> list = new LinkedList<Entry<T, Double>>(
-				unsortedMap.entrySet());
-
-		// Sorting the list based on values
-		Collections.sort(list, new Comparator<Entry<T, Double>>() {
-			public int compare(Entry<T, Double> o1, Entry<T, Double> o2) {
-				if (ascendingOrder) {
-					return o1.getValue().compareTo(o2.getValue());
-				} else {
-					return o2.getValue().compareTo(o1.getValue());
-
-				}
-			}
-		});
-
-		// Maintaining insertion order with the help of LinkedList
-		Map<T, Double> sortedMap = new LinkedHashMap<T, Double>();
-		for (Entry<T, Double> entry : list) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
-	}
+	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure,
+							   double targetShare);
 }
