@@ -1,46 +1,39 @@
 package microsim.alignment.probability;
 
-import java.util.ArrayList;
+import microsim.alignment.AlignmentUtils;
+import org.apache.commons.collections4.Predicate;
+
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
+import static jamjam.Sum.sum;
 
-public class MultiplicativeScalingAlignment<T> extends AbstractProbabilityAlignment<T> {
+/**
+ * A class for multiplicative scaling alignment method. All probabilities are extracted from the collection
+ * {@code agents} using provided {@code filter}. Further steps involve calculating the expected number of agents in this
+ * state, computing the correction multiplicative factor, and correcting individual probabilities via {@code closure}.
+ * @param <T> A class usually representing an agent.
+ * @see <a href="https://www.jasss.org/17/1/15.html">Jinjing Li and Cathal O'Donoghue, Evaluating Binary Alignment
+ * Methods in Microsimulation Models, Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
+ */
+public class MultiplicativeScalingAlignment<T> implements AlignmentUtils<T> {
 
-	@Override
-	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare) {
-		if (targetShare < 0. || targetShare > 1.) {
-			throw new IllegalArgumentException("target probability must lie in [0,1]");
-		}
-		
-		List<T> list = new ArrayList<T>();		
-		if (filter != null)
-			CollectionUtils.select(agents, filter, list);
-		else
-			list.addAll(agents);
-		
-		int n = list.size();
-		double sum = 0;
-		
-		// compute total expected number of simulated positive outcomes
-		sum = 0; 
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i);
-			sum += closure.getProbability(agent);
-		}
-		
-		// compute correction factor
-		double m = targetShare * n / sum; // multiplicative factor
-		
-		// correct individual probabilities
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i);
-			double val = closure.getProbability(agent);
-			closure.align(agent, val * m);			
-		}
+	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure,
+					  double targetProbability) {
+		// TODO input validation, split the code
+		if (targetProbability < 0. || targetProbability > 1.)
+			throw new IllegalArgumentException("Target probability must lie in [0,1]");
 
-	}	
+		List<T> agentList = extractAgentList(agents, filter);
 
+		double[] probabilities = new double[agentList.size()];
+
+		for (var agentId = 0; agentId < agentList.size(); agentId++)
+			probabilities[agentId] = closure.getProbability(agentList.get(agentId));
+		double sum = sum(probabilities);
+
+		double mFactor = targetProbability * agentList.size() / sum;
+
+		for (T agent : agentList) closure.align(agent, closure.getProbability(agent) * mFactor);
+	}
 }
