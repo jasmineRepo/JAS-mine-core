@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import microsim.alignment.AlignmentUtils;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 
@@ -23,8 +24,9 @@ import org.apache.commons.collections4.Predicate;
  * 
  * @author Ross Richardson
  */
-public class ResamplingAlignment<T extends EventListener> extends AbstractOutcomeAlignment<T> {
-
+public class ResamplingAlignment<T extends EventListener> extends AbstractOutcomeAlignment<T>
+		implements AlignmentUtils<T> {
+// fixme how is this legacy?
 
 	//-----------------------------------------------------------------------------------
 	//
@@ -65,21 +67,16 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		} else if(targetShare < 0.) {
 			throw new IllegalArgumentException("ResamplingAlignment targetShare is negative!  This is impossible.");
 		}
-		
-		List<T> list = new ArrayList<T>();		
-		if (filter != null)
-			CollectionUtils.select(agents, filter, list);
-		else
-			list.addAll(agents);
+
+		List<T> list = extractAgentList(agents, filter);
 
 		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		double sum = 0;
 		
 		// compute total number of simulated positive outcomes
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i);
-			sum += (closure.getOutcome(agent) ? 1 : 0); 
+		for (T agent : list) {
+			sum += (closure.getOutcome(agent) ? 1 : 0);
 		}
 		double avgResampleAttemptPerCapita = 20.; 
 		if(maxResamplingAttempts < sum) {			//This will catch the case where maxResamplingAttempts is not included in the arguments.  Also it provides a lower bound for the user to specify, which is the size of the subset of the population whose outcomes need changing.  Anything less, and the number is automatically enlarged (in the line below).
@@ -96,7 +93,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		
 		// compute difference between simulation and target
 		double delta = sum - targetShare * n;
-//		System.out.println("start delta is ," + delta + " and size of list is " + list.size() + " sum is ," + sum);
 		
 		int count = 0;
 		
@@ -110,7 +106,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 					closure.resample(agent);
 					if (!closure.getOutcome(agent)) { 
 						delta--;
-//						System.out.println("delta is now," + delta + " count was " + count);
 						count = 0;
 					}
 				}
@@ -125,7 +120,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 					closure.resample(agent);
 					if (closure.getOutcome(agent)) { 	
 						delta++;
-//						System.out.println("delta is now," + delta + " count was " + count);
 						count = 0;
 					}
 				}
@@ -197,9 +191,8 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		int sum = 0;
 		
 		// compute total number of simulated positive outcomes
-		for (int i=0; i<n; i++) {
-			T agent = list.get(i);
-			sum += (closure.getOutcome(agent) ? 1 : 0); 
+		for (T agent : list) {
+			sum += (closure.getOutcome(agent) ? 1 : 0);
 		}
 		int avgResampleAttemptPerCapita = 20; 
 		if(maxResamplingAttempts < sum) {			//This will catch the case where maxResamplingAttempts is not included in the arguments.  Also it provides a lower bound for the user to specify, which is the size of the subset of the population whose outcomes need changing.  Anything less, and the number is automatically enlarged (in the line below).
@@ -216,7 +209,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		
 		// compute difference between simulation and target
 		double delta = sum - targetNumber;
-//		System.out.println("start delta is ," + delta + " and size of list is " + list.size() + " sum is ," + sum);
 		
 		int count = 0;
 		
@@ -230,7 +222,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 					closure.resample(agent);
 					if (!closure.getOutcome(agent)) { 
 						delta--;
-//						System.out.println("delta is now," + delta + " count was " + count);
 						count = 0;
 					}
 				}
@@ -245,7 +236,6 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 					closure.resample(agent);
 					if (closure.getOutcome(agent)) { 	
 						delta++;
-//						System.out.println("delta is now," + delta + " count was " + count);
 						count = 0;
 					}
 				}
@@ -263,8 +253,5 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 							+ "not enough of the population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
-//		System.out.println("final delta is ," + delta);
-		
 	}
-
 }

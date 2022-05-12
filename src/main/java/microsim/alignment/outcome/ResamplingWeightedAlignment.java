@@ -1,6 +1,5 @@
 package microsim.alignment.outcome;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,16 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import microsim.agent.Weight;
+import microsim.alignment.AlignmentUtils;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 import microsim.statistics.regression.RegressionUtils;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 
 /**
  * Align the population by weighted resampling.  This involves picking an agent from the relevant collection of agents at 
- * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of it's relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
+ * random with a probability that depends on an associated weight.  The chosen agent then undergoes resampling of its relevant attribute (as specified by the AlignmentOutcomeClosure).  This process is continued until
  * either the alignment target is reached, or the maximum number of attempts to resample has been reached.
  * Implementation closely follows the JAS-mine ResamplingAlignment class, which is based on:
  * "Richiardi M., Poggi A. (2014). Imputing Individual Effects in Dynamic Microsimulation Models. An application to household formation and labor market participation in Italy. International Journal of Microsimulation, 7(2), pp. 3-39."
@@ -26,7 +25,7 @@ import org.apache.commons.collections4.Predicate;
  * 
  * @author Ross Richardson
  */
-public class ResamplingWeightedAlignment<T extends EventListener & Weight> extends AbstractOutcomeAlignment<T> {
+public class ResamplingWeightedAlignment<T extends EventListener & Weight> extends AbstractOutcomeAlignment<T> implements AlignmentUtils<T> {
 
 
 	//-----------------------------------------------------------------------------------
@@ -69,18 +68,13 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 		else if(targetShare < 0.) {
 			throw new IllegalArgumentException("ResamplingWeightedAlignment targetShare is negative!  This is impossible to reach.");
 		}
-		
-		List<T> list = new ArrayList<T>();		
-		if (filter != null)
-			CollectionUtils.select(agents, filter, list);
-		else
-			list.addAll(agents);
+
+		List<T> list = extractAgentList(agents, filter);
 
 		double total = 0.;
 		
 		// compute total number of simulated positive outcomes
-		for (int i = 0; i < list.size(); i++) {
-			T agent = list.get(i);
+		for (T agent : list) {
 			double weight = agent.getWeight();
 			total += weight;
 		}		
@@ -128,12 +122,8 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 		if(targetNumber < 0) {
 			throw new IllegalArgumentException("ResamplingWeightedAlignment targetNumber is negative!  This is impossible to reach.");
 		}
-		
-		List<T> list = new ArrayList<T>();		
-		if (filter != null)
-			CollectionUtils.select(agents, filter, list);
-		else
-			list.addAll(agents);
+
+		List<T> list = extractAgentList(agents, filter);
 		
 		doAlignment(list, closure, targetNumber, maxResamplingAttempts);
 		
@@ -149,22 +139,20 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 		int avgResampleAttemptsPerAgent = 20;
 		double sum = 0.;
 		double total = 0.;
-		HashMap<T, Double> trueAgentMap = new HashMap<T, Double>();
-		HashMap<T, Double> falseAgentMap = new HashMap<T, Double>();
+		HashMap<T, Double> trueAgentMap = new HashMap<>();
+		HashMap<T, Double> falseAgentMap = new HashMap<>();
 		
 		// compute total number of simulated positive outcomes
-		for (int i=0; i< list.size(); i++) {
-			T agent = list.get(i);
+		for (T agent : list) {
 			double weight = agent.getWeight();
-			if(weight <= 0.) {
+			if (weight <= 0.) {
 				throw new IllegalArgumentException("Weight cannot be zero or negative in ResamplingWeightedAlignment!");
 			}
 			total += weight;
-			if(closure.getOutcome(agent)) {
+			if (closure.getOutcome(agent)) {
 				sum += weight;
 				trueAgentMap.put(agent, weight);
-			} 
-			else {
+			} else {
 				falseAgentMap.put(agent, weight);
 			}
 		}
