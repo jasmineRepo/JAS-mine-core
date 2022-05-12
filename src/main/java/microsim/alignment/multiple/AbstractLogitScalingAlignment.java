@@ -3,14 +3,14 @@ package microsim.alignment.multiple;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-
 import lombok.val;
-import org.apache.commons.collections4.CollectionUtils;
+import microsim.alignment.AlignmentUtils;
 import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.InputMismatchException;
+import java.util.List;
 
 import static jamjam.Mean.mean;
 import static jamjam.Sum.sum;
@@ -34,12 +34,16 @@ import static java.lang.System.arraycopy;
  *           This code extends the original algorithm by adding the case of weighted samples. It also does add a filter
  *           for the whole population to align only the relevant subpopulation.
  *
+ *           In the degenerate case when all probabilities are given as open-point distributions this algorithm fails to
+ *           converge. This happens due to the fact it conserves 0s & 1s, thus, the entire array of probabilities does
+ *           not change.
+ *
  * @param <T> The Type parameter usually representing the agent class.
  *
  * @see <a href="https://ideas.repec.org/a/ijm/journl/v9y2016i3p89-102.html">Peter Stephensen, A General Method
  *      for Alignment in Microsimulation models, International Journal of Microsimulation (2016) 9(3) 89-102</a>
  */
-public abstract class AbstractLogitScalingAlignment<T> {
+public abstract class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
     /**
      * @return totalChoiceNumber The number of possible outcomes of a given event that is the length of
      *                           the {@code targetShare} parameter.
@@ -82,7 +86,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @return target The target share of the relevant subpopulation. Sums of the aligned probabilities must be equal
      *                to these values.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] target;
+    @Getter(AccessLevel.PACKAGE) private double[] targetShare;
 
     /**
      * @return errorThreshold Cumulative error threshold of the iterative scheme. Calculated for the whole
@@ -120,9 +124,9 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param filter A filter to select a subpopulation from a given collection of {@code agents}.
      * @param closure An object that specifies how to get the (unaligned) probability of the agent and how to set the
      *                result of the aligned probability.
-     * @param targetShare The target share of the relevant subpopulation (specified as a proportion of {@code agents}
-     *                    filtered with {@code filter} population). Means of the aligned probabilities must be equal
-     *                    to these values.
+     * @param targetProbabilityDistribution The target share of the relevant subpopulation (specified as a proportion of
+     *                                      {@code agents} filtered with {@code filter} population). Means of the
+     *                                      aligned probabilities must be equal to these values.// fixme rewrite this
      * @param maxNumberIterations The maximum number of iterations until the iterative loop in the alignment algorithm
      *                            terminates. The resulting probabilities at that time are then used
      * @param precision The appropriate value here depends on the precision of the probabilities. If the probabilities
@@ -130,12 +134,12 @@ public abstract class AbstractLogitScalingAlignment<T> {
      * @param warningsOn Enables or disables the warning thrown by {@link #throwDivergenceError(double, boolean, double,
      *                   double, double, int, int)}.
      */
-    final public void align(Collection<T> agents, Predicate<T> filter,
-                            AlignmentMultiProbabilityClosure<T> closure, double @NonNull [] targetShare,
-                            int maxNumberIterations, double precision, boolean warningsOn){
+    final public void align(Collection<T> agents, Predicate<T> filter, AlignmentMultiProbabilityClosure<T> closure,
+                            double @NonNull [] targetProbabilityDistribution, int maxNumberIterations, double precision,
+                            boolean warningsOn){
         // todo sanity check - has to have at least two choices. Do we need it everywhere?
 
-        totalChoiceNumber = targetShare.length;
+        totalChoiceNumber = targetProbabilityDistribution.length;
 
         filteredAgentList = extractAgentList(agents, filter);
         agentNumber = filteredAgentList.size();
@@ -145,7 +149,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
         weights = new double [getFilteredAgentList().size()];
         extractWeights(weights);
 
-        validateInputData(targetShare, maxNumberIterations, precision, weights);
+        validateInputData(targetProbabilityDistribution, maxNumberIterations, precision, weights);
         
         prob = new double[agentNumber][totalChoiceNumber];
 
@@ -157,16 +161,16 @@ public abstract class AbstractLogitScalingAlignment<T> {
                 prob[i][choice] = closure.getProbability(agent)[choice] * weights[i];
         }
 
-        target = new double[totalChoiceNumber];
+        targetShare = new double[totalChoiceNumber];
         for(var choice = 0; choice < totalChoiceNumber; choice++)
-            target[choice] = targetShare[choice] * total;
+            targetShare[choice] = targetProbabilityDistribution[choice] * total;
         errorThreshold = precision * total;
 
         probSumOverAgents = new double[totalChoiceNumber];
         previousProbSumOverAgents = new double[totalChoiceNumber];
 
         while(error >= errorThreshold && count < maxNumberIterations) {
-            probabilityAdjustmentCycle(previousProbSumOverAgents, probSumOverAgents, target, weights, tempAgents,
+            probabilityAdjustmentCycle(previousProbSumOverAgents, probSumOverAgents, targetShare, weights, tempAgents,
                                        prob);
             error = recalculateProbabilityError(previousProbSumOverAgents, probSumOverAgents);
             count++;
@@ -176,8 +180,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
     }
 
     /**
-     * This method uses pre-set alignment parameters that define its precision (1.e-5) and the number of
-     * iterations (100), it further passes the parameters to the full {@link #align(Collection, Predicate,
+     * This method uses pre-set alignment parameters that define its precision (1.e-15) and the number of
+     * iterations (50), it further passes the parameters to the full {@link #align(Collection, Predicate,
      * AlignmentMultiProbabilityClosure, double[], int, double, boolean) align} method.
      * Use the {@link #align(Collection, Predicate, AlignmentMultiProbabilityClosure, double[], int, double, boolean)
      * align} method if these parameters are to be adjusted.
@@ -192,7 +196,7 @@ public abstract class AbstractLogitScalingAlignment<T> {
      */
     public void align(Collection<T> agents, Predicate<T> filter,
                       AlignmentMultiProbabilityClosure<T> closure, double[] targetShare) {
-        align(agents, filter, closure, targetShare, 100, 1.e-5, true);
+        align(agents, filter, closure, targetShare, 50, 1.e-15, true);
     }
 
     /**
@@ -230,21 +234,6 @@ public abstract class AbstractLogitScalingAlignment<T> {
         for (var weight : weights)
             if (weight <= 0. || isNaN(weight) || isInfinite(weight))
                 throw new IllegalArgumentException("Agent's weight cannot be <= 0, NaN, or Inf.");
-    }
-
-    /**
-     * Sorts out {@code agents} according to the filter requirements.
-     * @param agents An unsorted list of agents.
-     * @param filter Null, or a predicate, one for all agents - to filter some of them out.
-     * @return A filtered list of agents.
-     */
-    final @NotNull List<T> extractAgentList(final Collection<T> agents, final @Nullable Predicate<T> filter){
-        List<T> list = new ArrayList<>();
-        if (filter != null)
-            CollectionUtils.select(agents, filter, list);
-        else
-            list.addAll(agents);
-        return list;
     }
 
     /**
@@ -352,6 +341,9 @@ public abstract class AbstractLogitScalingAlignment<T> {
                                           final double @NonNull [] targetSum, final double @NonNull [] w,
                                           final double @NonNull [] agentSizeArray,
                                           final double @NonNull [][] probabilities){
+        // fixme add target/agent size check everywhere, at least two both
+        // fixme there is no need to check for the interface,
+        //  try name calling instead https://www.tutorialspoint.com/java/lang/class_getmethod.htm
         for (val probability : probabilities)
             if (probability == null)
                 throw new NullPointerException("A sub-array of probabilities is expected, but null was provided.");
@@ -406,8 +398,8 @@ public abstract class AbstractLogitScalingAlignment<T> {
         arraycopy(newProbSum, 0, oldProbSum, 0, targetSum.length);
 
         for(var choice = 0; choice < targetSum.length; choice++) {
-            for (var agent = 0; agent < agentSizeArray.length; agent++)
-                agentSizeArray[agent] = probabilities[agent][choice];
+            for (var agentId = 0; agentId < agentSizeArray.length; agentId++)
+                agentSizeArray[agentId] = probabilities[agentId][choice];
             gamma[choice] = targetSum[choice] / sum(agentSizeArray);
         }
         return gamma;
