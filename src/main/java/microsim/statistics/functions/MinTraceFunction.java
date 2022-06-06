@@ -1,12 +1,13 @@
 package microsim.statistics.functions;
 
+import lombok.Getter;
 import microsim.event.CommonEventType;
 import microsim.exception.SimulationRuntimeException;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IFloatSource;
-import microsim.statistics.IIntSource;
-import microsim.statistics.ILongSource;
-import microsim.statistics.IUpdatableSource;
+import microsim.statistics.FloatSource;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.IntSource;
+import microsim.statistics.LongSource;
+import microsim.statistics.UpdatableSource;
 import microsim.statistics.reflectors.DoubleInvoker;
 import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
@@ -21,28 +22,9 @@ import microsim.statistics.reflectors.LongInvoker;
  * the simulation model has to run for a long time, condition which implies the growth of the
  * memory occupancy. Moreover the MemorylessSeries objects are much faster than the Series one,
  * because they pre-compute the statistics operation step by step. Trying to compute a mean
- * of a Series object, force the Mean function to sum all the values, every time series is updated. 
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa and Ross Richardson
- * <p>
+ * of a Series object, force the Mean function to sum all the values, every time series is updated.
  */
-public abstract class MinTraceFunction extends AbstractFunction implements IDoubleSource  {
+public abstract class MinTraceFunction extends AbstractFunction implements DoubleSource  {
 				
 	public enum Variables {
 		LastValue,
@@ -57,7 +39,7 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
+	 * @param type The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */
 	@Override
@@ -70,38 +52,19 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	
 	/**
 	 * An implementation of the MemorylessSeries class, which manages long type data sources.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa
-	 *
 	 */
-	public static class Long extends MinTraceFunction implements ILongSource {
-		protected long min = java.lang.Long.MAX_VALUE;
+	public static class Long extends MinTraceFunction implements LongSource {
+		@Getter protected long min = java.lang.Long.MAX_VALUE;
 	
-		protected ILongSource target;
-		private Enum<?> valueID;
+		protected LongSource target;
+		private final Enum<?> valueID;
 
-		private long lastRead;
+		@Getter private long lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
-		public Long(ILongSource source, Enum<?> valueID) {
+		public Long(LongSource source, Enum<?> valueID) {
 			super();
 			target = source;
 			this.valueID = valueID;
@@ -114,14 +77,14 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 		public Long(Object source, String valueName, boolean getFromMethod) {
 			super();
 			target = new LongInvoker(source, valueName, getFromMethod);
-			valueID = ILongSource.Variables.Default;
+			valueID = LongSource.Variables.Default;
 		}
 
 		/** Read the source values and update statistics.*/
 		public void applyFunction() {
 			super.applyFunction();
-			if (target instanceof IUpdatableSource)
-				((IUpdatableSource) target).updateSource();
+			if (target instanceof UpdatableSource)
+				((UpdatableSource) target).updateSource();
 			lastRead = target.getLongValue(valueID);
 
 			if (lastRead < min)
@@ -133,73 +96,42 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			switch ( (MinTraceFunction.Variables) valueID) {
-				case LastValue :			return (double) lastRead;
-				case Min :				return (double) min;
-				default :	throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> (double) lastRead;
+				case Min -> (double) min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
 		/** Return the result of a given statistic.
 			*  @param valueID One of the F_ constants representing available statistics.
 			*  @return The computed value.
 			*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public long getLongValue(Enum<?> valueID) {
-			switch ( (MinTraceFunction.Variables) valueID) {
-				case LastValue :			return lastRead;
-				case Min :				return  min;
-				default :	throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
-		}
-
-
-		/** Return the last long value read from the source object.
-			*  @return A long value collected at the last reading operation.*/
-		public long getLastValue() {
-			return lastRead;
-		}
-		
-		/** The minimum function.
-		 *  @return The minimum value.*/
-		public long getMin()
-		{
-			return min;
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> lastRead;
+				case Min -> min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
 	}
 
 	/**
 	 * An implementation of the MemorylessSeries class, which manages double type data sources.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
-	public static class Double extends MinTraceFunction implements IDoubleSource {
-		protected double min = java.lang.Double.MAX_VALUE;
+	public static class Double extends MinTraceFunction implements DoubleSource {
+		@Getter protected double min = java.lang.Double.MAX_VALUE;
 		
-		protected IDoubleSource target;
-		private Enum<?> valueID;
+		protected DoubleSource target;
+		private final Enum<?> valueID;
 
-		private double lastRead;
+		@Getter private double lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
-		public Double(IDoubleSource source, Enum<?> valueID) {
+		public Double(DoubleSource source, Enum<?> valueID) {
 			super();
 			target = source;
 			this.valueID = valueID;
@@ -212,14 +144,14 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 		public Double(Object source, String valueName, boolean getFromMethod) {
 			super();
 			target = new DoubleInvoker(source, valueName, getFromMethod);
-			valueID = IDoubleSource.Variables.Default;
+			valueID = DoubleSource.Variables.Default;
 		}
 
 		/** Read the source values and update statistics.*/
 		public void applyFunction() {
 			super.applyFunction();
-			if (target instanceof IUpdatableSource)
-				((IUpdatableSource) target).updateSource();
+			if (target instanceof UpdatableSource)
+				((UpdatableSource) target).updateSource();
 			lastRead = target.getDoubleValue(valueID);
 
 			if (lastRead < min)
@@ -231,62 +163,30 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			switch( (MinTraceFunction.Variables) valueID)
-			{
-				case LastValue: return lastRead;
-				case Min: return min;
-				default: throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
-		}
-
-		/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
-		public double getLastValue() {
-			return lastRead;
-		}
-
-		/** The minimum function.
-		 *  @return The minimum value.*/
-		public double getMin()
-		{
-			return min;
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> lastRead;
+				case Min -> min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
 	}
 
 	/**
 	 * An implementation of the MemorylessSeries class, which manages integer type data sources.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
-	public static class Integer extends MinTraceFunction implements IIntSource {
-		protected int min = java.lang.Integer.MAX_VALUE;
+	public static class Integer extends MinTraceFunction implements IntSource {
+		@Getter protected int min = java.lang.Integer.MAX_VALUE;
 		
-		protected IIntSource target;
-		private Enum<?> valueID;
+		protected IntSource target;
+		private final Enum<?> valueID;
 
-		private int lastRead;
+		@Getter private int lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
-		public Integer(IIntSource source, Enum<?> valueID) {
+		public Integer(IntSource source, Enum<?> valueID) {
 			super();
 			target = source;
 			this.valueID = valueID;
@@ -299,14 +199,14 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 		public Integer(Object source, String valueName, boolean getFromMethod) {
 			super();
 			target = new IntegerInvoker(source, valueName, getFromMethod);
-			valueID = IIntSource.Variables.Default;
+			valueID = IntSource.Variables.Default;
 		}
 
 		/** Read the source values and update statistics.*/
 		public void applyFunction() {
 			super.applyFunction();
-			if (target instanceof IUpdatableSource)
-				((IUpdatableSource) target).updateSource();
+			if (target instanceof UpdatableSource)
+				((UpdatableSource) target).updateSource();
 			lastRead = target.getIntValue(valueID);
 
 			if (lastRead < min)
@@ -318,70 +218,39 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			switch( (MinTraceFunction.Variables) valueID)
-			{
-				case LastValue: return lastRead;
-				case Min: return min;
-				default: throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> lastRead;
+				case Min -> min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
 		
 		public int getIntValue(Enum<?> valueID) {
-			switch( (MinTraceFunction.Variables)valueID)
-			{
-				case LastValue: return lastRead;
-				case Min: return min;
-				default: throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> lastRead;
+				case Min -> min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
-		/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
-		public int getLastValue() {
-			return lastRead;
-		}
-
-		/** The minimum function.
-		*  @return The minimum value.*/
-		public int getMin() {
-			return min;
-		}
-
 	}
 
 	/**
 	 * An implementation of the MemorylessSeries class, which manages float type data sources.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
-	public static class Float extends MinTraceFunction implements IFloatSource {
-		protected float min = java.lang.Float.MAX_VALUE;
+	public static class Float extends MinTraceFunction implements FloatSource {
+		@Getter protected float min = java.lang.Float.MAX_VALUE;
 		
-		protected IFloatSource target;
-		private Enum<?> valueID;
+		protected FloatSource target;
+		private final Enum<?> valueID;
 
-		private float lastRead;
+		@Getter private float lastRead;
 
 		/** Create a basic statistic probe on a IDblSource object.
 		 *  @param source The IDblSource object.
 		 *  @param valueID The value identifier defined by source object. */
-		public Float(IFloatSource source, Enum<?> valueID) {
+		public Float(FloatSource source, Enum<?> valueID) {
 			super();
 			target = source;
 			this.valueID = valueID;
@@ -394,14 +263,14 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 		public Float(Object source, String valueName, boolean getFromMethod) {
 			super();
 			target = new FloatInvoker(source, valueName, getFromMethod);
-			valueID = IFloatSource.Variables.Default;
+			valueID = FloatSource.Variables.Default;
 		}
 
 		/** Read the source values and update statistics.*/
 		public void applyFunction() {
 			super.applyFunction();
-			if (target instanceof IUpdatableSource)
-				((IUpdatableSource) target).updateSource();
+			if (target instanceof UpdatableSource)
+				((UpdatableSource) target).updateSource();
 			lastRead = target.getFloatValue(valueID);
 
 			if (lastRead < min)
@@ -413,11 +282,12 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 				*  @return The computed value.
 				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public double getDoubleValue(Enum<?> valueID) {
-			switch ( (MinTraceFunction.Variables) valueID) {
-				case LastValue :			return (double) lastRead;
-				case Min :				return (double) min;
-				default :	throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> (double) lastRead;
+				case Min -> (double) min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
 		
 		/** Return the result of a given statistic.
@@ -425,24 +295,12 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 			*  @return The computed value.
 			*  @throws UnsupportedOperationException If the given valueID is not supported.*/
 		public float getFloatValue(Enum<?> valueID) {
-			switch ( (MinTraceFunction.Variables) valueID) {
-				case LastValue :			return lastRead;
-				case Min :				return min;
-				default :	throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
-			}
+			return switch ((MinTraceFunction.Variables) valueID) {
+				case LastValue -> lastRead;
+				case Min -> min;
+				default ->
+						throw new UnsupportedOperationException("The computer does not support an operation with id " + valueID);
+			};
 		}
-
-				/** Return the last double value read from the source object.
-			*  @return A double value collected at the last reading operation.*/
-		public float getLastValue() {
-			return lastRead;
-		}
-
-		/** The minimum function.
-			*  @return The minimum value.*/
-		public float getMin() {
-			return min;
-		}
-
 	}
 }

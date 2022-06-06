@@ -1,8 +1,7 @@
 package microsim.statistics;
 
-import java.util.Collection;
-import java.util.Iterator;
-
+import lombok.Getter;
+import lombok.Setter;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.reflectors.DoubleInvoker;
@@ -10,42 +9,25 @@ import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
+import java.util.Collection;
+
 /**
  * A cross section is a collection of values each of them representing the status of a given
- * variable of an element of a collection of agents. 
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa
- *
+ * variable of an element of a collection of agents.
  */
-public abstract class CrossSection implements EventListener, IUpdatableSource, ISourceObjectArray
+public abstract class CrossSection implements EventListener, UpdatableSource, SourceObjectArray
 {
 	protected Object[] sourceList;
 	
 	protected TimeChecker timeChecker = new TimeChecker();;
 	
-	protected ICollectionFilter filter = null;
+	@Setter @Getter	protected CollectionFilter filter = null;
 	
 	public abstract void updateSource();
 
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
+	 * @param type The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */
 	public void onEvent(Enum<?> type) {
@@ -57,7 +39,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 
 	public Object[] getSourceArray() {	return sourceList; }
 			
-	public static class Double extends CrossSection implements IDoubleArraySource
+	public static class Double extends CrossSection implements DoubleArraySource
 	{
 		protected double[] valueList;
 	
@@ -81,11 +63,10 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		public Double(Collection<?> source)
 		{ 
 			target = source;
-			this.valueID = IDoubleSource.Variables.Default;
+			this.valueID = DoubleSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -93,7 +74,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		public Double(Collection<?> source, Class<?> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IDoubleSource.Variables.Default;
+			this.valueID = DoubleSource.Variables.Default;
 			invoker = new DoubleInvoker(objectClass, valueName, getFromMethod);
 		}
 
@@ -104,13 +85,13 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 	
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
-			buf.append("CrossSection.Double [");
+			StringBuilder buf = new StringBuilder();
+			buf.append("CrossSection.Double [");//duplicates again
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]");
+			buf.append(valueList[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -125,22 +106,16 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getDouble(obj);
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IDoubleSource) obj).getDoubleValue(valueID);
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((DoubleSource) obj).getDoubleValue(valueID);
 							sourceList[i++] = obj;
 						}
 					}
@@ -149,17 +124,13 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			}
 			else
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
+					for (Object o : target) {
 						valueList[i] = invoker.getDouble(o);
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
-						valueList[i] = ((IDoubleSource) o).getDoubleValue(valueID);
+					for (Object o : target) {
+						valueList[i] = ((DoubleSource) o).getDoubleValue(valueID);
 						sourceList[i++] = o;
 					}
 						
@@ -168,7 +139,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 	}
 	
 
-	public static class Long extends CrossSection implements ILongArraySource
+	public static class Long extends CrossSection implements LongArraySource
 	{
 		protected long[] valueList;
 	
@@ -176,8 +147,8 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		protected Collection<?> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of ILongSource objects.
-		 *  @param source The collection containing ILongSource object.
+		/** Create a statistic probe on a collection of LongSource objects.
+		 *  @param source The collection containing LongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(Collection<?> source, Enum<?> valueID)
 		{ 
@@ -185,18 +156,17 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			this.valueID = valueID;
 		}
 
-		/** Create a statistic probe on a collection of ILongSource objects.
-		 * It uses the ILongSource.DEFAULT variable id.
-		 *  @param source The collection containing ILongSource object.
+		/** Create a statistic probe on a collection of LongSource objects.
+		 * It uses the LongSource.DEFAULT variable id.
+		 *  @param source The collection containing LongSource object.
 		 */
 		public Long(Collection<?> source)
 		{ 
 			target = source;
-			this.valueID = ILongSource.Variables.Default;
+			this.valueID = LongSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -204,7 +174,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		public Long(Collection<?> source, Class<?> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = ILongSource.Variables.Default;
+			this.valueID = LongSource.Variables.Default;
 			invoker = new LongInvoker(objectClass, valueName, getFromMethod);
 		}
 		
@@ -225,13 +195,13 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Double [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]");
+			buf.append(valueList[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -246,22 +216,16 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getLong(obj);
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((ILongSource) obj).getLongValue(valueID);
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((LongSource) obj).getLongValue(valueID);
 							sourceList[i++] = obj;
 						}
 					}
@@ -270,24 +234,20 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			}
 			else
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
+					for (Object o : target) {
 						valueList[i] = invoker.getLong(o);
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
-						valueList[i] = ((ILongSource) o).getLongValue(valueID);
+					for (Object o : target) {
+						valueList[i] = ((LongSource) o).getLongValue(valueID);
 						sourceList[i++] = o;
 					}
 						
 		}
 	}
 	
-	public static class Integer extends CrossSection implements IIntArraySource
+	public static class Integer extends CrossSection implements IntArraySource
 	{
 		protected int[] valueList;
 	
@@ -295,8 +255,8 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		protected Collection<?> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IIntSource objects.
-		 *  @param source The collection containing IIntSource object.
+		/** Create a statistic probe on a collection of IntSource objects.
+		 *  @param source The collection containing IntSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(Collection<?> source, Enum<?> valueID)
 		{ 
@@ -304,18 +264,17 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			this.valueID = valueID;
 		}
 
-		/** Create a statistic probe on a collection of IIntSource objects. 
-		 *  It uses the IIntSource.DEFAULT variable id.
-		 *  @param source The collection containing IIntSource object.
+		/** Create a statistic probe on a collection of IntSource objects.
+		 *  It uses the IntSource.DEFAULT variable id.
+		 *  @param source The collection containing IntSource object.
 		 */
 		public Integer(Collection<?> source)
 		{ 
 			target = source;
-			this.valueID = IIntSource.Variables.Default;
+			this.valueID = IntSource.Variables.Default;
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -323,7 +282,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		public Integer(Collection<?> source, Class<?> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IIntSource.Variables.Default;
+			this.valueID = IntSource.Variables.Default;
 			invoker = new IntegerInvoker(objectClass, valueName, getFromMethod);
 		}
 		
@@ -336,20 +295,20 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		{ 
 			double[] list = new double[valueList.length];
 			for (int i = 0; i < valueList.length; i++)
-				list[i] = (double) valueList[i];
+				list[i] = valueList[i];
 
 			return list; 
 		}
 
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Double [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]");
+			buf.append(valueList[size]).append("]");
 			return buf.toString();
 		}
 		
@@ -364,22 +323,16 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getInt(obj);
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IIntSource) obj).getIntValue(valueID);
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((IntSource) obj).getIntValue(valueID);
 							sourceList[i++] = obj;
 						}
 					}
@@ -388,24 +341,20 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			}
 			else
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
+					for (Object o : target) {
 						valueList[i] = invoker.getInt(o);
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
-						valueList[i] = ((IIntSource) o).getIntValue(valueID);
+					for (Object o : target) {
+						valueList[i] = ((IntSource) o).getIntValue(valueID);
 						sourceList[i++] = o;
 					}
 						
 		}
 	}
 	
-	public static class Float extends CrossSection implements IFloatArraySource
+	public static class Float extends CrossSection implements FloatArraySource
 	{
 		protected float[] valueList;
 	
@@ -413,8 +362,8 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		protected Collection<?> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IFloatSource objects.
-		 *  @param source The collection containing IFloatSource object.
+		/** Create a statistic probe on a collection of FloatSource objects.
+		 *  @param source The collection containing FloatSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(Collection<?> source, Enum<?> valueID)
 		{ 
@@ -422,18 +371,17 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			this.valueID = valueID;
 		}
 		
-		/** Create a statistic probe on a collection of IFloatSource objects. 
-		 *  It uses the IFloatSource.DEFAULT variable id.
-		 *  @param source The collection containing IFloatSource object.
+		/** Create a statistic probe on a collection of FloatSource objects.
+		 *  It uses the FloatSource.DEFAULT variable id.
+		 *  @param source The collection containing FloatSource object.
 		 */
 		public Float(Collection<?> source)
 		{ 
 			target = source;
-			this.valueID = IFloatSource.Variables.Default;
+			this.valueID = FloatSource.Variables.Default;
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -441,7 +389,7 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		public Float(Collection<?> source, Class<?> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IFloatSource.Variables.Default;
+			this.valueID = FloatSource.Variables.Default;
 			invoker = new FloatInvoker(objectClass, valueName, getFromMethod);
 		}
 			
@@ -454,20 +402,20 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		{ 
 			double[] list = new double[valueList.length];
 			for (int i = 0; i < valueList.length; i++)
-				list[i] = (double) valueList[i];
+				list[i] = valueList[i];
 
 			return list; 
 		}
 			
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Double [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]");
+			buf.append(valueList[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -482,22 +430,16 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getFloat(obj);
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IFloatSource) obj).getFloatValue(valueID);
+					for (Object obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((FloatSource) obj).getFloatValue(valueID);
 							sourceList[i++] = obj;
 						}
 					}
@@ -506,35 +448,18 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 			}
 			else
 				if (invoker != null)
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
+					for (Object o : target) {
 						valueList[i] = invoker.getFloat(o);
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<?> it = target.iterator(); it.hasNext(); )
-					{
-						Object o = it.next();
-						valueList[i] = ((IFloatSource) o).getFloatValue(valueID);
+					for (Object o : target) {
+						valueList[i] = ((FloatSource) o).getFloatValue(valueID);
 						sourceList[i++] = o;
 					}
 						
 		}
 		
-	}
-	/**
-	 * @return
-	 */
-	public ICollectionFilter getFilter() {
-		return filter;
-	}
-
-	/**
-	 * @param filter
-	 */
-	public void setFilter(ICollectionFilter filter) {
-		this.filter = filter;
 	}
 
 	/** Return the current status of the time checker. A time checker avoid the object to update

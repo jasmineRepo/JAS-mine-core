@@ -1,96 +1,55 @@
 package microsim.statistics.functions;
 
-import microsim.statistics.IDoubleArraySource;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IFloatArraySource;
-import microsim.statistics.IFloatSource;
-import microsim.statistics.IIntArraySource;
-import microsim.statistics.IIntSource;
-import microsim.statistics.ILongArraySource;
-import microsim.statistics.ILongSource;
+import microsim.statistics.*;
+import microsim.statistics.DoubleArraySource;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.FloatArraySource;
+import microsim.statistics.LongSource;
 
 /**
  * This class computes the maximum value in an array of source values. According to the source data type
  * there are four data-type oriented implementations. Each of them implements always the 
- * <i>IDoubleSource</i> interface.
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa and Ross Richardson
- * <p>
+ * <i>DoubleSource</i> interface.
  */
-public abstract class MaxArrayFunction extends AbstractArrayFunction implements IDoubleSource {
+public abstract class MaxArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
 	/** Create a maximum function on a float array source.
 	 * @param source The data source.
 	 */
-	public MaxArrayFunction(IFloatArraySource source) {
+	public MaxArrayFunction(FloatArraySource source) {
 		super(source);
 	}
 
 	/** Create a maximum function on an integer array source.
 	 * @param source The data source.
 	 */
-	public MaxArrayFunction(IIntArraySource source) {
+	public MaxArrayFunction(IntArraySource source) {
 		super(source);
 	}
 
 	/** Create a maximum function on a long array source.
 	 * @param source The data source.
 	 */
-	public MaxArrayFunction(ILongArraySource source) {
+	public MaxArrayFunction(LongArraySource source) {
 		super(source);
 	}
 
 	/** Create a maximum function on a double array source.
 	 * @param source The data source.
 	 */
-	public MaxArrayFunction(IDoubleArraySource source) {
+	public MaxArrayFunction(DoubleArraySource source) {
 		super(source);
 	}
 	
 	/**
 	 * MaxFunction operating on double source values.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa
-	 *
 	 */
-	public static class Double extends MaxArrayFunction implements IDoubleSource
+	public static class Double extends MaxArrayFunction implements DoubleSource
 	{
 		/** Create a maximum function on a double array source.
 		 * @param source The data source.
 		 */
-		public Double(IDoubleArraySource source) {
+		public Double(DoubleArraySource source) {
 			super(source);
 		}
 
@@ -101,10 +60,10 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public void apply(double[] data) {
 			dmax = java.lang.Double.MIN_VALUE;
-			
-			for (int i = 0; i < data.length; i++)
-				if (dmax < data[i])
-					dmax = data[i];
+
+			for (double datum : data)
+				if (dmax < datum)
+					dmax = datum;
 					
 		}
 
@@ -116,32 +75,13 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	
 	/**
 	 * MaxFunction operating on long source values.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa
-	 *
 	 */
-	public static class Long extends MaxArrayFunction implements ILongSource
+	public static class Long extends MaxArrayFunction implements LongSource
 	{
 		/** Create a maximum function on a long array source.
 		 * @param source The data source.
 		 */
-		public Long(ILongArraySource source) {
+		public Long(LongArraySource source) {
 			super(source);
 		}
 
@@ -152,10 +92,10 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public void apply(long[] data) {
 			lmax = java.lang.Long.MIN_VALUE;
-			
-			for (int i = 0; i < data.length; i++)
-				if (lmax < data[i])
-					lmax = data[i];
+
+			for (long datum : data)
+				if (lmax < datum)
+					lmax = datum;
 					
 		}
 
@@ -174,32 +114,13 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	
 	/**
 	 * MaxFunction operating on integer source values.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa
-	 *
 	 */
-	public static class Integer extends MaxArrayFunction implements IIntSource
+	public static class Integer extends MaxArrayFunction implements IntSource
 	{
 		/** Create a maximum function on an integer array source.
 		 * @param source The data source.
 		 */
-		public Integer(IIntArraySource source) {
+		public Integer(IntArraySource source) {
 			super(source);
 		}
 
@@ -211,10 +132,10 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		public void apply(int[] data) {
 			
 			imax = java.lang.Integer.MIN_VALUE;
-			
-			for (int i = 0; i < data.length; i++)
-				if (imax < data[i])
-					imax = data[i];
+
+			for (int datum : data)
+				if (imax < datum)
+					imax = datum;
 		}
 
 		/* (non-Javadoc)
@@ -234,32 +155,13 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	
 	/**
 	 * MaxFunction operating on float source values.
-	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
-	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
-	public static class Float extends MaxArrayFunction implements IFloatSource
+	public static class Float extends MaxArrayFunction implements FloatSource
 	{
 		/** Create a maximum function on an float array source.
 		 * @param source The data source.
 		 */
-		public Float(IFloatArraySource source) {
+		public Float(FloatArraySource source) {
 			super(source);
 		}
 
@@ -270,11 +172,10 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public void apply(float[] data) {			
 			fmax = java.lang.Float.MIN_VALUE;
-			
-			for (int i = 0; i < data.length; i++)
-//				if (fmax > data[i])
-				if (fmax < data[i])					//Corrected by Ross
-					fmax = data[i];
+
+			for (float datum : data)
+				if (fmax < datum)
+					fmax = datum;
 		}
 
 		/* (non-Javadoc)

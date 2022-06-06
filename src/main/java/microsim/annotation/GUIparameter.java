@@ -14,13 +14,12 @@ import java.lang.annotation.ElementType;
  * @author ross richardson
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD }) 
+@Target({ElementType.FIELD})
 public @interface GUIparameter {
 
-	public String section() default "";
+	String section() default "";
 	
-	public String name() default "";
+	String name() default "";
 	
-	public String description() default "";
-	
+	String description() default "";
 }

@@ -1,8 +1,8 @@
 package microsim.data;
 
-import java.util.Collection;
-
 import microsim.data.db.DatabaseUtils;
+
+import java.util.Collection;
 
 /**
  * DataExport is a class that handles the exporting to data to an output database and/or .csv files.  Note that only numbers, enums 
@@ -13,9 +13,9 @@ import microsim.data.db.DatabaseUtils;
  */
 public class DataExport {
 
-	private ExportCSV csvExport;
-	private boolean toDatabase;
-	private boolean toCSV;
+	private ExportToCSV csvExport;
+	private final boolean toDatabase;
+	private final boolean toCSV;
 	private Object targetObject;
 	private Collection<?> collectionTarget;
 	
@@ -28,11 +28,11 @@ public class DataExport {
 	 * @param exportToCSVfile - set to true if the user wants to export to .csv files named after the class name of the targetCollection
 	 */
 	public DataExport(Collection<?> targetCollection, boolean exportToDatabase, boolean exportToCSVfile) {
-		this.collectionTarget = targetCollection;
+		collectionTarget = targetCollection;
 		toDatabase = exportToDatabase;
 		toCSV = exportToCSVfile;
 		if(toCSV) {
-			csvExport = new ExportCSV(collectionTarget); 
+			csvExport = new ExportToCSV(collectionTarget);
 		}
 	}
 
@@ -49,9 +49,8 @@ public class DataExport {
 		targetObject = targetSingleObject; 
 		toDatabase = exportToDatabase;
 		toCSV = exportToCSVfile;
-		
 		if(toCSV) {
-			csvExport = new ExportCSV(targetObject); 
+			csvExport = new ExportToCSV(targetObject);
 		}
 	}
 		

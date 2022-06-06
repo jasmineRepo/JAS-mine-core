@@ -1,16 +1,7 @@
 package microsim.statistics.regression;
 
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
-import microsim.statistics.regression.RegressionColumnNames;
-
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
@@ -18,6 +9,8 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.RandomGenerator;
+
+import java.util.*;
 
 public class RegressionUtils {
 
@@ -298,9 +291,9 @@ public class RegressionUtils {
 		}
 		
 		//Linear interpolation of event domain
-		double event = events[i-1] + (events[i] - events[i-1]) * ((toss + weights[i-1] - x) / weights[i-1]);		//The expression in the last parentheses is derived from (toss - (x - prob[i-1])) / (x - (x - prob[i-1])), where x is the cumulative probability at the start of events[i] and (x - prob[i-1]) is the cumulative probability at the start of events[i-1]  
-		
-		return event;
+		//The expression in the last parentheses is derived from (toss - (x - prob[i-1])) / (x - (x - prob[i-1])), where x is the cumulative probability at the start of events[i] and (x - prob[i-1]) is the cumulative probability at the start of events[i-1]
+
+		return events[i-1] + (events[i] - events[i-1]) * ((toss + weights[i-1] - x) / weights[i-1]);
 	}
 
 	
@@ -326,12 +319,6 @@ public class RegressionUtils {
 		if(keys.length > 1) {
 			throw new IllegalArgumentException("There are more conditional keys in the multiKey of the map in RegressionUtils.bootstrap(map).  This cannot currently be handled.  \nThe Stack Trace is "
 					+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-//			for(int i = 0; i < map.keys.length; i++) {
-//				if(map.keys[i].equals(RegressionColumnNames.REGRESSOR.toString())) {
-//					regressorColumnIndex = i;
-//				}
-//			}
-//			System.out.println("Warning, there are more conditional keys in the multiKey of the map in RegressionUtils.bootstrap(map).  Check that the covaraince matrix is represented in the correct way.");
 		}
 		else {
 			if(keys[0].equals(RegressionColumnNames.REGRESSOR.toString())) {
@@ -505,130 +492,94 @@ public class RegressionUtils {
 	 * 
 	 */
 	public static <T> Map<T, MultiKeyCoefficientMap> bootstrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType) {
-		
+
 		T[] possibleEvents = enumType.getEnumConstants();
-		
-		Set<T> specifiedEvents =  eventRegressionCoefficientMap.keySet();
-		
+
+		Set<T> specifiedEvents = eventRegressionCoefficientMap.keySet();
+
 		int missingEvents = 0;
-		String[] tNames = new String[specifiedEvents.size()];
 		int count = 0;
-		String[] multiKeyMapKeyNames = null;			//The name of the MultiKey in the MultiKeyCoefficientMaps
-		String[] multiKeyMapValueNames = null;			//The name of the values in the MultiKeyCoefficientMaps
+		String[] multiKeyMapKeyNames = null;            //The name of the MultiKey in the MultiKeyCoefficientMaps
+		String[] multiKeyMapValueNames = null;            //The name of the values in the MultiKeyCoefficientMaps
 		Set<MultiKey> covariateMultiKeys = null;
 		T baseT = null;
 		for (T t : possibleEvents) {
 			if (specifiedEvents.contains(t)) {
-				tNames[count] = t.toString();
 				MultiKeyCoefficientMap map = eventRegressionCoefficientMap.get(t);
-				if(count == 0) {
-					baseT = t;		//base event which we compare the key names and value names of all other events' MultiKeyCoefficientMaps 
+				if (count == 0) {
+					baseT = t;        //base event which we compare the key names and value names of all other events' MultiKeyCoefficientMaps
 					multiKeyMapKeyNames = map.getKeysNames();
 					multiKeyMapValueNames = map.getValuesNames();
 					covariateMultiKeys = map.keySet();
-				}
-				else {
+				} else {
 					String[] otherKeyNames = map.getKeysNames();
 					String[] otherValueNames = map.getValuesNames();
 					Set<MultiKey> otherMultiKeys = map.keySet();
 					//Check dimensions match
-					if(multiKeyMapKeyNames.length != otherKeyNames.length) {
+					if (multiKeyMapKeyNames.length != otherKeyNames.length) {
 						throw new IllegalArgumentException("The number of keys in the regression coefficient MultiKeyCofficientMap for event " + t + " does not match the number of keys in event " + baseT);
 					}
-					if(multiKeyMapValueNames.length != otherValueNames.length) {
+					if (multiKeyMapValueNames.length != otherValueNames.length) {
 						throw new IllegalArgumentException("The number of value names in the regression coefficient MultiKeyCofficientMap for event " + t + " does not match the number of value names in event " + baseT);
 					}
-					if(map.keySet().size() != covariateMultiKeys.size()) {
+					if (map.keySet().size() != covariateMultiKeys.size()) {
 						throw new IllegalArgumentException("The number of covariates specified in the regression coefficient MultiKeyCofficientMap for event " + t + " does not match the number of covariates in event " + baseT);
 					}
 
 					//Check key names and value names match between events
-					for(int i = 0; i < multiKeyMapKeyNames.length; i++) {
-						if(!multiKeyMapKeyNames[i].equals(otherKeyNames[i])) {
+					for (int i = 0; i < multiKeyMapKeyNames.length; i++) {
+						if (!multiKeyMapKeyNames[i].equals(otherKeyNames[i])) {
 							throw new IllegalArgumentException("The key names in the regression coefficient MultiKeyCofficientMap for event " + t + " do not match the key names in event " + baseT);
 						}
 					}
-					for(int i = 0; i < multiKeyMapValueNames.length; i++) {
-						if(!multiKeyMapValueNames[i].equals(otherValueNames[i])) {
+					for (int i = 0; i < multiKeyMapValueNames.length; i++) {
+						if (!multiKeyMapValueNames[i].equals(otherValueNames[i])) {
 							throw new IllegalArgumentException("The value names in the regression coefficient MultiKeyCofficientMap for event " + t + " do not match the value names in event " + baseT);
 						}
 					}
 					//Check that all events have the same MultiKeys (regression covariates)
-					for(MultiKey mk : otherMultiKeys) {
-						if(!covariateMultiKeys.contains(mk)) {
+					for (MultiKey mk : otherMultiKeys) {
+						if (!covariateMultiKeys.contains(mk)) {
 							throw new IllegalArgumentException("The covariate " + mk.getKey(0) + " specified in the regression coefficient MultiKeyCofficientMap for event " + t + " does not appear in the set of covariates of "
-									+ "event " + baseT + ".  Check that all events have the same set of regression covariates!");							
+									+ "event " + baseT + ".  Check that all events have the same set of regression covariates!");
 						}
-					}					
+					}
 				}
 				count++;
-			}
-			else {
+			} else {
 				missingEvents++;
-				if(missingEvents > 1) {							//The multinomial regression can go without specifying coefficients for 1 of the events (outcomes) of the type T as the probability of this event can be determined by the residual of the other probabilities.
+				if (missingEvents > 1) {                            //The multinomial regression can go without specifying coefficients for 1 of the events (outcomes) of the type T as the probability of this event can be determined by the residual of the other probabilities.
 					throw new RuntimeException("MultiProbitRegression has been constructed with a "
 							+ "map that does not contain enough of the possible values of the type T.  "
 							+ "The map should contain the full number of T values, or one less than the "
 							+ "full number of T values (in which case, the missing value is considered the "
 							+ "'default' case whose regression betas are all zero).");
 				}
-			}			
+			}
 		}
-		
-		MultiKeyCoefficientMap enlargedCoefficientMap = new MultiKeyCoefficientMap(multiKeyMapKeyNames, multiKeyMapValueNames);		//Create new MultiKeyCoefficientMap that has matching key and value names as (one of) the entries of the Map<T, MultiKeyCoefficientMap>.
-		for(T event : specifiedEvents) {
+
+		MultiKeyCoefficientMap enlargedCoefficientMap = new MultiKeyCoefficientMap(multiKeyMapKeyNames, multiKeyMapValueNames);        //Create new MultiKeyCoefficientMap that has matching key and value names as (one of) the entries of the Map<T, MultiKeyCoefficientMap>.
+		for (T event : specifiedEvents) {
 			MultiKeyCoefficientMap regCoefficientsMap = eventRegressionCoefficientMap.get(event);
-			for(Object o : regCoefficientsMap.keySet()) {
-				MultiKey mk = (MultiKey)o; 
+			for (Object o : regCoefficientsMap.keySet()) {
+				MultiKey mk = (MultiKey) o;
 				String combinedName = event.toString() + "_" + mk.getKey(0).toString();
 				enlargedCoefficientMap.putValue(combinedName, regCoefficientsMap.getValue(mk));
 			}
 		}
-		
+
 		enlargedCoefficientMap = bootstrap(enlargedCoefficientMap, covarianceMatrix);
-		
-		Map<T, MultiKeyCoefficientMap> newMap = new HashMap<T, MultiKeyCoefficientMap>(specifiedEvents.size());
-		for(T event : specifiedEvents) {
+
+		Map<T, MultiKeyCoefficientMap> newMap = new HashMap<>(specifiedEvents.size());
+		for (T event : specifiedEvents) {
 			MultiKeyCoefficientMap newCoefficientMap = new MultiKeyCoefficientMap(multiKeyMapKeyNames, multiKeyMapValueNames);
-			for(MultiKey mk : covariateMultiKeys) {
+			for (MultiKey mk : covariateMultiKeys) {
 				String combinedName = event.toString() + "_" + mk.getKey(0).toString();
-//				System.out.println("combinedName " + combinedName);
-				double regCoefficient = ((Number)enlargedCoefficientMap.getValue(combinedName)).doubleValue();
+				double regCoefficient = ((Number) enlargedCoefficientMap.getValue(combinedName)).doubleValue();
 				newCoefficientMap.putValue(mk, regCoefficient);
-//				System.out.println(mk.toString() + ", " + regCoefficient);
 			}
 			newMap.put(event, newCoefficientMap);
 		}
-		
-////		Set<String> covarianceEvents = new HashSet<String>(specifiedEvents.size());
-//		for(Object o : covarianceMatrix.keySet()) {
-//			String key = o.toString();
-//			String[] subStrings = key.split("_");
-//			if(subStrings.length > 2) {
-//				throw new IllegalArgumentException("covarianceMatrix contains a key featuring substrings "
-//						+ "separated by more than one '_' character.  There should only be one instance of "
-//						+ "the '_' character in the name keys, which should be used to separate a prefix "
-//						+ "corresponding to an event (outcome) name, and a suffix corresponding to a regression "
-//						+ "covariate name.");
-//			}
-////			for(int i = 0; i < tNames.length; i++) {
-////				if(subStrings[0].equals(tNames[i])) {
-////					covarianceEvents.add(subStrings[0]);		//Only check that first substring of key before the 'regular expression' "_" character is an event name.  Thus if LowEdu and HighEdu are events, and the covariance matrix contains keys LowEdu_age and HighEdu_age, this will be satisfied, but not if the keys are age_LowEdu and age_HighEdu.  This is to prevent confusion over what is the event name and the covariate name. 
-////				}
-////			}
-//		}
-
 		return newMap;
-		
 	}
-	
-	/**
-	 * @deprecated  As of release 4.0.7 because of typo in method name, replaced by {@link #bootstrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType)}
-	 */
-	@Deprecated
-	public static <T> Map<T, MultiKeyCoefficientMap> boostrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType) {
-		return bootstrapMultinomialRegression(eventRegressionCoefficientMap, covarianceMatrix, enumType);		
-	}
-	
-	
 }

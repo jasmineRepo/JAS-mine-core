@@ -15,13 +15,12 @@ import java.lang.annotation.ElementType;
  */
 @Deprecated
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD })		//Added by Ross 
+@Target({ElementType.FIELD})
 public @interface ModelParameter {
 
-	public String section() default "";
+	String section() default "";
 	
-	public String name() default "";
+	String name() default "";
 	
-	public String description() default "";
-	
+	String description() default "";
 }

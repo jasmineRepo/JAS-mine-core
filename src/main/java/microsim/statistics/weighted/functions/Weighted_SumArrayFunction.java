@@ -1,96 +1,57 @@
 package microsim.statistics.weighted.functions;
 
-import microsim.statistics.weighted.IWeightedDoubleArraySource;
-import microsim.statistics.weighted.IWeightedFloatArraySource;
-import microsim.statistics.weighted.IWeightedIntArraySource;
-import microsim.statistics.weighted.IWeightedLongArraySource;
+import microsim.statistics.weighted.WeightedDoubleArraySource;
+import microsim.statistics.weighted.WeightedFloatArraySource;
+import microsim.statistics.weighted.WeightedIntArraySource;
+import microsim.statistics.weighted.WeightedLongArraySource;
 
-import microsim.statistics.IDoubleSource;
+import microsim.statistics.DoubleSource;
 
 /**
  * This class computes the sum of an array of source values, with each element of the array
  * multiplied by the weight of the source (the source must implement the <i>Weight</i> 
  * interface).  According to the source data type there are four data-type oriented implementations. 
- * Each of them implements always the <i>IDoubleSource</i> interface.
- *
- * <p>Title: JAS-mine</p>
- * <p>Description: Java Agent-based Simulation library.  Modelling in a Networked Environment</p>
- * <p>Copyright (C) 2017 Michele Sonnessa and Ross Richardson</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa and Ross Richardson
- * <p>
+ * Each of them implements always the <i>DoubleSource</i> interface.
  */
-public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFunction implements IDoubleSource {
+public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFunction implements DoubleSource {
 
 	/** Create a sum function on a float array weighted-source.
 	 * @param source The weighted data source.
 	 */
-	public Weighted_SumArrayFunction(IWeightedFloatArraySource source) {
+	public Weighted_SumArrayFunction(WeightedFloatArraySource source) {
 		super(source);
 	}
 
 	/** Create a sum function on an integer array weighted-source.
 	 * @param source The weighted data source.
 	 */
-	public Weighted_SumArrayFunction(IWeightedIntArraySource source) {
+	public Weighted_SumArrayFunction(WeightedIntArraySource source) {
 		super(source);
 	}
 
 	/** Create a sum function on a long array weighted-source.
 	 * @param source The weighted data source.
 	 */
-	public Weighted_SumArrayFunction(IWeightedLongArraySource source) {
+	public Weighted_SumArrayFunction(WeightedLongArraySource source) {
 		super(source);
 	}
 
 	/** Create a sum function on a double array weighted-source.
 	 * @param source The weighted data source.
 	 */
-	public Weighted_SumArrayFunction(IWeightedDoubleArraySource source) {
+	public Weighted_SumArrayFunction(WeightedDoubleArraySource source) {
 		super(source);
 	}
 	
 	/**
 	 * SumFunction operating on weighted double source values.
-	 *
-	 * <p>Title: JAS-mine</p>
-	 * <p>Description: Java Agent-based Simulation library.  Modelling in a Networked Environment</p>
-	 * <p>Copyright (C) 2017 Michele Sonnessa and Ross Richardson</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 *
-	 * @author Michele Sonnessa and Ross Richardson
-	 * <p>
-	 *
 	 */
-	public static class Double extends Weighted_SumArrayFunction implements IDoubleSource
+	public static class Double extends Weighted_SumArrayFunction implements DoubleSource
 	{
 		/** Create a sum function on a weighted double array source.
 		 * @param source The data source.
 		 */
-		public Double(IWeightedDoubleArraySource source) {
+		public Double(WeightedDoubleArraySource source) {
 			super(source);
 		}
 
@@ -115,33 +76,13 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 	
 	/**
 	 * SumFunction operating on weighted long source values.
-	 *
-	 * <p>Title: JAS-mine</p>
-	 * <p>Description: Java Agent-based Simulation library.  Modelling in a Networked Environment</p>
-	 * <p>Copyright (C) 2017 Michele Sonnessa and Ross Richardson</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 *
-	 * @author Michele Sonnessa and Ross Richardson
-	 * <p>
-	 * 
 	 */
-	public static class Long extends Weighted_SumArrayFunction //implements ILongSource
+	public static class Long extends Weighted_SumArrayFunction //implements LongSource
 	{
 		/** Create a sum function on a weighted long array source.
 		 * @param source The weighted data source.
 		 */
-		public Long(IWeightedLongArraySource source) {
+		public Long(WeightedLongArraySource source) {
 			super(source);
 		}
 
@@ -173,33 +114,13 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 	
 	/**
 	 * SumFunction operating on weighted integer source values.
-	 *
-	 * <p>Title: JAS-mine</p>
-	 * <p>Description: Java Agent-based Simulation library.  Modelling in a Networked Environment</p>
-	 * <p>Copyright (C) 2017 Michele Sonnessa and Ross Richardson</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 *
-	 * @author Michele Sonnessa and Ross Richardson
-	 * <p>
-	 * 
 	 */
-	public static class Integer extends Weighted_SumArrayFunction //implements IIntSource
+	public static class Integer extends Weighted_SumArrayFunction //implements IntSource
 	{
 		/** Create a sum function on a weighted integer array source.
 		 * @param source The weighted data source.
 		 */
-		public Integer(IWeightedIntArraySource source) {
+		public Integer(WeightedIntArraySource source) {
 			super(source);
 		}
 
@@ -233,33 +154,13 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 	
 	/**
 	 * SumFunction operating on weighted float source values.
-	 *
-	 * <p>Title: JAS-mine</p>
-	 * <p>Description: Java Agent-based Simulation library.  Modelling in a Networked Environment</p>
-	 * <p>Copyright (C) 2017 Michele Sonnessa and Ross Richardson</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 *
-	 * @author Michele Sonnessa and Ross Richardson
-	 * <p>
-	 * 
 	 */
-	public static class Float extends Weighted_SumArrayFunction //implements IFloatSource
+	public static class Float extends Weighted_SumArrayFunction //implements FloatSource
 	{
 		/** Create a sum function on a weighted float array source.
 		 * @param source The data source.
 		 */
-		public Float(IWeightedFloatArraySource source) {
+		public Float(WeightedFloatArraySource source) {
 			super(source);
 		}
 

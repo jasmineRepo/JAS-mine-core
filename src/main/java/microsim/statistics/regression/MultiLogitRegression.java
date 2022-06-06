@@ -1,26 +1,22 @@
 package microsim.statistics.regression;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
-import microsim.statistics.IDoubleSource;
+import microsim.statistics.DoubleSource;
 
-public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceRegression<T> {
+import java.util.*;
 
-	private Random random;
+public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRegression<T> {
+
+	private final Random random;
 	
-	private Map<T, MultiKeyCoefficientMap> maps = null;
+	private Map<T, MultiKeyCoefficientMap> maps;
 		
 	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps) {		
 		random = SimulationEngine.getRnd();
 		this.maps = maps;
 		int count = 0;
-		Set<String> covariateNames = new HashSet<String>();
+		Set<String> covariateNames = new HashSet<>();
 		for(T event : maps.keySet()) {
 			@SuppressWarnings("unchecked")
 			Set<Object> covariateSet = (maps.get(event)).keySet();
@@ -33,10 +29,6 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiLogitRegression object do not match!");
 					}
 				}
-//				if((maps.get(event)).getValue(covariate).equals(0)) {
-//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-//				}
 			}
 			count++;
 		}
@@ -47,7 +39,7 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 		this.random = random;
 		this.maps = maps;
 		int count = 0;
-		Set<String> covariateNames = new HashSet<String>();
+		Set<String> covariateNames = new HashSet<>();
 		for(T event : maps.keySet()) {
 			@SuppressWarnings("unchecked")
 			Set<Object> covariateSet = (maps.get(event)).keySet();
@@ -60,10 +52,6 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiLogitRegression object do not match!");
 					}
 				}
-//				if((maps.get(event)).getValue(covariate).equals(0)) {
-//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-//				}
 			}
 			count++;
 		}
@@ -89,7 +77,7 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 	//Original version was incorrect - did not normalise probabilities.  Corrected by Ross Richardson.
 //	@Override
 	public T eventType(Object individual) {		
-		Map<T, Double> probs = new HashMap<T, Double>();
+		Map<T, Double> probs = new HashMap<>();
 
 		double denominator = 0.; 
 		
@@ -103,18 +91,17 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 		T k = null;
 		T[] eventProbs = (T[]) k.getClass().getEnumConstants();
 		int countNullEventProbs = 0;
-		for (int i = 0; i < eventProbs.length; i++) {
-			if (probs.get(eventProbs[i]) == null) {						//The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
-				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
-				if(countNullEventProbs > 1) {
+		for (T eventProb : eventProbs) {
+			if (probs.get(eventProb) == null) {                        //The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
+				countNullEventProbs++;                                    //Check no more than one event has null prob, so that it is valid to take the residual to find the probability
+				if (countNullEventProbs > 1) {
 //					throw new RuntimeException("countNullEventProbs > 1 in MultiLogitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
 					throw new RuntimeException("MultiLogitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
+				} else {
+					denominator += 0.5;        //We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
+					probs.put((T) eventProb, 0.5 / denominator);        //The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.
 				}
-				else {
-					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
-					probs.put((T) eventProbs[i], 0.5/denominator);		//The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.				
-				}						
-			}			
+			}
 		}
 		
 		//Normalise the probabilities of the events specified in the regression maps
@@ -139,7 +126,7 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 	 * @return
 	 */
 	public T eventType(Map<String, Double> values) {
-		Map<T, Double> probs = new HashMap<T, Double>();
+		Map<T, Double> probs = new HashMap<>();
 
 		double denominator = 0.0;
 
@@ -153,18 +140,17 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 		T k = null;
 		T[] eventProbs = (T[]) k.getClass().getEnumConstants();
 		int countNullEventProbs = 0;
-		for (int i = 0; i < eventProbs.length; i++) {
-			if (probs.get(eventProbs[i]) == null) {						//The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
-				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
-				if(countNullEventProbs > 1) {
+		for (T eventProb : eventProbs) {
+			if (probs.get(eventProb) == null) {                        //The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
+				countNullEventProbs++;                                    //Check no more than one event has null prob, so that it is valid to take the residual to find the probability
+				if (countNullEventProbs > 1) {
 //					throw new RuntimeException("countNullEventProbs > 1 in MultiLogitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
 					throw new RuntimeException("MultiLogitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
+				} else {
+					denominator += 0.5;        //We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
+					probs.put((T) eventProb, 0.5 / denominator);        //The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.
 				}
-				else {
-					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
-					probs.put((T) eventProbs[i], 0.5/denominator);		//The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.				
-				}						
-			}			
+			}
 		}
 
 		//Normalise the probabilities of the events specified in the regression maps
@@ -186,21 +172,21 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 	// @author Ross Richardson
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public <E extends Enum<E>> double getLogitTransformOfScore(T event, IDoubleSource iDblSrc, Class<E> Regressors) {
+	public <E extends Enum<E>> double getLogitTransformOfScore(T event, DoubleSource iDblSrc, Class<E> Regressors) {
       MultiKeyCoefficientMap map = maps.get(event);
       double score;
       if(map.getKeysNames().length == 1) {
           score = LinearRegression.computeScore(map, iDblSrc, Regressors, true);            //No additional conditioning regression keys used, so no need to check for them
       }
       else {
-          score = LinearRegression.computeScore(map, iDblSrc, Regressors);        //Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the IObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
+          score = LinearRegression.computeScore(map, iDblSrc, Regressors);        //Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the ObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
       }
 
       return (double) 1 / (1 + Math.exp(- score));
   } 
 	
-	public <E extends Enum<E>> T eventType(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {		
-		Map<T, Double> probs = new HashMap<T, Double>();
+	public <E extends Enum<E>> T eventType(DoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
+		Map<T, Double> probs = new HashMap<>();
 
 		double denominator = 0.; 
 		
@@ -215,18 +201,17 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 //		T[] eventProbs = (T[]) maps.keySet().getClass().getEnumConstants();		//Results in Null Pointer Exception
 
 		int countNullEventProbs = 0;
-		for (int i = 0; i < eventProbs.length; i++) {
-			if (probs.get(eventProbs[i]) == null) {						//The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
-				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
-				if(countNullEventProbs > 1) {
+		for (T eventProb : eventProbs) {
+			if (probs.get(eventProb) == null) {                        //The multiLogit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
+				countNullEventProbs++;                                    //Check no more than one event has null prob, so that it is valid to take the residual to find the probability
+				if (countNullEventProbs > 1) {
 //					throw new RuntimeException("countNullEventProbs > 1 in MultiLogitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
 					throw new RuntimeException("MultiLogitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
+				} else {
+					denominator += 0.5;        //We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
+					probs.put((T) eventProb, 0.5 / denominator);        //The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.
 				}
-				else {
-					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
-					probs.put((T) eventProbs[i], 0.5/denominator);		//The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the Logit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of Logit transforms for all events.				
-				}						
-			}			
+			}
 		}
 		
 		//Normalise the probabilities of the events specified in the regression maps

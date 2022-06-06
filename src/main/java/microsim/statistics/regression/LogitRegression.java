@@ -1,14 +1,14 @@
 package microsim.statistics.regression;
 
+import microsim.data.MultiKeyCoefficientMap;
+import microsim.engine.SimulationEngine;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.ObjectSource;
+
 import java.util.Map;
 import java.util.Random;
 
-import microsim.data.MultiKeyCoefficientMap;
-import microsim.engine.SimulationEngine;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IObjectSource;
-
-public class LogitRegression extends LinearRegression implements IBinaryChoiceRegression {
+public class LogitRegression extends LinearRegression implements BinaryChoiceRegression {
 
 	private Random random;
 	
@@ -51,22 +51,22 @@ public class LogitRegression extends LinearRegression implements IBinaryChoiceRe
 	//
 	////////////////////////////////
 	
-	public <T extends Enum<T>> double getProbability(IDoubleSource iDblSrc, Class<T> enumType) {
+	public <T extends Enum<T>> double getProbability(DoubleSource iDblSrc, Class<T> enumType) {
 		final double score = super.getScore(iDblSrc, enumType);		
 		return (double) 1 / (1 + Math.exp(- score));			
 	}
 	
-	public <T extends Enum<T>> boolean event(IDoubleSource iDblSrc, Class<T> enumType) {
+	public <T extends Enum<T>> boolean event(DoubleSource iDblSrc, Class<T> enumType) {
 		final double probability = getProbability(iDblSrc, enumType);
 		return (random.nextDouble() < probability);		
 	}
 	
-	public <T extends Enum<T>, U extends Enum<U>> double getProbability(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+	public <T extends Enum<T>, U extends Enum<U>> double getProbability(DoubleSource iDblSrc, Class<T> enumTypeDbl, ObjectSource iObjSrc, Class<U> enumTypeObj) {
 		final double score = super.getScore(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);		
 		return (double) 1 / (1 + Math.exp(- score));			
 	}
 	
-	public <T extends Enum<T>, U extends Enum<U>> boolean event(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+	public <T extends Enum<T>, U extends Enum<U>> boolean event(DoubleSource iDblSrc, Class<T> enumTypeDbl, ObjectSource iObjSrc, Class<U> enumTypeObj) {
 		final double probability = getProbability(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);
 		return (random.nextDouble() < probability);		
 	}

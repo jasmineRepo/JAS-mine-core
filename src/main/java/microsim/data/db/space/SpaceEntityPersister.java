@@ -1,18 +1,17 @@
 package microsim.data.db.space;
 
-import java.lang.reflect.Field;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import microsim.engine.SimulationEngine;
 import microsim.space.IntSpace;
 import microsim.space.ObjectSpace;
 
+import java.lang.reflect.Field;
+
 public class SpaceEntityPersister {
 
 	public static void persistIntSpace(EntityManager entityManager, IntSpace space, Class<? extends IIntSpaceEntity> entityClass) throws Exception {
-		EntityTransaction tx = null;
+		EntityTransaction tx;
 		tx = entityManager.getTransaction();
 		tx.begin();
 		
@@ -20,7 +19,7 @@ public class SpaceEntityPersister {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
 					final IIntSpaceEntity entity = entityClass.newInstance();
-					entity.setSimulationRun(new Long(SimulationEngine.getInstance().getCurrentRunNumber()));
+					entity.setSimulationRun((long) SimulationEngine.getInstance().getCurrentRunNumber());
 					entity.setSimulationTime(SimulationEngine.getInstance().getTime());
 					entity.setX(x);
 					entity.setY(y);
@@ -29,7 +28,7 @@ public class SpaceEntityPersister {
 				}
 			}
 		} catch (Exception e) {
-			if (tx != null && tx.isActive())
+			if (tx.isActive())
 				tx.rollback();
 			throw e;
 		}
@@ -38,7 +37,7 @@ public class SpaceEntityPersister {
 	}
 
 	public static void persistObjectSpace(EntityManager entityManager, ObjectSpace space, Class<? extends IIntSpaceEntity> entityClass, String idField) throws Exception {
-		EntityTransaction tx = null;
+		EntityTransaction tx;
 		tx = entityManager.getTransaction();
 		tx.begin();
 		
@@ -49,17 +48,17 @@ public class SpaceEntityPersister {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
 					final IIntSpaceEntity entity = entityClass.newInstance();
-					entity.setSimulationRun(new Long(SimulationEngine.getInstance().getCurrentRunNumber()));
+					entity.setSimulationRun((long) SimulationEngine.getInstance().getCurrentRunNumber());
 					entity.setSimulationTime(SimulationEngine.getInstance().getTime());
 					entity.setX(x);
 					entity.setY(y);
-					final Long value = field.getLong(space.get(x, y));  
-					entity.setValue(value.intValue());
+					final long value = field.getLong(space.get(x, y));
+					entity.setValue((int) value);
 					entityManager.persist(entity);
 				}
 			}
 		} catch (Exception e) {
-			if (tx != null && tx.isActive())
+			if (tx.isActive())
 				tx.rollback();
 			throw e;
 		}

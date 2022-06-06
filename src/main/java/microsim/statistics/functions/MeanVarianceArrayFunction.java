@@ -1,10 +1,10 @@
 package microsim.statistics.functions;
 
-import microsim.statistics.IDoubleArraySource;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IFloatArraySource;
-import microsim.statistics.IIntArraySource;
-import microsim.statistics.ILongArraySource;
+import microsim.statistics.DoubleArraySource;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.FloatArraySource;
+import microsim.statistics.IntArraySource;
+import microsim.statistics.LongArraySource;
 
 /**
  * This class computes the average and variance value of an array of values taken from a data source. 
@@ -12,27 +12,8 @@ import microsim.statistics.ILongArraySource;
  * <i>IDoubleSource</i> interface. <BR>
  * In order to retrieve the mean pass the MeanVarianceFunction.MEAN argument to the getDoubleValue function,
  * while for the variance the MeanVarianceFunction.VARIANCE one.
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa
- * <p>
  */
-public class MeanVarianceArrayFunction extends AbstractArrayFunction implements IDoubleSource {
+public class MeanVarianceArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
 
 	public enum Variables {
@@ -45,28 +26,28 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 	/** Create a mean function on a float array source.
 	 * @param source The data source.
 	 */
-	public MeanVarianceArrayFunction(IFloatArraySource source) {
+	public MeanVarianceArrayFunction(FloatArraySource source) {
 		super(source);
 	}
 
 	/** Create a mean function on an integer array source.
 	 * @param source The data source.
 	 */
-	public MeanVarianceArrayFunction(IIntArraySource source) {
+	public MeanVarianceArrayFunction(IntArraySource source) {
 		super(source);
 	}
 
 	/** Create a mean function on a long array source.
 	 * @param source The data source.
 	 */
-	public MeanVarianceArrayFunction(ILongArraySource source) {
+	public MeanVarianceArrayFunction(LongArraySource source) {
 		super(source);
 	}
 
 	/** Create a mean function on a double array source.
 	 * @param source The data source.
 	 */
-	public MeanVarianceArrayFunction(IDoubleArraySource source) {
+	public MeanVarianceArrayFunction(DoubleArraySource source) {
 		super(source);
 	}
 
@@ -82,7 +63,8 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 		else
 		{
 			mean = sum / (double) count;
-			variance = (sumOfSquares - mean * sum) / (double) count; 		//This is a population variance as it is the variance of the array's data.
+			variance = (sumOfSquares - mean * sum) / (double) count;
+			//This is a population variance as it is the variance of the array's data.
 		}		
 		System.out.println("count " + count + ", mean " + mean + ", variance " + variance);
 	}
@@ -94,9 +76,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 		
 		double sum = 0.0;
 		double sumOfSquares = 0.0;
-		for (int i = 0; i < data.length; i++)
-		{
-			double d = data[i];
+		for (double d : data) {
 			sum += d;
 			sumOfSquares += (d * d);
 		}
@@ -109,9 +89,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 	public void apply(float[] data) {
 		double sum = 0.0;
 		double sumOfSquares = 0.0;
-		for (int i = 0; i < data.length; i++)
-		{
-			double d = data[i];
+		for (double d : data) {
 			sum += d;
 			sumOfSquares += (d * d);
 		}
@@ -125,9 +103,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 
 		double sum = 0.0;
 		double sumOfSquares = 0.0;
-		for (int i = 0; i < data.length; i++)
-		{
-			double d = data[i];
+		for (double d : data) {
 			sum += d;
 			sumOfSquares += (d * d);
 		}
@@ -140,9 +116,7 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 	public void apply(long[] data) {
 		double sum = 0.0;
 		double sumOfSquares = 0.0;
-		for (int i = 0; i < data.length; i++)
-		{
-			double d = data[i];
+		for (double d : data) {
 			sum += d;
 			sumOfSquares += (d * d);
 		}
@@ -153,12 +127,12 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 	 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
 	 */
 	public double getDoubleValue(Enum<?> variableID) {
-		switch ( (MeanVarianceArrayFunction.Variables) variableID)
-		{
-			case Mean: return mean;
-			case Variance: return variance;
-			default: throw new UnsupportedOperationException("The function result with id " + variableID + " is not supported.");
-		}
+		return switch ((Variables) variableID) {
+			case Mean -> mean;
+			case Variance -> variance;
+			default ->
+					throw new UnsupportedOperationException("The function result with id " + variableID + " is not supported.");
+		};
 	}
 	
 	

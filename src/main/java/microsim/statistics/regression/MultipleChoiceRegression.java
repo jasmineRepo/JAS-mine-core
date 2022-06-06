@@ -2,7 +2,7 @@ package microsim.statistics.regression;
 
 import java.util.Map;
 
-public interface IMultipleChoiceRegression<T extends Enum<T>> {
+public interface MultipleChoiceRegression<T extends Enum<T>> {
 
 	T eventType(Object individual); 
 	

@@ -1,62 +1,35 @@
 package microsim.statistics.weighted;
-//package microsim.statistics.weighted;
 
-import microsim.statistics.ICollectionFilter;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IFloatSource;
-import microsim.statistics.IIntSource;
-import microsim.statistics.ILongSource;
-import microsim.statistics.ISourceObjectArray;
-import microsim.statistics.IUpdatableSource;
-import microsim.statistics.TimeChecker;
-
-import java.util.Collection;
-import java.util.Iterator;
-
+import lombok.Getter;
+import lombok.Setter;
 import microsim.agent.Weight;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
+import microsim.statistics.*;
 import microsim.statistics.reflectors.DoubleInvoker;
 import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
+import java.util.Collection;
+
 /**
  * A weighted cross section is a collection of values each of them representing the status of a given
- * variable of a weighted element of a collection of agents. 
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa
- *
+ * variable of a weighted element of a collection of agents.
  */
-public abstract class Weighted_CrossSection implements EventListener, IUpdatableSource, ISourceObjectArray
+public abstract class Weighted_CrossSection implements EventListener, UpdatableSource, SourceObjectArray
 {
 	protected Object[] sourceList;
 	
 	protected TimeChecker timeChecker = new TimeChecker();;
 	
-	protected ICollectionFilter filter = null;
+	@Setter	@Getter protected CollectionFilter filter = null;
 	
 	public abstract void updateSource();
 
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
+	 * @param type The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */
 	public void onEvent(Enum<?> type) {
@@ -68,10 +41,9 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 
 	public Object[] getSourceArray() {	return sourceList; }
 			
-	public static class Double extends Weighted_CrossSection implements IWeightedDoubleArraySource
-	{
-		protected double[] valueList;
-		protected double[] weights;
+	public static class Double extends Weighted_CrossSection {
+		@Getter protected double[] valueList;
+		@Getter protected double[] weights;
 		
 		protected DoubleInvoker invoker;
 		protected Collection<? extends Weight> target;
@@ -93,7 +65,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		public Double(Collection<? extends Weight> source)
 		{ 
 			target = source;
-			this.valueID = IDoubleSource.Variables.Default;
+			this.valueID = DoubleSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
@@ -104,28 +76,23 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		public Double(Collection<? extends Weight> source, Class<? extends Weight> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IDoubleSource.Variables.Default;
+			this.valueID = DoubleSource.Variables.Default;
 			invoker = new DoubleInvoker(objectClass, valueName, getFromMethod);
-		}
-
-		public double[] getDoubleArray() 
-		{ 
-			return valueList;	
 		}
 	
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Double [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]; weights [");
+			buf.append(valueList[size]).append("]; weights [");
 			for (int i = 0; i < size; i++) {
-				buf.append(weights[i] + " ");
+				buf.append(weights[i]).append(" ");
 			}
-			buf.append(weights[size] + "]");
+			buf.append(weights[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -141,23 +108,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getDouble(obj);
-							weights[i] = obj.getWeight(); 
+							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IDoubleSource) obj).getDoubleValue(valueID);
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((DoubleSource) obj).getDoubleValue(valueID);
 							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
@@ -168,34 +129,23 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			}
 			else
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
+					for (Weight o : target) {
 						valueList[i] = invoker.getDouble(o);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
-						valueList[i] = ((IDoubleSource) o).getDoubleValue(valueID);
+					for (Weight o : target) {
+						valueList[i] = ((DoubleSource) o).getDoubleValue(valueID);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
-						
 		}
-
-		@Override
-		public double[] getWeights() {
-			return weights;
-		}
-
 	}
 	
 
 	
-	public static class Integer extends Weighted_CrossSection implements IWeightedIntArraySource
+	public static class Integer extends Weighted_CrossSection implements WeightedIntArraySource
 	{
 		protected int[] valueList;
 		protected double[] weights;
@@ -204,8 +154,8 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		protected Collection<? extends Weight> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IIntSource objects.
-		 *  @param source The collection containing IIntSource object.
+		/** Create a statistic probe on a collection of IntSource objects.
+		 *  @param source The collection containing IntSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(Collection<? extends Weight> source, Enum<?> valueID)
 		{ 
@@ -213,14 +163,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			this.valueID = valueID;
 		}
 
-		/** Create a statistic probe on a collection of IIntSource objects. 
-		 *  It uses the IIntSource.DEFAULT variable id.
-		 *  @param source The collection containing IIntSource object.
+		/** Create a statistic probe on a collection of IntSource objects.
+		 *  It uses the IntSource.DEFAULT variable id.
+		 *  @param source The collection containing IntSource object.
 		 */
 		public Integer(Collection<? extends Weight> source)
 		{ 
 			target = source;
-			this.valueID = IIntSource.Variables.Default;
+			this.valueID = IntSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
@@ -231,7 +181,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		public Integer(Collection<? extends Weight> source, Class<? extends Weight> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IIntSource.Variables.Default;
+			this.valueID = IntSource.Variables.Default;
 			invoker = new IntegerInvoker(objectClass, valueName, getFromMethod);
 		}
 
@@ -242,17 +192,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 	
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Integer [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]; weights [");
+			buf.append(valueList[size]).append("]; weights [");
 			for (int i = 0; i < size; i++) {
-				buf.append(weights[i] + " ");
+				buf.append(weights[i]).append(" ");
 			}
-			buf.append(weights[size] + "]");
+			buf.append(weights[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -268,23 +218,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getInt(obj);
-							weights[i] = obj.getWeight(); 
+							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IIntSource) obj).getIntValue(valueID);
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((IntSource) obj).getIntValue(valueID);
 							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
@@ -295,18 +239,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			}
 			else
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
+					for (Weight o : target) {
 						valueList[i] = invoker.getInt(o);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
-						valueList[i] = ((IIntSource) o).getIntValue(valueID);
+					for (Weight o : target) {
+						valueList[i] = ((IntSource) o).getIntValue(valueID);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
@@ -323,7 +263,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 	
 	
 	
-	public static class Float extends Weighted_CrossSection implements IWeightedFloatArraySource
+	public static class Float extends Weighted_CrossSection implements WeightedFloatArraySource
 	{
 		protected float[] valueList;
 		protected double[] weights;
@@ -332,8 +272,8 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		protected Collection<? extends Weight> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of IFloatSource objects.
-		 *  @param source The collection containing IFloatSource object.
+		/** Create a statistic probe on a collection of FloatSource objects.
+		 *  @param source The collection containing FloatSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(Collection<? extends Weight> source, Enum<?> valueID)
 		{ 
@@ -341,14 +281,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			this.valueID = valueID;
 		}
 
-		/** Create a statistic probe on a collection of IFloatSource objects. 
-		 *  It uses the IFloatSource.DEFAULT variable id.
-		 *  @param source The collection containing IFloatSource object.
+		/** Create a statistic probe on a collection of FloatSource objects.
+		 *  It uses the FloatSource.DEFAULT variable id.
+		 *  @param source The collection containing FloatSource object.
 		 */
 		public Float(Collection<? extends Weight> source)
 		{ 
 			target = source;
-			this.valueID = IFloatSource.Variables.Default;
+			this.valueID = FloatSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
@@ -359,7 +299,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		public Float(Collection<? extends Weight> source, Class<? extends Weight> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = IFloatSource.Variables.Default;
+			this.valueID = FloatSource.Variables.Default;
 			invoker = new FloatInvoker(objectClass, valueName, getFromMethod);
 		}
 
@@ -370,17 +310,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 	
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Float [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]; weights [");
+			buf.append(valueList[size]).append("]; weights [");
 			for (int i = 0; i < size; i++) {
-				buf.append(weights[i] + " ");
+				buf.append(weights[i]).append(" ");
 			}
-			buf.append(weights[size] + "]");
+			buf.append(weights[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -396,23 +336,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getFloat(obj);
-							weights[i] = obj.getWeight(); 
+							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((IFloatSource) obj).getFloatValue(valueID);
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((FloatSource) obj).getFloatValue(valueID);
 							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
@@ -423,18 +357,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			}
 			else
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
+					for (Weight o : target) {
 						valueList[i] = invoker.getFloat(o);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
-						valueList[i] = ((IFloatSource) o).getFloatValue(valueID);
+					for (Weight o : target) {
+						valueList[i] = ((FloatSource) o).getFloatValue(valueID);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
@@ -450,7 +380,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 
 	
 	
-	public static class Long extends Weighted_CrossSection implements IWeightedLongArraySource
+	public static class Long extends Weighted_CrossSection implements WeightedLongArraySource
 	{
 		protected long[] valueList;
 		protected double[] weights;
@@ -459,8 +389,8 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		protected Collection<? extends Weight> target;
 		protected Enum<?> valueID;
 
-		/** Create a statistic probe on a collection of ILongSource objects.
-		 *  @param source The collection containing ILongSource object.
+		/** Create a statistic probe on a collection of LongSource objects.
+		 *  @param source The collection containing LongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(Collection<? extends Weight> source, Enum<?> valueID)
 		{ 
@@ -468,14 +398,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			this.valueID = valueID;
 		}
 
-		/** Create a statistic probe on a collection of ILongSource objects. 
-		 *  It uses the ILongSource.DEFAULT variable id.
-		 *  @param source The collection containing ILongSource object.
+		/** Create a statistic probe on a collection of LongSource objects.
+		 *  It uses the LongSource.DEFAULT variable id.
+		 *  @param source The collection containing LongSource object.
 		 */
 		public Long(Collection<? extends Weight> source)
 		{ 
 			target = source;
-			this.valueID = ILongSource.Variables.Default;
+			this.valueID = LongSource.Variables.Default;
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
@@ -486,7 +416,7 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 		public Long(Collection<? extends Weight> source, Class<? extends Weight> objectClass,	String valueName, boolean getFromMethod)
 		{ 
 			target = source;
-			this.valueID = ILongSource.Variables.Default;
+			this.valueID = LongSource.Variables.Default;
 			invoker = new LongInvoker(objectClass, valueName, getFromMethod);
 		}
 
@@ -497,17 +427,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 	
 		public String toString()
 		{
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			buf.append("CrossSection.Long [");
 			int size = valueList.length - 1;
 			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i] + " ");
+				buf.append(valueList[i]).append(" ");
 			}
-			buf.append(valueList[size] + "]; weights [");
+			buf.append(valueList[size]).append("]; weights [");
 			for (int i = 0; i < size; i++) {
-				buf.append(weights[i] + " ");
+				buf.append(weights[i]).append(" ");
 			}
-			buf.append(weights[size] + "]");
+			buf.append(weights[size]).append("]");
 			return buf.toString();
 		}
 			
@@ -523,23 +453,17 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			if (filter != null)
 			{
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
 							valueList[i] = invoker.getLong(obj);
-							weights[i] = obj.getWeight(); 
+							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight obj = it.next();
-						if (filter.isFiltered(obj))
-						{
-							valueList[i] =((ILongSource) obj).getLongValue(valueID);
+					for (Weight obj : target) {
+						if (filter.isFiltered(obj)) {
+							valueList[i] = ((LongSource) obj).getLongValue(valueID);
 							weights[i] = obj.getWeight();
 							sourceList[i++] = obj;
 						}
@@ -550,18 +474,14 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			}
 			else
 				if (invoker != null)
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
+					for (Weight o : target) {
 						valueList[i] = invoker.getLong(o);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
 				else
-					for (Iterator<? extends Weight> it = target.iterator(); it.hasNext(); )
-					{
-						Weight o = it.next();
-						valueList[i] = ((ILongSource) o).getLongValue(valueID);
+					for (Weight o : target) {
+						valueList[i] = ((LongSource) o).getLongValue(valueID);
 						weights[i] = o.getWeight();
 						sourceList[i++] = o;
 					}
@@ -573,21 +493,6 @@ public abstract class Weighted_CrossSection implements EventListener, IUpdatable
 			return weights;
 		}
 
-	}
-		
-	
-	/**
-	 * @return
-	 */
-	public ICollectionFilter getFilter() {
-		return filter;
-	}
-
-	/**
-	 * @param filter
-	 */
-	public void setFilter(ICollectionFilter filter) {
-		this.filter = filter;
 	}
 
 	/** Return the current status of the time checker. A time checker avoid the object to update

@@ -1,48 +1,20 @@
 package microsim.statistics.reflectors;
 
+import microsim.reflection.ReflectionUtils;
+import microsim.statistics.LongSource;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import microsim.reflection.ReflectionUtils;
-import microsim.statistics.ILongSource;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
  * which return double values. It is used by Statistics objects.
- * 
- * <p>
- * Title: JAS
- * </p>
- * <p>
- * Description: Java Agent-based Simulation library
- * </p>
- * <p>
- * Copyright (C) 2002 Michele Sonnessa
- * </p>
- * 
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa
- *         <p>
  */
-public class LongInvoker implements ILongSource {
-	private static Logger log = Logger.getLogger(LongInvoker.class.toString());
+public class LongInvoker implements LongSource {
+	private static final Logger log = Logger.getLogger(LongInvoker.class.toString());
 	
 	protected Method method;
 	protected Field field;
@@ -128,18 +100,18 @@ public class LongInvoker implements ILongSource {
 				try {
 					return field.getLong(target);
 				} catch (IllegalArgumentException e) {
-					return ((Long) field.get(target)).longValue();
+					return (Long) field.get(target);
 				}
 			} else
-				return ((Long) method.invoke(target, null)).longValue();
+				return (Long) method.invoke(target, null);
 		} catch (InvocationTargetException ie) {
-			StringBuffer message = new StringBuffer();
+			StringBuilder message = new StringBuilder();
 			if (method == null)
-				message.append("LngInvoker: Field " + field + "of object "
-						+ target + " raised the following error:\n");
+				message.append("LngInvoker: Field ").append(field).append("of object ").append(target).
+						append(" raised the following error:\n");
 			else
-				message.append("LngInvoker: Method " + method + "of object "
-						+ target + " raised the following error:\n");
+				message.append("LngInvoker: Method ").append(method).append("of object ").append(target).
+						append(" raised the following error:\n");
 			message.append(ie.getMessage());
 			ie.printStackTrace();
 			log.log(Level.SEVERE, message.toString());

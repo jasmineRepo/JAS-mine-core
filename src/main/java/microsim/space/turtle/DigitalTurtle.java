@@ -1,11 +1,13 @@
 package microsim.space.turtle;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
 
 import microsim.engine.SimulationEngine;
 import microsim.space.ObjectSpace;
+
+import java.io.Serial;
 
 /**
  * TO DO Documentation.
@@ -37,12 +39,10 @@ import microsim.space.ObjectSpace;
  * @author Michele Sonnessa
  *         <p>
  */
-@MappedSuperclass
-public class DigitalTurtle extends AbstractTurtle {
-	private static final long serialVersionUID = -6624018914521929484L;
+@MappedSuperclass public class DigitalTurtle extends AbstractTurtle {
+	@Serial private static final long serialVersionUID = -6624018914521929484L;
 
-	@Enumerated(EnumType.STRING)
-	protected Direction heading = Direction.North;
+	@Enumerated(EnumType.STRING) protected Direction heading = Direction.North;
 
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
@@ -101,27 +101,17 @@ public class DigitalTurtle extends AbstractTurtle {
 	}
 
 	public int getHeading() {
-		switch (heading) {
-		case North:
-			return 90;
-		case NorthEast:
-			return 45;
-		case East:
-			return 0;
-		case SouthEast:
-			return 315;
-		case South:
-			return 270;
-		case SouthWest:
-			return 225;
-		case West:
-			return 180;
-		case NorthWest:
-			return 135;
-		default:
-			throw new IndexOutOfBoundsException(
-					"The current heading is not a valid heading: " + heading);
-		}
+		return switch (heading) {
+			case North -> 90;
+			case NorthEast -> 45;
+			case East -> 0;
+			case SouthEast -> 315;
+			case South -> 270;
+			case SouthWest -> 225;
+			case West -> 180;
+			case NorthWest -> 135;
+			default -> throw new IndexOutOfBoundsException("The current heading is not a valid heading: " + heading);
+		};
 	}
 
 	public void forward(int steps) {
@@ -132,8 +122,7 @@ public class DigitalTurtle extends AbstractTurtle {
 
 	public boolean leap(int steps) {
 		if (grid == null)
-			throw new IllegalStateException(
-					"Turtle is not attached to any grid!");
+			throw new IllegalStateException("Turtle is not attached to any grid!");
 
 		int xx = getNextX(steps);
 		int yy = getNextY(steps);
@@ -145,8 +134,7 @@ public class DigitalTurtle extends AbstractTurtle {
 	}
 
 	public void turnRight(int degrees) {
-		throw new UnsupportedOperationException(
-				"The digital turtle cannot turn right.");
+		throw new UnsupportedOperationException("The digital turtle cannot turn right.");
 	}
 
 	public void turnCardinalRight(int steps) {
@@ -156,7 +144,7 @@ public class DigitalTurtle extends AbstractTurtle {
 	public int getNextX(int steps) {
 		int xx = x;
 
-		switch (heading) {
+		switch (heading) {//fixme
 		case NorthEast:
 		case East:
 		case SouthEast:
@@ -170,27 +158,20 @@ public class DigitalTurtle extends AbstractTurtle {
 		default:
 			return x;
 		}
-		switch (moving) {
-		case Bounded:
-			xx = grid.boundX(xx);
-			break;
-		case Bounce:
-			xx = grid.reflectX(xx);
-			break;
-		case Torus:
-			xx = grid.torusX(xx);
-			break;
-		}
+		xx = switch (moving) {
+			case Bounded -> grid.boundX(xx);
+			case Bounce -> grid.reflectX(xx);
+			case Torus -> grid.torusX(xx);
+		};
 
 		return xx;
 	}
 
 	public void setHeading(int heading) {
 		if (heading < 0 || heading > 359)
-			throw new IndexOutOfBoundsException(
-					"heading must be a value within the [0, 360) interval.");
+			throw new IndexOutOfBoundsException("Heading must be a value within the [0, 360) interval.");
 
-		if (heading < 45)
+		if (heading < 45)//fixme switch?
 			this.heading = Direction.East;
 		else if (heading < 90)
 			this.heading = Direction.NorthEast;
@@ -216,7 +197,7 @@ public class DigitalTurtle extends AbstractTurtle {
 	public int getNextY(int steps) {
 		int yy = y;
 
-		switch (heading) {
+		switch (heading) {//fixme
 		case North:
 		case NorthEast:
 		case NorthWest:
@@ -231,17 +212,11 @@ public class DigitalTurtle extends AbstractTurtle {
 			return y;
 		}
 
-		switch (moving) {
-		case Bounded:
-			yy = grid.boundY(yy);
-			break;
-		case Bounce:
-			yy = grid.reflectY(yy);
-			break;
-		case Torus:
-			yy = grid.torusY(yy);
-			break;
-		}
+		yy = switch (moving) {
+			case Bounded -> grid.boundY(yy);
+			case Bounce -> grid.reflectY(yy);
+			case Torus -> grid.torusY(yy);
+		};
 
 		return yy;
 	}

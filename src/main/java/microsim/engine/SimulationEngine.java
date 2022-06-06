@@ -1,27 +1,21 @@
 package microsim.engine;
 
-import java.io.Serial;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.math3.random.RandomGenerator;
-
+import lombok.extern.java.Log;
 import microsim.data.ExperimentManager;
 import microsim.data.db.Experiment;
 import microsim.event.EventQueue;
 import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
+import org.apache.commons.math3.random.RandomGenerator;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.Serial;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * The simulation engine. The engine keeps a reference to an EventQueue object to
@@ -32,44 +26,15 @@ import microsim.exception.SimulationRuntimeException;
  * the engine. It is able to show windows destroyed by user. When the windows is
  * shown the engine put the windows in the location where it was when the
  * project document was saved to disk. The window size is stored, too.
- * 
- * <p>
- * Title: JAS
- * </p>
- * <p>
- * Description: Java Agent-based Simulation library
- * </p>
- * <p>
- * Copyright (C) 2002 Michele Sonnessa
- * </p>
- * 
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa 
- *         <p>
  */
-public class SimulationEngine extends Thread {
-
-	private static final Logger log = Logger.getLogger(SimulationEngine.class.toString());
+@Log public class SimulationEngine extends Thread {
 
 	/** Set the delay time beetween two simulation steps, ms. */
 	@Setter private int eventThresold = 0;
 
 	@Setter @Getter private int currentRunNumber = 1;
 
-	@Getter private Experiment currentExperiment = null;
+	private Experiment currentExperiment = null;
 
 	@Setter @Getter private String multiRunId = null;
 
@@ -200,7 +165,7 @@ public class SimulationEngine extends Thread {
 		this.builderClass = builderClass;
 	}
 
-	public static SimulationEngine getInstance() {
+	public static @NotNull SimulationEngine getInstance() {
 		return instance == null ? new SimulationEngine() : instance;
 	}
 
@@ -525,4 +490,7 @@ public class SimulationEngine extends Thread {
 
 	}
 
+	public Experiment getCurrentExperiment() {
+		return currentExperiment == null ? new Experiment() : currentExperiment;
+	}
 }

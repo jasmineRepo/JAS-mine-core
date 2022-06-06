@@ -1,63 +1,44 @@
 package microsim.statistics.functions;
 
-import microsim.statistics.IDoubleArraySource;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IFloatArraySource;
-import microsim.statistics.IIntArraySource;
-import microsim.statistics.IIntSource;
-import microsim.statistics.ILongArraySource;
+import microsim.statistics.DoubleArraySource;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.FloatArraySource;
+import microsim.statistics.IntArraySource;
+import microsim.statistics.IntSource;
+import microsim.statistics.LongArraySource;
 
 /**
  * This class computes the number of values in an array taken from a data source. 
  * The mean function return always an int value, so it implements the 
- * <i>IIntSource</i> interface and the standard  <i>IDoubleSource</i> one.
- * 
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa
- * <p>
+ * <i>IntSource</i> interface and the standard  <i>DoubleSource</i> one.
  */
-public class CountArrayFunction extends AbstractArrayFunction implements IDoubleSource, IIntSource {
+public class CountArrayFunction extends AbstractArrayFunction implements DoubleSource, IntSource {
 
 	/** Create a count function on a float array source.
 	 * @param source The data source.
 	 */
-	public CountArrayFunction(IFloatArraySource source) {
+	public CountArrayFunction(FloatArraySource source) {
 		super(source);
 	}
 
 	/** Create a count function on an integer array source.
 	 * @param source The data source.
 	 */
-	public CountArrayFunction(IIntArraySource source) {
+	public CountArrayFunction(IntArraySource source) {
 		super(source);
 	}
 
 	/** Create a count function on a long array source.
 	 * @param source The data source.
 	 */
-	public CountArrayFunction(ILongArraySource source) {
+	public CountArrayFunction(LongArraySource source) {
 		super(source);
 	}
 
 	/** Create a count function on a double array source.
 	 * @param source The data source.
 	 */
-	public CountArrayFunction(IDoubleArraySource source) {
+	public CountArrayFunction(DoubleArraySource source) {
 		super(source);
 	}
 

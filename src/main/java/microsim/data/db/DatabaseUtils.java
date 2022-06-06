@@ -1,28 +1,23 @@
 package microsim.data.db;
 
-import java.lang.reflect.Field;
-import java.util.*;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import jakarta.persistence.*;
-
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.hibernate.tool.schema.TargetType;
-
+import lombok.extern.java.Log;
+import lombok.val;
 import microsim.annotation.GUIparameter;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
 
-public class DatabaseUtils {
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.logging.Level;
 
-	private static final Logger log = Logger.getLogger(DatabaseUtils.class.toString());
+@Log public class DatabaseUtils {
 
 	private static EntityManagerFactory emf = null;
 	private static EntityManagerFactory outEntityManagerFactory = null;
@@ -48,8 +43,8 @@ public class DatabaseUtils {
 		for (Object model : models) {
 			Field[] fields = model.getClass().getDeclaredFields();
 			for (Field field : fields) {
-				GUIparameter modelParamter = field.getAnnotation(GUIparameter.class);
-				if (modelParamter != null) {
+				GUIparameter modelParameter = field.getAnnotation(GUIparameter.class);
+				if (modelParameter != null) {
 					field.setAccessible(true);
 					ExperimentParameter parameter = new ExperimentParameter();
 					parameter.experiment = experiment;
@@ -60,39 +55,25 @@ public class DatabaseUtils {
 					experiment.parameters.add(parameter);
 				}
 			}
-			
 		}
-
 		experiment = entityManager.merge(experiment);
 		tx.commit();
 
 		return experiment;
 	}
-	
 
-	public static void snap(EntityManager em, Long run, Double time, Object target)
-			throws Exception {
-		
+	public static void snap(EntityManager em, Long run, Double time, Object target) throws Exception {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return;
 		
 		final Field[] targetFields = target.getClass().getDeclaredFields();
     	Field idField = null;
-//    	String idFieldName;
     	for(Field fld : targetFields) {
-    		if(fld.getType().equals(PanelEntityKey.class)) {		//Doesn't rely on the name of the field
+    		if(fld.getType().equals(PanelEntityKey.class)) {
     			idField = fld;
-//    			idFieldName = fld.getName();
     			break;
     		}
     	}
-//		final Field idField = target.getClass().getDeclaredField("id");		//Relies on the name of the field being 'id', which may not be true if the user gives it another name.
-//		if (idField != null)
-//			idField.setAccessible(true);
-//
-//		if (idField == null || !idField.getType().equals(PanelEntityKey.class))
-//			throw new IllegalArgumentException("Object of type " + Object.class
-//					+ " cannot be snapped!");
     	if (idField != null)
 			idField.setAccessible(true);
 		else throw new IllegalArgumentException("Object of type "
@@ -122,7 +103,7 @@ public class DatabaseUtils {
 		tx.commit();
 	}
 
-	public static void snap(Object target) throws Exception {
+	public static void snap(Object target) throws Exception {// fixme collection is an object too
 		snap(DatabaseUtils.getOutEntityManger(),
 				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
 				SimulationEngine.getInstance().getTime(),
@@ -136,23 +117,20 @@ public class DatabaseUtils {
 				targetCollection);
 	}
 	
-	public static void snap(EntityManager em, Long run, Double time,
-			Collection<?> targetCollection) throws Exception {
+	public static void snap(EntityManager em, Long run, Double time, Collection<?> targetCollection) throws Exception {
 
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return;
 		
 		if (targetCollection != null && targetCollection.size() > 0) {
 
-			EntityTransaction tx = null;
+			EntityTransaction tx;
 
 			final Field[] targetFields = targetCollection.iterator().next().getClass().getDeclaredFields();
 	    	Field idField = null;
-//	    	String idFieldName;
 	    	for(Field fld : targetFields) {
-	    		if(fld.getType().equals(PanelEntityKey.class)) {		//Doesn't rely on the name of the field
+	    		if(fld.getType().equals(PanelEntityKey.class)) {
 	    			idField = fld;
-//	    			idFieldName = fld.getName();
 	    			break;
 	    		}
 	    	}
@@ -161,22 +139,12 @@ public class DatabaseUtils {
 			else throw new IllegalArgumentException("Object of type "
 					+ Object.class + " cannot be exported to database as it does not have a field of type PanelEntityKey.class or it is null!");
 
-//			final Field idField = targetCollection.iterator().next().getClass()
-//					.getDeclaredField("id");
-//			if (idField != null)
-//				idField.setAccessible(true);
-//
-//			if (idField == null
-//					|| !idField.getType().equals(PanelEntityKey.class))
-//				throw new IllegalArgumentException("Object of type "
-//						+ Object.class + " cannot be snapped!");
-
 			tx = em.getTransaction();
 			tx.begin();
 
 			for (Object panelTarget : targetCollection) {
 				try {
-					em.detach(panelTarget);
+					em.detach(panelTarget);// fixme duplicate
 					final PanelEntityKey key = (PanelEntityKey) idField.get(panelTarget);
 					PanelEntityKey newId = new PanelEntityKey();
 					if (key != null)
@@ -189,7 +157,7 @@ public class DatabaseUtils {
 					em.merge(panelTarget);
 					idField.set(panelTarget, key);
 				} catch (Exception e) {
-					if (tx != null && tx.isActive())
+					if (tx.isActive())
 						tx.rollback();
 					throw e;
 				}
@@ -198,8 +166,7 @@ public class DatabaseUtils {
 		}
 	}
 
-	public static void copy(EntityManager em, Long run, Double time, Object target)
-			throws Exception {
+	public static void copy(EntityManager em, Long run, Double time, Object target) throws Exception {
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
@@ -213,8 +180,7 @@ public class DatabaseUtils {
 		tx.commit();
 	}
 
-	public static void copy(EntityManager em, Long run, Double time,
-			Collection<?> targetCollection) throws Exception {
+	public static void copy(EntityManager em, Long run, Double time, Collection<?> targetCollection) throws Exception {
 		if (targetCollection != null && targetCollection.size() > 0) {
 			EntityTransaction tx = em.getTransaction();
 			tx.begin();
@@ -248,7 +214,7 @@ public class DatabaseUtils {
 		
 		if (emf == null) {
 			try {
-				Map<String, String> configOverrides = new HashMap<>();
+				val configOverrides = new Properties();
 				if (autoUpdate) 
 					configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
@@ -271,23 +237,23 @@ public class DatabaseUtils {
 	public static void inputSchemaUpdateEntityManger() {
 		if (emf == null) {
 			try {
-				Map<String, String> configOverrides = new HashMap<>();
+				val configOverrides = new Properties();
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
 				if (databaseInputUrl != null)
 					configOverrides.put("hibernate.connection.url", databaseInputUrl);
+				val serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
 
+				val metadata = new MetadataSources(serviceRegistry);
+				val enumSet = EnumSet.of(TargetType.DATABASE);
 
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
-				MetadataSources metadata = new MetadataSources(serviceRegistry);
-				EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
 				SchemaExport schemaExport = new SchemaExport();
 				schemaExport.create(enumSet, metadata.buildMetadata());
 
-				EntityManager em = Persistence.createEntityManagerFactory("sim-model",
+				val em = Persistence.createEntityManagerFactory("sim-model",
 						configOverrides).createEntityManager();
 
-				EntityTransaction tx = em.getTransaction();
+				val tx = em.getTransaction();
 				tx.begin();
 				em.flush();
 				tx.commit();
@@ -317,20 +283,20 @@ public class DatabaseUtils {
 		
 		if (outEntityManagerFactory == null) {
 			try {
-				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<>();
+				val configOverrides = new Properties();// fixme duplicating code
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
 				if (databaseOutputUrl != null)
 					configOverrides.put("hibernate.connection.url", databaseOutputUrl);
+				val serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
 
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
-				MetadataSources metadata = new MetadataSources(serviceRegistry)
+				val metadata = new MetadataSources(serviceRegistry)
 												.addAnnotatedClass(Experiment.class)
 												.addAnnotatedClass(ExperimentParameter.class);
-				EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+				val enumSet = EnumSet.of(TargetType.DATABASE);
+
 				SchemaUpdate schemaUpdate = new SchemaUpdate();
-				schemaUpdate.execute(enumSet, metadata.buildMetadata());  // TODO check this part
+				schemaUpdate.execute(enumSet, metadata.buildMetadata());
 
 				outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides);
 
@@ -378,6 +344,4 @@ public class DatabaseUtils {
 
 		return MultiKeyCoefficientMapFactory.createMapFromAnnotatedList(res);
 	}
-
-	
 }

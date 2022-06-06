@@ -1,51 +1,32 @@
 package microsim.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ParameterDomain {
 
 	public ParameterDomain() {
-		
 	}
 	
-	public ParameterDomain(String name, Object[] values) {
-		super();
+	public ParameterDomain(String name, Object @Nullable [] values) {
 		this.name = name;
 		this.values = values;
 	}
 
-	private String name;
+	@Setter	@Getter private String name;
 	
-	private Object[] values;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Object[] getValues() {
-		return values;
-	}
-
-	public void setValues(Object[] values) {
-		this.values = values;
-	}
+	@Setter @Getter private Object @Nullable [] values;
 	
-	public ParameterDomain addValue(Object value) {
-		List<Object> array = new ArrayList<Object>();
+	public @NotNull ParameterDomain addValue(Object value) {
+		val scratchLength = 1 + (values != null ? values.length : 0);
+		val scratchArray = new Object[scratchLength];
 		if (values != null)
-			for (int i = 0; i < values.length; i++) 
-				array.add(values[i]);
-		
-		array.add(value);
-		
-		values = array.toArray();
-		
+			System.arraycopy(values, 0, scratchArray, 0, values.length);
+		scratchArray[scratchLength - 1] = value;
+		values = scratchArray;
 		return this;
 	}
-		
 }

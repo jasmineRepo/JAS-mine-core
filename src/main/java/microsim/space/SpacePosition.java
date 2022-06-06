@@ -1,16 +1,15 @@
 package microsim.space;
 
+import jakarta.persistence.MappedSuperclass;
+
+import java.io.Serial;
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
+@MappedSuperclass public class SpacePosition implements Serializable, Comparable<SpacePosition> {// replace with record?// see lombok @data
 
-@MappedSuperclass
-public class SpacePosition implements Serializable, Comparable<SpacePosition> {
-
-	private static final long serialVersionUID = 1L;
+	@Serial private static final long serialVersionUID = 1L;
 
 	protected int x;
-	
 	protected int y;
 	
 	public SpacePosition() {

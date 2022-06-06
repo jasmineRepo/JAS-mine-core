@@ -1,20 +1,20 @@
 package microsim.statistics.regression;
 
+import cern.jet.random.Normal;
+import cern.jet.random.engine.MersenneTwister;
+import microsim.data.MultiKeyCoefficientMap;
+import microsim.engine.SimulationEngine;
+import microsim.statistics.DoubleSource;
+import microsim.statistics.ObjectSource;
+
 import java.util.Map;
 import java.util.Random;
 
-import microsim.data.MultiKeyCoefficientMap;
-import microsim.engine.SimulationEngine;
-import microsim.statistics.IDoubleSource;
-import microsim.statistics.IObjectSource;
-import cern.jet.random.Normal;
-import cern.jet.random.engine.MersenneTwister;
+public class ProbitRegression extends LinearRegression implements BinaryChoiceRegression {
 
-public class ProbitRegression extends LinearRegression implements IBinaryChoiceRegression {
-
-	private Random random;
+	private final Random random;
 	
-	private Normal normalRV;
+	private final Normal normalRV;
 
 	public ProbitRegression(MultiKeyCoefficientMap map) {
 		super(map);
@@ -30,12 +30,12 @@ public class ProbitRegression extends LinearRegression implements IBinaryChoiceR
 	
 	public double getProbability(Map<String, Double> values) {
 		final double score = super.getScore(values);		
-		return (double) normalRV.cdf(score);
+		return normalRV.cdf(score);
 	}
 	
 	public double getProbability(Object individual) {
 		final double score = super.getScore(individual);		
-		return (double) normalRV.cdf(score);		
+		return normalRV.cdf(score);
 	}
 	
 //	@Override
@@ -54,22 +54,22 @@ public class ProbitRegression extends LinearRegression implements IBinaryChoiceR
 	//	New methods
 	//	@author Ross Richardson
 	////////////////////////////////
-	public <T extends Enum<T>> double getProbability(IDoubleSource iDblSrc, Class<T> enumType) {
+	public <T extends Enum<T>> double getProbability(DoubleSource iDblSrc, Class<T> enumType) {
 		final double score = super.getScore(iDblSrc, enumType);				
-		return (double) normalRV.cdf(score);
+		return normalRV.cdf(score);
 	}
 	
-	public <T extends Enum<T>> boolean event(IDoubleSource iDblSrc, Class<T> enumType) {
+	public <T extends Enum<T>> boolean event(DoubleSource iDblSrc, Class<T> enumType) {
 		final double probability = getProbability(iDblSrc, enumType);
 		return (random.nextDouble() < probability);		
 	}
 	
-	public <T extends Enum<T>, U extends Enum<U>> double getProbability(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+	public <T extends Enum<T>, U extends Enum<U>> double getProbability(DoubleSource iDblSrc, Class<T> enumTypeDbl, ObjectSource iObjSrc, Class<U> enumTypeObj) {
 		final double score = super.getScore(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);		
-		return (double) normalRV.cdf(score);			
+		return normalRV.cdf(score);
 	}
 	
-	public <T extends Enum<T>, U extends Enum<U>> boolean event(IDoubleSource iDblSrc, Class<T> enumTypeDbl, IObjectSource iObjSrc, Class<U> enumTypeObj) {
+	public <T extends Enum<T>, U extends Enum<U>> boolean event(DoubleSource iDblSrc, Class<T> enumTypeDbl, ObjectSource iObjSrc, Class<U> enumTypeObj) {
 		final double probability = getProbability(iDblSrc, enumTypeDbl, iObjSrc, enumTypeObj);
 		return (random.nextDouble() < probability);		
 	}

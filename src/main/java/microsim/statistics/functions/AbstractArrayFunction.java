@@ -1,34 +1,15 @@
 package microsim.statistics.functions;
 
-import microsim.statistics.IDoubleArraySource;
-import microsim.statistics.IFloatArraySource;
-import microsim.statistics.IIntArraySource;
-import microsim.statistics.ILongArraySource;
-import microsim.statistics.IUpdatableSource;
+import microsim.statistics.DoubleArraySource;
+import microsim.statistics.FloatArraySource;
+import microsim.statistics.IntArraySource;
+import microsim.statistics.LongArraySource;
+import microsim.statistics.UpdatableSource;
 
 /**
  * This class represents the skeleton for all the function which opeate on array of native data type values.
- * Each inheriting class automatically implements the <i>IUpdatableSource</i> and the <i>ISimEventListener</i>,
+ * Each inheriting class automatically implements the <i>UpdatableSource</i> and the <i>ISimEventListener</i>,
  * which are managed by the AbstractArrayFunction.
- * 
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa
- * 
  */
 public abstract class AbstractArrayFunction extends AbstractFunction {
 
@@ -37,17 +18,17 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	protected static final int TYPE_INT = 2;
 	protected static final int TYPE_LNG = 3;
 
-	protected IDoubleArraySource dblSource;
-	protected IFloatArraySource fltSource;
-	protected IIntArraySource intSource;
-	protected ILongArraySource lngSource;
+	protected DoubleArraySource dblSource;
+	protected FloatArraySource fltSource;
+	protected IntArraySource intSource;
+	protected LongArraySource lngSource;
 	protected int type;
 	
 	
 	/** Create a function on a double array source.
 	 * @param source The data source.
 	 */
-	public AbstractArrayFunction(IDoubleArraySource source)
+	public AbstractArrayFunction(DoubleArraySource source)
 	{
 		super();
 		type = TYPE_DBL;
@@ -57,7 +38,7 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	/** Create a function on a float array source.
 	 * @param source The data source.
 	 */
-	public AbstractArrayFunction(IFloatArraySource source)
+	public AbstractArrayFunction(FloatArraySource source)
 	{
 		super();
 		type = TYPE_FLT;
@@ -67,7 +48,7 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	/** Create a function on an integer array source.
 	 * @param source The data source.
 	 */
-	public AbstractArrayFunction(IIntArraySource source)
+	public AbstractArrayFunction(IntArraySource source)
 	{
 		super();
 		type = TYPE_INT;
@@ -77,7 +58,7 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	/** Create a function on a long array source.
 	 * @param source The data source.
 	 */
-	public AbstractArrayFunction(ILongArraySource source)
+	public AbstractArrayFunction(LongArraySource source)
 	{
 		super();
 		type = TYPE_LNG;
@@ -85,33 +66,32 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	}		
 	
 	/**
-	 * Force the function to update itself. If the data source implements the <i>IUpdatableSource</i> 
+	 * Force the function to update itself. If the data source implements the <i>UpdatableSource</i>
 	 * interface it is updated before reading data.
 	 */
 	public void applyFunction()
 	{
-		switch (type)
-		{
-			case TYPE_DBL:
-				if (dblSource instanceof IUpdatableSource)
-					((IUpdatableSource) dblSource).updateSource(); 
-				apply(dblSource.getDoubleArray()); 
-				break;
-			case TYPE_FLT: 
-				if (fltSource instanceof IUpdatableSource)
-					((IUpdatableSource) fltSource).updateSource(); 
-				apply(fltSource.getFloatArray()); 
-				break;
-			case TYPE_INT: 
-				if (intSource instanceof IUpdatableSource)
-					((IUpdatableSource) intSource).updateSource(); 
-				apply(intSource.getIntArray()); 
-				break;
-			case TYPE_LNG:
-				if (lngSource instanceof IUpdatableSource)
-					((IUpdatableSource) lngSource).updateSource(); 			 
-				apply(lngSource.getLongArray()); 
-				break;
+		switch (type) {
+			case TYPE_DBL -> {
+				if (dblSource instanceof UpdatableSource)
+					((UpdatableSource) dblSource).updateSource();
+				apply(dblSource.getDoubleArray());
+			}
+			case TYPE_FLT -> {
+				if (fltSource instanceof UpdatableSource)
+					((UpdatableSource) fltSource).updateSource();
+				apply(fltSource.getFloatArray());
+			}
+			case TYPE_INT -> {
+				if (intSource instanceof UpdatableSource)
+					((UpdatableSource) intSource).updateSource();
+				apply(intSource.getIntArray());
+			}
+			case TYPE_LNG -> {
+				if (lngSource instanceof UpdatableSource)
+					((UpdatableSource) lngSource).updateSource();
+				apply(lngSource.getLongArray());
+			}
 		}
 	}
 	
@@ -155,7 +135,4 @@ public abstract class AbstractArrayFunction extends AbstractFunction {
 	{
 		throw new UnsupportedOperationException("This function class cannot be applied to arrays of long values.");
 	}
-	
-
-
 }

@@ -1,9 +1,11 @@
 package microsim.space.turtle;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 import microsim.engine.SimulationEngine;
 import microsim.space.ObjectSpace;
+
+import java.io.Serial;
 
 /**
  * An agent able to move itself upon an object grid. It has got some specific
@@ -39,10 +41,9 @@ import microsim.space.ObjectSpace;
  * @author Michele Sonnessa
  *         <p>
  */
-@MappedSuperclass
-public class Turtle extends AbstractTurtle {
+@MappedSuperclass public class Turtle extends AbstractTurtle {
 
-	private static final long serialVersionUID = 4897224750701553738L;
+	@Serial private static final long serialVersionUID = 4897224750701553738L;
 
 	private int degreeHeading;
 	private double radiantHeading;
@@ -111,30 +112,14 @@ public class Turtle extends AbstractTurtle {
 	 */
 	public void setCardinalHeading(Direction directionType) {
 		switch (directionType) {
-		case North:
-			degreeHeading = 90;
-			break;
-		case NorthEast:
-			degreeHeading = 45;
-			break;
-		case East:
-			degreeHeading = 0;
-			break;
-		case SouthEast:
-			degreeHeading = 315;
-			break;
-		case South:
-			degreeHeading = 270;
-			break;
-		case SouthWest:
-			degreeHeading = 225;
-			break;
-		case West:
-			degreeHeading = 180;
-			break;
-		case NorthWest:
-			degreeHeading = 135;
-			break;
+			case North -> degreeHeading = 90;
+			case NorthEast -> degreeHeading = 45;
+			case East -> degreeHeading = 0;
+			case SouthEast -> degreeHeading = 315;
+			case South -> degreeHeading = 270;
+			case SouthWest -> degreeHeading = 225;
+			case West -> degreeHeading = 180;
+			case NorthWest -> degreeHeading = 135;
 		}
 
 		radiantHeading = Math.toRadians(degreeHeading);
@@ -272,16 +257,12 @@ public class Turtle extends AbstractTurtle {
 	private int getGridX(double aRealX) {
 		int nX = (int) Math.round(aRealX);
 
-		switch (moving) {
-		case Bounded:
-			return grid.boundX(nX);
-		case Bounce:
-			return grid.reflectX(nX);
-		case Torus:
-			return grid.torusX(nX);
-		default:
-			return nX;
-		}
+		return switch (moving) {
+			case Bounded -> grid.boundX(nX);
+			case Bounce -> grid.reflectX(nX);
+			case Torus -> grid.torusX(nX);
+			default -> nX;
+		};
 
 		// return (int) Math.round(aRealX);
 	}
@@ -291,16 +272,12 @@ public class Turtle extends AbstractTurtle {
 
 		int nY = (int) Math.round(aRealY);
 
-		switch (moving) {
-		case Bounded:
-			return grid.boundY(nY);
-		case Bounce:
-			return grid.reflectY(nY);
-		case Torus:
-			return grid.torusY(nY);
-		default:
-			return nY;
-		}
+		return switch (moving) {
+			case Bounded -> grid.boundY(nY);
+			case Bounce -> grid.reflectY(nY);
+			case Torus -> grid.torusY(nY);
+			default -> nY;
+		};
 
 	}
 
@@ -313,23 +290,24 @@ public class Turtle extends AbstractTurtle {
 		double rX = realX + steps * Math.cos(radiantHeading);
 
 		switch (moving) {
-		case Bounded:
-			if (rX < 0)
-				rX = 0.0;
-			if (rX > grid.getXSize())
-				rX = grid.getXSize();
-			break;
-		case Bounce:
-			if (rX < 0)
-				rX = -rX;
-			if (rX > grid.getXSize())
-				rX = 2 * grid.getXSize() - rX;
-			break;
-		case Torus:
-			while (rX < 0)
-				rX += grid.getXSize();
-			while (rX > grid.getXSize())
-				rX -= grid.getXSize();
+			case Bounded -> {
+				if (rX < 0)
+					rX = 0.0;
+				if (rX > grid.getXSize())
+					rX = grid.getXSize();
+			}
+			case Bounce -> {
+				if (rX < 0)
+					rX = -rX;
+				if (rX > grid.getXSize())
+					rX = 2 * grid.getXSize() - rX;
+			}
+			case Torus -> {
+				while (rX < 0)
+					rX += grid.getXSize();
+				while (rX > grid.getXSize())
+					rX -= grid.getXSize();
+			}
 		}
 
 		return rX;
@@ -357,23 +335,24 @@ public class Turtle extends AbstractTurtle {
 		double rY = realY + steps * Math.sin(radiantHeading);
 
 		switch (moving) {
-		case Bounded:
-			if (rY < 0)
-				rY = 0.0;
-			if (rY > grid.getYSize())
-				rY = grid.getYSize();
-			break;
-		case Bounce:
-			if (rY < 0)
-				rY = -rY;
-			if (rY > grid.getYSize())
-				rY = 2 * grid.getYSize() - rY;
-			break;
-		case Torus:
-			while (rY < 0)
-				rY += grid.getYSize();
-			while (rY > grid.getYSize())
-				rY -= grid.getYSize();
+			case Bounded -> {
+				if (rY < 0)
+					rY = 0.0;
+				if (rY > grid.getYSize())
+					rY = grid.getYSize();
+			}
+			case Bounce -> {
+				if (rY < 0)
+					rY = -rY;
+				if (rY > grid.getYSize())
+					rY = 2 * grid.getYSize() - rY;
+			}
+			case Torus -> {
+				while (rY < 0)
+					rY += grid.getYSize();
+				while (rY > grid.getYSize())
+					rY -= grid.getYSize();
+			}
 		}
 
 		return rY;

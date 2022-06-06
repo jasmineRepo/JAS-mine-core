@@ -1,12 +1,14 @@
 package microsim.space.turtle;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
+import lombok.Getter;
 import microsim.space.ObjectSpace;
 import microsim.space.SpacePosition;
+
+import java.io.Serial;
 
 /**
  * An agent able to move itself upon an object grid. It has got some specific
@@ -42,23 +44,24 @@ import microsim.space.SpacePosition;
  * @author Michele Sonnessa
  *         <p>
  */
-@MappedSuperclass
-public abstract class AbstractTurtle extends SpacePosition {
+@MappedSuperclass public abstract class AbstractTurtle extends SpacePosition {
 
-	private static final long serialVersionUID = -8822828953179373104L;
+	@Serial private static final long serialVersionUID = -8822828953179373104L;
 
 	public enum Direction {
-		North(0), NorthEast(1), East(2), SouthEast(3), South(4), SouthWest(5), West(
-				6), NorthWest(7);
+		North(0),
+		NorthEast(1),
+		East(2),
+		SouthEast(3),
+		South(4),
+		SouthWest(5),
+		West(6),
+		NorthWest(7);
 
-		private int numVal;
+		@Getter private int numVal;
 
 		Direction(int numVal) {
 			this.numVal = numVal;
-		}
-
-		public int getNumVal() {
-			return numVal;
 		}
 
 		public Direction leftShift(int steps) {

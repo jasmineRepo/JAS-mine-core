@@ -2,9 +2,7 @@ package microsim.statistics.regression;
 
 import java.util.Map;
 
-import microsim.statistics.regression.ILinearRegression;
-
-public interface IBinaryChoiceRegression extends ILinearRegression {
+public interface BinaryChoiceRegression extends LinReg {
 	
 	boolean event(Object individual);
 

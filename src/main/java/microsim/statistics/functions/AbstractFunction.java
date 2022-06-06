@@ -3,31 +3,13 @@ package microsim.statistics.functions;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.exception.SimulationRuntimeException;
-import microsim.statistics.IUpdatableSource;
+import microsim.statistics.UpdatableSource;
 import microsim.statistics.TimeChecker;
 
 /**
  * An abstract skeleton for the statistical function able to manage update time checking.
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
- *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
- * 
- * @author Michele Sonnessa
- * 
  */
-public abstract class AbstractFunction implements EventListener, IUpdatableSource {
+public abstract class AbstractFunction implements EventListener, UpdatableSource {
 
 	protected TimeChecker timeChecker;
 
@@ -38,7 +20,7 @@ public abstract class AbstractFunction implements EventListener, IUpdatableSourc
 	
 	/**
 	 * Update the source, invoking the <i>updateSource()</i> method.
-	 * @param actionId Accepts only the jas.engine.Sim.EVENT_UPDATE value.
+	 * @param type Accepts only the jas.engine.Sim.EVENT_UPDATE value.
 	 * @throws UnsupportedOperationException if actionId is not equal to the jas.engine.Sim.EVENT_UPDATE value.
 	 */	
 	public void onEvent(Enum<?> type) {
@@ -64,7 +46,7 @@ public abstract class AbstractFunction implements EventListener, IUpdatableSourc
 		timeChecker.setEnabled(b);
 	}
 	/* (non-Javadoc)
-	 * @see jas.statistics.IUpdatableSource#updateSource()
+	 * @see jas.statistics.UpdatableSource#updateSource()
 	 */
 	public void updateSource()
 	{

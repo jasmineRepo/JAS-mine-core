@@ -1,18 +1,17 @@
 package microsim.data;
 
+import lombok.extern.java.Log;
+import microsim.data.db.DatabaseUtils;
+import microsim.data.db.Experiment;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.sql.Date;
-
-import org.apache.commons.io.FileUtils;
-
+import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import microsim.data.db.DatabaseUtils;
-import microsim.data.db.Experiment;
 
 /**
  * Singleton. Utility used to create ana manage experiment setup.
@@ -22,17 +21,13 @@ import microsim.data.db.Experiment;
  * @author Michele Sonnessa, edited by Ross Richardson
  *
  */
-public class ExperimentManager {
-
-	private static final Logger log = Logger.getLogger(ExperimentManager.class.toString());
+@Log public class ExperimentManager {
 	
 	/** The flag determines if the tool must copy input resources into output folder. */
 	public boolean copyInputFolderStructure = true;
 	
 	/**	The flag determines if output database must automatically be created. */
 	public boolean saveExperimentOnDatabase = true;
-	
-//	public String inputDatabaseName = "input.odb";
 
 	private static ExperimentManager manager = null;
 	
@@ -67,84 +62,20 @@ public class ExperimentManager {
 				outDir.mkdirs();
 			
 			
-			if (!destFile.exists()) {
+			if (!destFile.exists())
 		        destFile.createNewFile();
-		    }
-	
-		    FileChannel source = null;
-		    FileChannel destination = null;
-		    try {
-		        source = new FileInputStream(sourceFile).getChannel();
-		        destination = new FileOutputStream(destFile).getChannel();
-	
-		        // previous code: destination.transferFrom(source, 0, source.size());
-		        // to avoid infinite loops, should be:
-		        long count = 0;
-		        long size = source.size();              
-		        while((count += destination.transferFrom(source, count, size-count))<size);
-		    }
-		    finally {
-		        if (source != null) {
-		            source.close();
-		        }
-		        if (destination != null) {
-		            destination.close();
-		        }
-		    }
+
+			try (FileChannel source = new FileInputStream(sourceFile).getChannel();
+				 FileChannel destination = new FileOutputStream(destFile).getChannel()) {
+
+				// previous code: destination.transferFrom(source, 0, source.size());
+				// to avoid infinite loops, should be:
+				long count = 0;
+				long size = source.size();
+				while ((count += destination.transferFrom(source, count, size - count)) < size) ;
+			}
 		}		
 	}
-
-	
-//	public static void expandODB(String odbFileName, String destinationFolder) {
-//
-//		byte[] buffer = new byte[1024];
-//
-//		try {
-//
-//			// create output directory is not exists
-//			File folder = new File(destinationFolder);
-//			if (!folder.exists()) {
-//				folder.mkdir();
-//			}
-//
-//			// get the zip file content
-//			ZipInputStream zis = new ZipInputStream(new FileInputStream(odbFileName));
-//			// get the zipped file list entry
-//			ZipEntry ze = zis.getNextEntry();
-//
-//			while (ze != null) {
-//
-//				String fileName = ze.getName();
-//				File newFile = new File(destinationFolder + File.separator + fileName);
-//				if (newFile.getPath().startsWith(folder.getPath() + File.separator + "database")) {
-//					log.debug("file unzip : " + newFile.getAbsoluteFile());
-//
-//					// create all non exists folders
-//					// else you will hit FileNotFoundException for compressed folder
-//					new File(newFile.getParent()).mkdirs();
-//
-//					FileOutputStream fos = new FileOutputStream(newFile.getParent() + File.separator + "database." + newFile.getName());
-//
-//					int len;
-//					while ((len = zis.read(buffer)) > 0) {
-//						fos.write(buffer, 0, len);
-//					}
-//
-//					fos.close();					
-//				}
-//				
-//				ze = zis.getNextEntry();
-//			}
-//
-//			zis.closeEntry();
-//			zis.close();
-//
-//			System.out.println("Done");
-//
-//		} catch (IOException ex) {
-//			ex.printStackTrace();
-//		}
-//	}	
 	
 	public Experiment setupExperiment(Experiment experiment, Object... models) throws Exception {
 		final String outFolder = experiment.getOutputFolder() + File.separator + "input";
@@ -154,15 +85,10 @@ public class ExperimentManager {
 		if (copyInputFolderStructure) {
 			log.log(Level.INFO, "Copying folder structure");
 			
-//			File inputDBFile = new File(experiment.inputFolder + File.separator + inputDatabaseName);
-//			if (inputDBFile.exists())
-//				expandODB(experiment.inputFolder + File.separator + inputDatabaseName, outFolder);
-			
 			File inputDir = new File(experiment.inputFolder);
 			if (inputDir.exists()) {
 				String[] files = inputDir.list();
-				for (String file : files) {
-//					if (! file.equals("input.odb") && ! file.startsWith("."))
+				for (String file : Objects.requireNonNull(files)) {
 					if (! file.startsWith(".")) {
 						log.log(Level.INFO, "Copying " + file + " to output folder");
 						copy(inputDir + File.separator + file, outFolder);

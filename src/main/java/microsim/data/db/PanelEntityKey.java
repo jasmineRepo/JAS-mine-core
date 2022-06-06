@@ -1,23 +1,22 @@
 package microsim.data.db;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serial;
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+@Embeddable public class PanelEntityKey implements Serializable {
 
-@Embeddable
-public class PanelEntityKey implements Serializable {
+	@Serial private static final long serialVersionUID = -1264771886420608859L;
 
-	private static final long serialVersionUID = -1264771886420608859L;
-
-	@Column(name="id")
-	private long id = 1L;
+	@Column(name="id") @Setter @Getter private long id = 1L;
 	
-	@Column(name="simulation_time")
-	private double simulationTime;
+	@Column(name="simulation_time") @Setter @Getter private double simulationTime;
 	
-	@Column(name="simulation_run")
-	private long simulationRun;
+	@Column(name="simulation_run") @Setter @Getter private long simulationRun;
 
 	public PanelEntityKey() {
 		super();
@@ -27,29 +26,4 @@ public class PanelEntityKey implements Serializable {
 		super();
 		this.id = id;
 	}
-	
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public double getSimulationTime() {
-		return simulationTime;
-	}
-
-	public void setSimulationTime(Double simulationTime) {
-		this.simulationTime = simulationTime;
-	}
-
-	public long getSimulationRun() {
-		return simulationRun;
-	}
-
-	public void setSimulationRun(Long simulationRun) {
-		this.simulationRun = simulationRun;
-	}
-		
 }
