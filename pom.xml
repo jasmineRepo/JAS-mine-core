@@ -9,6 +9,11 @@
 	<artifactId>JAS-mine-core</artifactId>
 	<version>5.0.0-alpha</version>
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources> <!-- fixme probably not needed, find where logs are stored -->
 		<plugins>
 			<!-- Code Coverage report generation -->
 			<plugin>
@@ -35,8 +40,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
 				<configuration> <!-- Compile JAVA 18 compatible bytecode -->
-					<source>18</source>
-					<target>18</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -61,7 +66,7 @@
 				  <execution>
 					<id>make-assembly</id>
 					<!-- bind to the packaging phase -->
-					<phase>package</phase> 
+					<phase>package</phase>
 					<goals>
 						<goal>single</goal>
 					</goals>
@@ -101,9 +106,21 @@
 			<version>3.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.orm</groupId>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.0.1.Final</version> <!-- JPA 3.0-->
+			<version>5.6.9.Final</version> <!-- JPA 3.0-->
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>4.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>4.5.1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -155,7 +172,7 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.28.0-GA</version>
+			<version>3.29.0-GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
