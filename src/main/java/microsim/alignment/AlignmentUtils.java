@@ -1,5 +1,6 @@
 package microsim.alignment;
 
+import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
@@ -16,13 +17,12 @@ public interface AlignmentUtils<T> {
      * @param filter Null, or a predicate, one for all agents - to filter some of them out.
      * @return A filtered list of agents.
      */
-    @NotNull
-    default List<T> extractAgentList(final Collection<T> agents, final @Nullable Predicate<T> filter){
-        List<T> list = new ArrayList<>();
-        if (filter != null)
-            CollectionUtils.select(agents, filter, list);
-        else
-            list.addAll(agents);
+    @NotNull default List<T> extractAgentList(final @Nullable Collection<T> agents,
+                                              final @Nullable Predicate<T> filter) {
+        val list = new ArrayList<T>();
+        if (agents != null)
+            if (filter != null) CollectionUtils.select(agents, filter, list);
+            else list.addAll(agents);
         return list;
     }
 }
