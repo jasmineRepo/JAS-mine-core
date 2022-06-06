@@ -85,6 +85,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.github.hakky54</groupId>
+			<artifactId>logcaptor</artifactId>
+			<version>2.7.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>
 			<version>1.2.0</version> <!-- Outdated, replace?-->
@@ -177,9 +183,9 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest</artifactId>
-			<version>2.2</version>
+			<groupId>org.assertj</groupId><!-- todo check for updates, try to build with good dependencies -->
+			<artifactId>assertj-core</artifactId>
+			<version>3.22.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
