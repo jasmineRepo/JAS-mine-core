@@ -11,9 +11,8 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("ConstantConditions")
-class LogitScalingWeightedAlignmentTest {
-    LogitScalingWeightedAlignment<A> testClass = new LogitScalingWeightedAlignment<>();
+class LogitScalingAlignmentTest {
+    LogitScalingAlignment<A> testClass = new LogitScalingAlignment<>();
 
     static class A implements Weight{
         @Setter private double weight;
