@@ -46,6 +46,12 @@ import static java.lang.String.format;
  *      for Alignment in Microsimulation models, International Journal of Microsimulation (2016) 9(3) 89-102</a>
  */
 public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
+    final static double ERROR_THRESHOLD = 1e-15;
+    /**
+     * @return targetDistribution The expected discrete probability distribution.
+     */
+    @Getter(AccessLevel.PACKAGE) private double[] targetDistribution;
+
     /**
      * @return totalChoiceNumber The number of possible outcomes of a given event that is the length of
      *                           the {@code targetShare} parameter.
@@ -85,7 +91,7 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
 
     /**
      * @return target The target share of the relevant subpopulation. Sums of the aligned probabilities must be equal
-     *                to these values.
+     *                to these values that can be greater than 1.
      */
     @Getter(AccessLevel.PACKAGE) private double[] targetShare;
 
@@ -136,9 +142,10 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
     final public void align(@NonNull Collection<T> agents, @Nullable Predicate<T> filter,
                             @NonNull AlignmentMultiProbabilityClosure<T> closure,
                             double @NonNull [] targetProbabilityDistribution){
+        targetDistribution = targetProbabilityDistribution;
         weightedModel = isWeighted(agents);
 
-        totalChoiceNumber = targetProbabilityDistribution.length;
+        totalChoiceNumber = targetDistribution.length;
 
         filteredAgentList = extractAgentList(agents, filter);
         totalAgentNumber = filteredAgentList.size();
@@ -153,33 +160,39 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
         for (var agentId = 0; agentId < totalAgentNumber; agentId++)
             probabilities[agentId] = closure.getProbability(filteredAgentList.get(agentId));
 
-        if (weightedModel)// todo does changing this array changes in probs changes the original one?
+        validateInputData();
+
+        if (weightedModel)
             for (var agentId = 0; agentId < totalAgentNumber; agentId++)
                 for (int choice = 0; choice < totalChoiceNumber; choice++)
                     probabilities[agentId][choice] *= weights[agentId];
 
-        validateInputData(targetProbabilityDistribution, probabilities, weights);// assume it works for now
-
-        targetShare = new double[totalChoiceNumber]; // expected number of agent in every state, can be > 1
+        targetShare = new double[totalChoiceNumber];
 
         gammaValues = new double[totalChoiceNumber];
         alphaValues = new double[totalAgentNumber];
 
         for(var choice = 0; choice < totalChoiceNumber; choice++)
-            targetShare[choice] = targetProbabilityDistribution[choice] * total;
+            targetShare[choice] = targetDistribution[choice] * total;
 
         probSumOverAgents = new double[totalChoiceNumber];
+        probSumOverChoices = new double[totalAgentNumber];
 
-        double error;
+        double error = 0.;
+        val actualProbabilityDistribution = new double[totalChoiceNumber];
         short iteration;
-        for (iteration = 0; iteration < 50 ; iteration++) {// todo check that this is enough
-            probabilityAdjustmentCycle(probSumOverAgents, targetShare, weights, tempAgents, probabilities);
-            error = KullbackLeiblerDivergence(targetProbabilityDistribution, probSumOverAgents); // fixme renormalize probsum back to probdistribution
-            if (error <= 1e-15)
+        for (iteration = 0; iteration < 100 ; iteration++) {
+            probabilityAdjustmentCycle();
+
+            for (var choiceId = 0; choiceId < totalChoiceNumber; choiceId++)
+                actualProbabilityDistribution[choiceId] = probSumOverAgents[choiceId] / total;
+
+            error = KullbackLeiblerDivergence(targetDistribution, actualProbabilityDistribution);
+            if (error <= ERROR_THRESHOLD)
                 break;
         }
-        throwDivergenceError(error, errorThreshold, total, totalAgentNumber, count);
-        correctProbabilities(closure, filteredAgentList, weights, probabilities);
+        throwDivergenceError(error, iteration);
+        correctProbabilities(closure);
     }
 
     /**
@@ -210,94 +223,97 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
 
     /**
      * Does a basic input data validation. Sees that probabilities are in range in [0,1], their sum is not greater than
-     * 1; also checks that weights and precision are strictly positive.
-     * @param targetShare Probabilities of outcomes of an event.
-     * @param maxNumberIterations The number of iterations the method goes through.
-     * @param precision The precision of the method.
-     * @param weights Weights of agents.
+     * 1; also checks that weights and precision are strictly positive. Steps in before weight scaling.
      * @throws AssertionError When any of the checks fail.
      * @throws NullPointerException When {@code targetShare} or {@code weights} or both are null.
-     * @throws IllegalArgumentException When sanity checks fail: {@code targetShare} values are out of range [0,1],
-     *                                  {@code sum(targetShare) > 1}, {@code maxNumberIterations == 0},
-     *                                  {@code precision <= 0}, NaN, or Inf, any element of {@code weights} is
-     *                                  {@code <= 0}, NaN, or Inf.
+     * @throws IllegalArgumentException When sanity checks fail:
+     *                                  {@code totalChoiceNumber} is 0 or 1,
+     *                                  {@code targetDistribution} values are out of range [0,1],
+     *                                  {@code sum(targetDistribution) != 1},
+     *                                  any element of {@code weights} is {@code <= 0, NaN, or Inf},
+     *                                  {@code probabilities} contains values out of range [0,1],
+     *                                  for any agent the sum of all probabilities is not 1,
+     *                                  impossible event, i.e., for *every* agent the probability of a particular
+     *                                  outcome is strictly zero,
+     *                                  the probability array is binary (contains 0 and 1 only) as the method does not
+     *                                  converge.
      */
-    final void validateInputData(final double [] targetShare, final int maxNumberIterations, final double [][] probs,
-                                 final double precision, final double[] weights){
-        if (targetShare.length < 2)
+    final void validateInputData(){
+        if (totalChoiceNumber < 2)
             throw new IllegalArgumentException("The number of outcomes must be at least 2.");
-//fixme targetProbabilityDistribution is an actual probabilities distribution!!!! all elements are between zero and one
-
-        for (var v : targetShare)
+        for (var v : targetDistribution)
             if (v < 0. || v > 1.)
                 throw new IllegalArgumentException("Each probability value must lie in [0,1].");
-        if (sum(targetShare) > 1.)
+        if (sum(targetDistribution) != 1.)
             throw new IllegalArgumentException("Sum of all outcomes must be 1 by definition.");
-        if (maxNumberIterations == 0)
-            throw new IllegalArgumentException("The method has to go at least through one iteration.");
-        if (precision <= 0. || isNaN(precision) || isInfinite(precision))
-            throw new IllegalArgumentException("The precision of the scheme has be greater than 0, but finite");
+        if (weights != null)
+            for (var weight : weights)
+                if (weight <= 0. || isNaN(weight) || isInfinite(weight))
+                    throw new IllegalArgumentException("Agent's weight cannot be <= 0, NaN, or Inf.");
 
-        for (var weight : weights)
-            if (weight <= 0. || isNaN(weight) || isInfinite(weight))
-                throw new IllegalArgumentException("Agent's weight cannot be <= 0, NaN, or Inf.");
+        for (var p : probabilities)
+            for (var v : p)
+                if (v < 0. || v > 1.)
+                    throw new IllegalArgumentException("Each probability value must lie in [0,1].");
+
+        for (var p : probabilities)
+            if (sum(p) != 1)
+                throw new IllegalArgumentException("Sum of all outcomes must be 1 by definition.");
+
+
+        for(var choice = 0; choice < totalChoiceNumber; choice++) {
+            for (var agentId = 0; agentId < totalAgentNumber; agentId++)
+                tempAgents[agentId] = probabilities[agentId][choice];
+            if (sum(tempAgents) == 0.)
+                throw new IllegalArgumentException("Absolutely impossible event.");
+        }
+
+        for (var agentId = 0; agentId < totalAgentNumber; agentId++) {
+            val p = probabilities[agentId];
+            tempAgents[agentId] = 0.;
+            for (var v : p) {
+                if (v != 0. && v != 1.) {
+                    tempAgents[agentId] = 1.;
+                    break;
+                }
+            }
+        }
+        if (sum(tempAgents) == 0.)
+            throw new IllegalArgumentException("Poorly picked data with static events: contains 0 and 1 only," +
+                    " does not converge.");
     }
 
     /**
      * Throws an error message when the method doesn't converge to the expected solution of the problem within a given
-     * range of iterations. This message is optional (conditional), however, additional sanity checks are introduced
-     * by default. If at least one of the input parameters is NaN of Inf, something went wrong earlier as these values
-     * make no numerical sense and should not be here in any case.
-     * @param precisionValue The accuracy of the method.
-     * @param warningsOn A boolean flag that switches on/off the warning message.
+     * range of iterations.
      * @param errorValue Actual error.
-     * @param errorLevel Expected error.
-     * @param sampleSize Number of agents.
      * @param iterations Total number of passed iterations at the moment of termination.
-     * @param totalAgentWeight The sum of all weights in a given subpopulation.
      * @throws ArithmeticException When the main iterative condition is not satisfied; when double values are NaN, Inf.
-     * @throws IllegalArgumentException When parameters are out of the acceptable range.
      */
-    final void throwDivergenceError(final double precisionValue, final boolean warningsOn,
-                                    final double errorValue, final double errorLevel, final double totalAgentWeight,
-                                    final int sampleSize, final int iterations){
-        val pv = isNaN(precisionValue) || isInfinite(precisionValue);
-        val ev = isNaN(errorValue) || isInfinite(errorValue);
-        val el = isNaN(errorLevel) || isInfinite(errorLevel);
-        val aw = isNaN(totalAgentWeight) || isInfinite(totalAgentWeight);
-        if (pv || ev || el || aw)
-            throw new ArithmeticException("Sanity check fails.");
-        if (precisionValue <= 0. || errorValue <= 0. || errorLevel <= 0. || totalAgentWeight <= 0. ||
-                sampleSize < 1 || iterations < 0)
-            throw new IllegalArgumentException("Values of parameters are out of range.");
-
-        if(errorValue >= errorLevel && warningsOn) {
+    final void throwDivergenceError(final double errorValue, final int iterations){
+        if(errorValue >= ERROR_THRESHOLD) {
             String className = this.getClass().getCanonicalName();
             throw new ArithmeticException(format("""
                 WARNING: The %s align() method terminated with an error of %f, which has a greater magnitude than the
                  precision bounds of +/-%f. The size of the filtered agent collection is %d and the number of iterations
                  was %d. Check the results of the %s alignment to ensure that alignment is good enough for the purpose
-                 in question, or consider increasing the maximum number of iterations or the precision!
-                """, className, errorValue/totalAgentWeight, precisionValue, sampleSize, iterations, className));
+                 in question, or consider changing the criteria for agent selection.
+                """, className, errorValue, ERROR_THRESHOLD, totalAgentNumber, iterations, className));
         }
     }
 
     /**
-     * Scales down {@link #getProbabilities()} to 're-normalise', as it was previously scaled up by weight. Replaces individual
-     * probabilities with the aligned probabilities {@link #getProbabilities()}.
+     * Scales down {@link #getProbabilities()} to 're-normalise', as it was previously scaled up by weight. Replaces
+     * individual probabilities with the aligned probabilities {@link #getProbabilities()}.
      * @param closure An instance of implementation of
      *                {@link microsim.alignment.multiple.AlignmentMultiProbabilityClosure}.
-     * @param fa A list of filtered agents.
-     * @param w Weights of agents.
-     * @param probabilities Probabilities of the subpopulation.
+     * @implNote No need to check for division by zero as all such values are filtered out earlier.
      */
-    final void correctProbabilities(final @NotNull AlignmentMultiProbabilityClosure<T> closure,
-                                    final @NotNull List<T> fa, final double @Nullable [] w,
-                                    final double @NotNull [] @NotNull [] probabilities){
-        if (w != null) for (var i = 0; i < totalAgentNumber; i++)
-                for(var choice = 0; choice < totalChoiceNumber; choice++) probabilities[i][choice] /= w[i];// zero weights are filtered out?
+    final void correctProbabilities(final @NotNull AlignmentMultiProbabilityClosure<T> closure){
+        if (weights != null) for (var i = 0; i < totalAgentNumber; i++)
+                for(var choice = 0; choice < totalChoiceNumber; choice++) probabilities[i][choice] /= weights[i];
 
-        for (var i = 0; i < totalAgentNumber; i++) closure.align(fa.get(i), probabilities[i]);
+        for (var i = 0; i < totalAgentNumber; i++) closure.align(filteredAgentList.get(i), probabilities[i]);
     }
 
     /**
@@ -316,23 +332,27 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
      * Generates an array with gamma values.
      * @implSpec {@code agentSizeArray} is introduced to avoid extra memory handling as this method is called during
      *           every iteration.
+     * @implNote No division by zero is handled, it's assumed all data of such kind is not valid and thus blocked from
+     *           processing earlier.
      */
     final void generateGammaValues(){
         for(var choice = 0; choice < totalChoiceNumber; choice++) {
             for (var agentId = 0; agentId < totalAgentNumber; agentId++)
-                agentSizeArray[agentId] = probabilities[agentId][choice];
-            gamma[choice] = targetSum[choice] / sum(agentSizeArray);// division by zero
+                tempAgents[agentId] = probabilities[agentId][choice];
+            gammaValues[choice] = targetShare[choice] / sum(tempAgents);
         }
     }
 
     /**
      * Generates corresponding alpha values.
+     * @implNote No division by zero here if the data is valid: the sum of all probabilities is 1 by definition. In the
+     *           case of a weighted population it's not 1 but the corresponding weight value that is not 0 anyway.
      */
     final void generateAlphaValues() {
         if (weights == null) Arrays.fill(alphaValues, 1.0);
         else System.arraycopy(weights, 0, alphaValues, 0, totalAgentNumber);
-        for (var agentId = 0; agentId < totalAgentNumber; agentId++) alphaValues[agentId] /= probSumOverChoices[agentId];
-        // division by zero
+        for (var agentId = 0; agentId < totalAgentNumber; agentId++)
+            alphaValues[agentId] /= probSumOverChoices[agentId];
     }
 
     /**
@@ -340,10 +360,6 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
      * such a way that the total sum of every column matches the target value.
      */
     final void executeGammaTransform(){
-        for (var g : gammaValues) assert g > 0 : "Gamma values must be non-negative.";
-        // does it have to be > or >=
-        // fixme how does the scheme behave when we have at least one 0 in the target distribution?// check for nan int subnormals?
-
         for(var agentId = 0; agentId < totalAgentNumber; agentId++) {
             for (var choice = 0; choice < totalChoiceNumber; choice++)
                 probabilities[agentId][choice] *= gammaValues[choice];
@@ -360,12 +376,12 @@ public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
     final void executeAlphaTransform(){
         for(var agentId = 0; agentId < totalAgentNumber; agentId++)
             for (var choice = 0; choice < totalChoiceNumber; choice++)
-                probabilities[agentId][choice] *= alphaValues[agentId]; // scale it first
+                probabilities[agentId][choice] *= alphaValues[agentId];
 
-        for (var choice = 0; choice < totalChoiceNumber; choice++) {
-            probSumOverAgents[choice] = 0.;
-            for (var agentId = 0; agentId < totalAgentNumber; agentId++) // fixme old sum was extremely odd, check it again
-                probSumOverAgents[choice] = sum(probSumOverAgents[choice], probabilities[agentId][choice]);// fixme not the most accurate sum
+        for(var choice = 0; choice < totalChoiceNumber; choice++) {
+            for (var agentId = 0; agentId < totalAgentNumber; agentId++)
+                tempAgents[agentId] = probabilities[agentId][choice];
+            probSumOverAgents[choice] = sum(tempAgents);
         }
     }
 }
