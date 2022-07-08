@@ -45,7 +45,7 @@ import static java.lang.String.format;
  * @see <a href="https://ideas.repec.org/a/ijm/journl/v9y2016i3p89-102.html">Peter Stephensen, A General Method
  *      for Alignment in Microsimulation models, International Journal of Microsimulation (2016) 9(3) 89-102</a>
  */
-public class AbstractLogitScalingAlignment<T> implements AlignmentUtils<T> {
+public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
     final static double ERROR_THRESHOLD = 1e-15;
     /**
      * @return targetDistribution The expected discrete probability distribution.
