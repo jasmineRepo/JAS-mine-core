@@ -1,7 +1,5 @@
 package microsim.alignment.multiple;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import microsim.agent.Weight;
@@ -12,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.InputMismatchException;
 import java.util.List;
 
 import static jamjam.Sum.sum;
@@ -48,85 +45,86 @@ import static java.lang.String.format;
 public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
     final static double ERROR_THRESHOLD = 1e-15;
     /**
-     * @return targetDistribution The expected discrete probability distribution.
+     * The expected discrete probability distribution.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] targetDistribution;
+    double[] targetDistribution;
 
     /**
-     * @return totalChoiceNumber The number of possible outcomes of a given event that is the length of
-     *                           the {@code targetShare} parameter.
+     * The number of possible outcomes of a given event that is the length of the {@code targetShare} parameter.
      */
-    @Getter(AccessLevel.PACKAGE) private int totalChoiceNumber;
+    int totalChoiceNumber;
 
     /**
-     * @return filteredAgentList A list of agents after applying {@link #extractAgentList(Collection, Predicate)} and
-     *                           {@code filter}.
+     * A list of agents after applying {@link #extractAgentList(Collection, Predicate)} and {@code filter}.
      */
-    @Getter(AccessLevel.PACKAGE) private List<T> filteredAgentList;
+    List<T> filteredAgentList;
 
     /**
-     * @return totalAgentNumber The total number of agents after passing the {@code filter}, obtained as the size of
-     *                     {@link #getFilteredAgentList()}.
+     * The total number of agents after passing the {@code filter}, obtained as the size of {@link
+     * #filteredAgentList}.
      */
-    @Getter(AccessLevel.PACKAGE) private int totalAgentNumber;
+    int totalAgentNumber;
 
     /**
-     * @return weights An array of agent weights, that has the same size as the array returned by
-     *                 {@link #getFilteredAgentList()}. {@code null} when there is no weights at all.
+     * An array of agent weights, that has the same size as the array returned by {@link #filteredAgentList}.
+     * {@code null} when there is no weights at all.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] weights;
+    double[] weights;
 
     /**
-     * @return probabilities A 2D array of probabilities, every value represents an agent/outcome probability. The size
-     *                       is defined as {@link #getTotalAgentNumber()}x{@link #getTotalChoiceNumber()}. All values
-     *                       are updated during simulation.
+     * A 2D array of probabilities, every value represents an agent/outcome probability. The size is defined as {@link
+     * #totalAgentNumber}x{@link #totalChoiceNumber}. All values are updated during simulation.
      */
-    @Getter(AccessLevel.PACKAGE) private double[][] probabilities;
+    double[][] probabilities;
 
     /**
-     * @return total The sum of all weights of all agents, retrieved by passing {@link #getWeights()} to {@link
-     *               jamjam.Sum#sum(double...)}.
+     * The sum of all weights of all agents, retrieved by passing {@link #weights} to {@link
+     * jamjam.Sum#sum(double...)}.
      */
-    @Getter(AccessLevel.PACKAGE) private double total;
+    double total;
 
     /**
-     * @return target The target share of the relevant subpopulation. Sums of the aligned probabilities must be equal
-     *                to these values that can be greater than 1.
+     * The target share of the relevant subpopulation. Sums of the aligned probabilities must be equal to these values
+     * that can be greater than 1.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] targetShare;
+    double[] targetShare;
 
     /**
-     * @return probSumOverAgents An array of size {@link #getTotalChoiceNumber()}, containing sums of probabilities
-     *                           over {@code agents} per choice at current iteration.
+     * An array of size {@link #totalChoiceNumber}, containing sums of probabilities over {@code agents} per choice
+     * at current iteration.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] probSumOverAgents;
+    double[] probSumOverAgents;
 
     /**
-     * @return probSumOverAgents An array of size {@link #getTotalAgentNumber()}, containing sums of probabilities over
-     *                           {@code choices} per agent at current iteration.
+     * An array of size {@link #totalAgentNumber}, containing sums of probabilities over {@code choices} per agent
+     * at current iteration.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] probSumOverChoices;
+    double[] probSumOverChoices;
 
     /**
-     * @return modelIsWeighted A {@code boolean} showing if the model has to deal with weighted data.
+     * A {@code boolean} showing if the model has to deal with weighted data.
      */
-    @Getter(AccessLevel.PACKAGE) private boolean weightedModel;
+    boolean weightedModel;
 
     /**
-     * @return  alphaValues An array containing alpha values.
+     * An array containing alpha values.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] alphaValues;
+    double[] alphaValues;
 
     /**
-     * @return  gammaValues An array containing gamma values.
+     * An array containing gamma values.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] gammaValues;
+    double[] gammaValues;
 
     /**
-     * @return  tempAgents A temporary array containing a certain property of all agents.
+     * A temporary array containing a certain property of all agents.
      */
-    @Getter(AccessLevel.PACKAGE) private double[] tempAgents;
+    double[] tempAgents;
 
+    /**
+     * A temporary array containing sums of probabilities, i.e., 1 if there is no weights, or weights otherwise.
+     */
+    double[] targetProbabilitySums;
     /**
      * General alignment procedure, it adjusts probabilities using all the provided parameters until the algorithm
      * reaches the target precision/number of iterations.
@@ -149,6 +147,8 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
 
         filteredAgentList = extractAgentList(agents, filter);
         totalAgentNumber = filteredAgentList.size();
+        if (totalAgentNumber == 0)
+            return;
 
         tempAgents = new double[totalAgentNumber];
 
@@ -161,6 +161,10 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
             probabilities[agentId] = closure.getProbability(filteredAgentList.get(agentId));
 
         validateInputData();
+
+        targetProbabilitySums = new double[totalAgentNumber];
+        if (weightedModel) System.arraycopy(weights, 0, targetProbabilitySums, 0, totalAgentNumber);
+        else Arrays.fill(targetProbabilitySums, 1.0);
 
         if (weightedModel)
             for (var agentId = 0; agentId < totalAgentNumber; agentId++)
@@ -177,7 +181,11 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
 
         probSumOverAgents = new double[totalChoiceNumber];
         probSumOverChoices = new double[totalAgentNumber];
-
+        for(var choice = 0; choice < totalChoiceNumber; choice++) {
+            for (var agentId = 0; agentId < totalAgentNumber; agentId++)
+                tempAgents[agentId] = probabilities[agentId][choice];
+            probSumOverAgents[choice] = sum(tempAgents);
+        }
         double error = 0.;
         val actualProbabilityDistribution = new double[totalChoiceNumber];
         short iteration;
@@ -199,14 +207,15 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      * Checks if all agents have corresponding weights, i.e., {@link Weight} implemented.
      * @param agentCollection A collection of objects representing agents.
      * @return {@code true} when all of them have weights, {@code false} if none of them have.
-     * @throws InputMismatchException When the input collection contains both weighted and non-weighted samples.
      * @implNote Introduced to avoid all the hassle with multiple classes.
+     *           Mixes of weighted and non-weighted objects are not possible.
+     *           In the case of an empty list returns false for the sake of consistency. The actual value is irrelevant
+     *           in this case since any empty agent list causes early exit.
      */
     boolean isWeighted(@NotNull Collection<T> agentCollection) {
-        if (agentCollection.stream().allMatch((o) -> o instanceof Weight)) return true;
-        else if (agentCollection.stream().noneMatch((o) -> o instanceof Weight)) return false;
-        else throw new InputMismatchException("Provided collection of agents contains " +
-                    "both weighted and non-weighted samples.");
+        if (agentCollection.isEmpty()) return false;
+        val scratch = agentCollection.iterator().next();
+        return scratch instanceof Weight;
     }
 
     /**
@@ -303,8 +312,8 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
     }
 
     /**
-     * Scales down {@link #getProbabilities()} to 're-normalise', as it was previously scaled up by weight. Replaces
-     * individual probabilities with the aligned probabilities {@link #getProbabilities()}.
+     * Scales down {@link #probabilities} to 're-normalise', as it was previously scaled up by weight. Replaces
+     * individual probabilities with the aligned probabilities {@link #probabilities}.
      * @param closure An instance of implementation of
      *                {@link microsim.alignment.multiple.AlignmentMultiProbabilityClosure}.
      * @implNote No need to check for division by zero as all such values are filtered out earlier.
@@ -336,11 +345,8 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      *           processing earlier.
      */
     final void generateGammaValues(){
-        for(var choice = 0; choice < totalChoiceNumber; choice++) {
-            for (var agentId = 0; agentId < totalAgentNumber; agentId++)
-                tempAgents[agentId] = probabilities[agentId][choice];
-            gammaValues[choice] = targetShare[choice] / sum(tempAgents);
-        }
+        for(var choice = 0; choice < totalChoiceNumber; choice++)
+            gammaValues[choice] = targetShare[choice] / probSumOverAgents[choice];
     }
 
     /**
@@ -349,10 +355,8 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      *           case of a weighted population it's not 1 but the corresponding weight value that is not 0 anyway.
      */
     final void generateAlphaValues() {
-        if (weights == null) Arrays.fill(alphaValues, 1.0);
-        else System.arraycopy(weights, 0, alphaValues, 0, totalAgentNumber);
         for (var agentId = 0; agentId < totalAgentNumber; agentId++)
-            alphaValues[agentId] /= probSumOverChoices[agentId];
+            alphaValues[agentId] = targetProbabilitySums[agentId] / probSumOverChoices[agentId];
     }
 
     /**
