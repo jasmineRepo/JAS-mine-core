@@ -20,11 +20,7 @@ class AlignmentUtilsTest {
 
     @Test @DisplayName("Generic predicate") void testExtractAgentList() {
         assertTrue(lsa.extractAgentList(new ArrayList<>(), mock(Predicate.class)).isEmpty());
-        assertTrue(lsa.extractAgentList(null, null).isEmpty());
-    }
-
-    @Test @DisplayName("Collection of agents is null") void testExtractAgentList1() {
-        assertTrue(lsa.extractAgentList(null, null).isEmpty());
+        assertTrue(lsa.extractAgentList(new ArrayList<>(), null).isEmpty());
     }
 
     @Test @DisplayName("Filter is null") void testExtractAgentList2() {
