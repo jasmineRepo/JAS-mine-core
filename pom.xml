@@ -75,13 +75,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>3.5.1</version> <!-- See deprecation notice. TODO find where used and replace -->
-			</extension>
-		</extensions>
 	</build>
 	<dependencies>
 		<dependency>
@@ -107,7 +100,7 @@
 			<version>3.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>6.1.1.Final</version> <!-- JPA 3.0-->
 		</dependency>
