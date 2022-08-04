@@ -14,9 +14,9 @@ public interface AlignmentUtils<T> {
     /**
      * Sorts out {@code agents} according to the filter requirements.
      *
-     * @param agents An unsorted list of agents.
+     * @param agents An unsorted collection of agents.
      * @param filter Null, or a predicate, one for all agents - to filter some of them out.
-     * @return A filtered list of agents.
+     * @return a filtered list of agents.
      */
     @NotNull
     default List<T> extractAgentList(final @NotNull Collection<T> agents,

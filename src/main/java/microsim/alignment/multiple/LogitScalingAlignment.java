@@ -207,10 +207,10 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      *
      * @param agentCollection A collection of objects representing agents.
      * @return {@code true} when all of them have weights, {@code false} if none of them have.
+     * @throws IllegalArgumentException when {@code agentCollection} is empty.
      * @implNote Introduced to avoid all the hassle with multiple classes. Mixes of weighted and non-weighted objects
      * are not possible. In the case of an empty list returns false for the sake of consistency. The actual value is
      * irrelevant in this case since any empty agent list causes early exit.
-     * @throws IllegalArgumentException when {@code agentCollection} is empty
      */
     boolean isWeighted(@NotNull Collection<T> agentCollection) {
         if (agentCollection.isEmpty())
@@ -236,8 +236,6 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      * Does a basic input data validation. Sees that probabilities are in range in [0,1], their sum is not greater than
      * 1; also checks that weights and precision are strictly positive. Steps in before weight scaling.
      *
-     * @throws AssertionError           When any of the checks fail.
-     * @throws NullPointerException     When {@code targetShare} or {@code weights} or both are null.
      * @throws IllegalArgumentException When sanity checks fail:
      *                                  {@code totalChoiceNumber} is 0 or 1,
      *                                  {@code targetDistribution} values are out of range [0,1],
