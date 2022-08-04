@@ -210,8 +210,11 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      * @implNote Introduced to avoid all the hassle with multiple classes. Mixes of weighted and non-weighted objects
      * are not possible. In the case of an empty list returns false for the sake of consistency. The actual value is
      * irrelevant in this case since any empty agent list causes early exit.
+     * @throws IllegalArgumentException when {@code agentCollection} is empty
      */
     boolean isWeighted(@NotNull Collection<T> agentCollection) {
+        if (agentCollection.isEmpty())
+            throw new IllegalArgumentException("Empty input is ambiguous.");
         val scratch = agentCollection.iterator().next();
         return scratch instanceof Weight;
     }
