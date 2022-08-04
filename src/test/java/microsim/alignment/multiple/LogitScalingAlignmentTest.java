@@ -602,8 +602,8 @@ class LogitScalingAlignmentTest {
     }
 
     @Test
-    void isWeighted() {
-        var n = 15;
+    void weightedModel() {
+        var n = 3;
         testClass.filteredAgentList = new ArrayList<>();
         testClass.weightedModel = true;
         for (var i = 0; i < n; i++) {
@@ -612,7 +612,19 @@ class LogitScalingAlignmentTest {
             testClass.filteredAgentList.add(scratch);
         }
         assertTrue(testClass.isWeighted(testClass.filteredAgentList));
-        assertFalse(testClass.isWeighted(new ArrayList<>()));
+        assertThrows(IllegalArgumentException.class, () -> testClass.isWeighted(new ArrayList<>()));
+    }
+
+    @Test
+    void weightedModel1() {
+        var n = 3;
+        LogitScalingAlignment<Aprime> tc = new LogitScalingAlignment<>();
+
+        tc.filteredAgentList = new ArrayList<>();
+        tc.weightedModel = false;
+        for (var i = 0; i < n; i++) tc.filteredAgentList.add(new Aprime());
+        assertFalse(tc.isWeighted(tc.filteredAgentList));
+        assertThrows(IllegalArgumentException.class, () -> testClass.isWeighted(new ArrayList<>()));
     }
 
     @Test
