@@ -9,9 +9,13 @@ import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.tool.schema.TargetType;
+import org.hibernate.tool.schema.internal.HibernateSchemaManagementTool;
+import org.hibernate.tool.schema.spi.ScriptTargetOutput;
+import org.hibernate.tool.schema.spi.TargetDescriptor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -28,28 +32,27 @@ import java.util.logging.Level;
 		
 	public static Long autoincrementSeed = 1000000L;
 	
-	public static Experiment createExperiment(EntityManager entityManager,
-											  Experiment experiment, Object... models) throws IllegalArgumentException,
-			IllegalAccessException {
+	public static Experiment createExperiment(final EntityManager entityManager, Experiment experiment,
+											  final Object... models)
+			throws IllegalArgumentException, IllegalAccessException {
 	
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return experiment;
 		
-		EntityTransaction tx = entityManager.getTransaction();
-		tx.begin();
+		val transaction = entityManager.getTransaction();
+		transaction.begin();
 
 		experiment.parameters = new ArrayList<>();
 
 		for (Object model : models) {
-			Field[] fields = model.getClass().getDeclaredFields();
-			for (Field field : fields) {
+			for (Field field : model.getClass().getDeclaredFields()) {
 				GUIparameter modelParameter = field.getAnnotation(GUIparameter.class);
 				if (modelParameter != null) {
 					field.setAccessible(true);
-					ExperimentParameter parameter = new ExperimentParameter();
+					val parameter = new ExperimentParameter();
 					parameter.experiment = experiment;
 					parameter.name = field.getName();
-					Object obj = field.get(model);
+					val obj = field.get(model);
 					parameter.value = (obj != null ? obj.toString() : "null");
 
 					experiment.parameters.add(parameter);
@@ -57,7 +60,7 @@ import java.util.logging.Level;
 			}
 		}
 		experiment = entityManager.merge(experiment);
-		tx.commit();
+		transaction.commit();
 
 		return experiment;
 	}
@@ -65,42 +68,40 @@ import java.util.logging.Level;
 	public static void snap(EntityManager em, Long run, Double time, Object target) throws Exception {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return;
-		
-		final Field[] targetFields = target.getClass().getDeclaredFields();
+
     	Field idField = null;
-    	for(Field fld : targetFields) {
+    	for(Field fld : target.getClass().getDeclaredFields()) {
     		if(fld.getType().equals(PanelEntityKey.class)) {
     			idField = fld;
     			break;
     		}
     	}
-    	if (idField != null)
-			idField.setAccessible(true);
-		else throw new IllegalArgumentException("Object of type "
-				+ target.getClass() + " cannot be exported to database as it does not have a field of type PanelEntityKey.class or it is null!");
+    	if (idField != null) idField.setAccessible(true);
+		else {
+			String m = "Object of type %s cannot be exported to database as it does not have a field " +
+					   "of type PanelEntityKey.class or it is null!";
+			throw new IllegalArgumentException(String.format(m, target.getClass()));
+		}
 
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+		val transaction = em.getTransaction();
+		transaction.begin();
 
 		try {
 			em.detach(target);
-			final PanelEntityKey key = (PanelEntityKey) idField.get(target);
+			val key = (PanelEntityKey) idField.get(target);
 			PanelEntityKey newId = new PanelEntityKey();
-			if (key != null)
-				newId.setId(key.getId());
-			else
-				newId.setId(autoincrementSeed++);
+			newId.setId(key != null ? key.getId() : autoincrementSeed++);
 			newId.setSimulationTime(SimulationEngine.getInstance().getTime());
 			newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
 			idField.set(target, newId);
 			em.merge(target);
 			idField.set(target, key);
 		} catch (Exception e) {
-			tx.rollback();
+			transaction.rollback();
 			throw e;
 		}
 
-		tx.commit();
+		transaction.commit();
 	}
 
 	public static void snap(Object target) throws Exception {// fixme collection is an object too
@@ -123,46 +124,42 @@ import java.util.logging.Level;
 			return;
 		
 		if (targetCollection != null && targetCollection.size() > 0) {
-
-			EntityTransaction tx;
-
-			final Field[] targetFields = targetCollection.iterator().next().getClass().getDeclaredFields();
+			EntityTransaction transaction;
 	    	Field idField = null;
-	    	for(Field fld : targetFields) {
+	    	for(Field fld : targetCollection.iterator().next().getClass().getDeclaredFields()) {
 	    		if(fld.getType().equals(PanelEntityKey.class)) {
 	    			idField = fld;
 	    			break;
 	    		}
 	    	}
-	    	if (idField != null)
-				idField.setAccessible(true);
-			else throw new IllegalArgumentException("Object of type "
-					+ Object.class + " cannot be exported to database as it does not have a field of type PanelEntityKey.class or it is null!");
+	    	if (idField != null) idField.setAccessible(true);
+			else {
+				String m = "Object of type %s cannot be exported to database as it does not have a field " +
+						"of type PanelEntityKey.class or it is null!";
+				throw new IllegalArgumentException(String.format(m, Object.class));
+			}
 
-			tx = em.getTransaction();
-			tx.begin();
+			transaction = em.getTransaction();
+			transaction.begin();
 
 			for (Object panelTarget : targetCollection) {
 				try {
 					em.detach(panelTarget);// fixme duplicate
-					final PanelEntityKey key = (PanelEntityKey) idField.get(panelTarget);
+					val key = (PanelEntityKey) idField.get(panelTarget);
 					PanelEntityKey newId = new PanelEntityKey();
-					if (key != null)
-						newId.setId(key.getId());
-					else
-						newId.setId(autoincrementSeed++);
+					newId.setId(key != null ? key.getId() : autoincrementSeed++);
 					newId.setSimulationTime(SimulationEngine.getInstance().getTime());
 					newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
 					idField.set(panelTarget, newId);
 					em.merge(panelTarget);
 					idField.set(panelTarget, key);
 				} catch (Exception e) {
-					if (tx.isActive())
-						tx.rollback();
+					if (transaction.isActive())
+						transaction.rollback();
 					throw e;
 				}
 			}
-			tx.commit();
+			transaction.commit();
 		}
 	}
 
@@ -208,7 +205,7 @@ import java.util.logging.Level;
 	 * @return The static session factory. If null something went wrong during
 	 *         initialization.
 	 */
-	public static EntityManager getEntityManger(boolean autoUpdate) {
+	public static @Nullable EntityManager getEntityManger(boolean autoUpdate) {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
@@ -240,24 +237,37 @@ import java.util.logging.Level;
 				val configOverrides = new Properties();
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
-				if (databaseInputUrl != null)
-					configOverrides.put("hibernate.connection.url", databaseInputUrl);
-				val serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
-
+				if (databaseInputUrl != null) configOverrides.put("hibernate.connection.url", databaseInputUrl);
+				val serviceRegistry = new StandardServiceRegistryBuilder()
+																					.applySettings(configOverrides)
+																					.build();
 				val metadata = new MetadataSources(serviceRegistry);
-				val enumSet = EnumSet.of(TargetType.DATABASE);
 
-				SchemaExport schemaExport = new SchemaExport();
-				schemaExport.create(enumSet, metadata.buildMetadata());
+				val smt = new HibernateSchemaManagementTool();
+				smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
+				val sc = smt.getSchemaCreator(null);
+				val md = metadata.buildMetadata();
+				sc.doCreation(md, null, null, null,
+						new TargetDescriptor() {
+							@Override
+							public EnumSet<TargetType> getTargetTypes() {
+								return EnumSet.of(TargetType.DATABASE);
+							}
 
-				val em = Persistence.createEntityManagerFactory("sim-model",
-						configOverrides).createEntityManager();
+							@Override
+							public ScriptTargetOutput getScriptTargetOutput() {
+								return null;
+							}
+						});
+
+				val localEmf = Persistence.createEntityManagerFactory("sim-model", configOverrides);
+				val em = localEmf.createEntityManager();
 
 				val tx = em.getTransaction();
 				tx.begin();
 				em.flush();
 				tx.commit();
-								
+
 			} catch (Throwable ex) {
 				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
 				if (ex instanceof PersistenceException)
@@ -277,7 +287,7 @@ import java.util.logging.Level;
 		return getOutEntityManger("sim-model-out");
 	}
 
-	public static EntityManager getOutEntityManger(String persistenceUnitName) {
+	public static @Nullable EntityManager getOutEntityManger(String persistenceUnitName) {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
@@ -286,17 +296,36 @@ import java.util.logging.Level;
 				val configOverrides = new Properties();// fixme duplicating code
 				configOverrides.put("hibernate.hbm2ddl.auto", "update");
 				configOverrides.put("hibernate.archive.autodetection", "class");
-				if (databaseOutputUrl != null)
-					configOverrides.put("hibernate.connection.url", databaseOutputUrl);
-				val serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configOverrides).build();
+				if (databaseOutputUrl != null) configOverrides.put("hibernate.connection.url", databaseOutputUrl);
+				val serviceRegistry = new StandardServiceRegistryBuilder()
+																					.applySettings(configOverrides)
+																					.build();
 
 				val metadata = new MetadataSources(serviceRegistry)
 												.addAnnotatedClass(Experiment.class)
 												.addAnnotatedClass(ExperimentParameter.class);
-				val enumSet = EnumSet.of(TargetType.DATABASE);
 
-				SchemaUpdate schemaUpdate = new SchemaUpdate();
-				schemaUpdate.execute(enumSet, metadata.buildMetadata());
+				val smt = new HibernateSchemaManagementTool();// fixme the same code as in inputSchemaUpdateEntityManger as a temporary measure
+				smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
+
+				val sc = smt.getSchemaCreator(null);
+				val md = metadata.buildMetadata();
+				sc.doCreation(md, null, null, null,
+						new TargetDescriptor() {
+							@Override
+							public EnumSet<TargetType> getTargetTypes() {
+								return EnumSet.of(TargetType.DATABASE);
+							}
+
+							@Override
+							public ScriptTargetOutput getScriptTargetOutput() {
+								return null;
+							}
+						});
+
+
+				//SchemaUpdate schemaUpdate = new SchemaUpdate();
+				//schemaUpdate.execute(enumSet, metadata.buildMetadata());
 
 				outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides);
 
@@ -315,32 +344,23 @@ import java.util.logging.Level;
 		return loadTable(getEntityManger(), clazz);
 	}
 
-	public static List<?> loadTable(EntityManager entityManager, Class<?> clazz) {
-		final Query query = entityManager.createQuery("from " + clazz.getSimpleName() + " rec");
-		return query.getResultList();
+	public static List<?> loadTable(@NotNull EntityManager entityManager, @NotNull Class<?> clazz) {
+		return entityManager.createQuery("from %s rec ".formatted(clazz.getSimpleName())).getResultList();
 	}
 
-	public static MultiKeyCoefficientMap loadCoefficientMap(Class<?> clazz)
-			throws IllegalArgumentException, SecurityException,
-			IllegalAccessException, NoSuchFieldException {
+	public static @NotNull MultiKeyCoefficientMap loadCoefficientMap(Class<?> clazz)
+			throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
 		return loadCoefficientMap(getEntityManger(), clazz);
 	}
 
-	public static MultiKeyCoefficientMap loadCoefficientMap(
-			EntityManager entityManager, Class<?> clazz)
-			throws IllegalArgumentException, SecurityException,
-			IllegalAccessException, NoSuchFieldException {
+	public static @NotNull MultiKeyCoefficientMap loadCoefficientMap(@NotNull EntityManager entityManager,
+																	 Class<?> clazz)
+			throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
 
-		final EntityTransaction tx = entityManager.getTransaction();
-		tx.begin();
-
-		final String hql = "from " + clazz.getSimpleName() + " rec ";
-
-		final Query query = entityManager.createQuery(hql);
-
-		final List<?> res = query.getResultList();
-
-		tx.commit();
+		val transaction = entityManager.getTransaction();
+		transaction.begin();
+		val res = loadTable(entityManager, clazz);
+		transaction.commit();
 
 		return MultiKeyCoefficientMapFactory.createMapFromAnnotatedList(res);
 	}
