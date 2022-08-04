@@ -124,9 +124,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.4</version>
+			<groupId>com.melloware</groupId>
+			<artifactId>commons-beanutils2</artifactId><!-- TODO replace with the official commons release when it's out -->
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId> <!-- Old -ish, replace?-->
@@ -205,17 +205,6 @@
 			<artifactId>assertj-core</artifactId>
 			<version>3.23.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.nd4j</groupId>
-			<artifactId>nd4j-common</artifactId>
-			<version>1.0.0-M2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.nd4j</groupId>
-			<artifactId>nd4j-perf</artifactId>
-			<version>1.0.0-alpha</version>
-			<scope>compile</scope><!-- read about this, how does it work-->
 		</dependency>
 
 	</dependencies>
