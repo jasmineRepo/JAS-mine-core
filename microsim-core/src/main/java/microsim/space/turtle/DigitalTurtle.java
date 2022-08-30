@@ -1,8 +1,8 @@
 package microsim.space.turtle;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
 
 import microsim.engine.SimulationEngine;
 import microsim.space.ObjectSpace;
@@ -47,11 +47,6 @@ public class DigitalTurtle extends AbstractTurtle {
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
-	 * @param grid
-	 *            The grid upon the turtle moves.
 	 */
 	public DigitalTurtle() {
 		super(null, 0, 0);
@@ -60,9 +55,6 @@ public class DigitalTurtle extends AbstractTurtle {
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
 	 * @param grid
 	 *            The grid upon the turtle moves.
 	 */
@@ -73,9 +65,6 @@ public class DigitalTurtle extends AbstractTurtle {
 	/**
 	 * Create a turtle with a given identifier on the given grid at the given
 	 * position.
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
 	 * @param x
 	 *            The initial x coordinate of the turtle.
 	 * @param y

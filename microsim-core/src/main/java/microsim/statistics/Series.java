@@ -41,7 +41,6 @@ public abstract class Series implements EventListener, IUpdatableSource
 
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */
 	public void onEvent(Enum<?> type) {
@@ -137,9 +136,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
 		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
 		public Double(Object source, String valueName, boolean getFromMethod)
@@ -187,7 +184,6 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected Enum<?> valueID;
 
 		/** Create a statistic probe on a collection of ILongSource objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source The collection containing ILongSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Long(ILongSource source, Enum<?> valueID)
@@ -209,9 +205,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
 		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
 		public Long(Object source, String valueName, boolean getFromMethod)
@@ -269,7 +263,6 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected Enum<?> valueID;
 
 		/** Create a statistic probe on a collection of IIntSource objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source The collection containing IIntSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Integer(IIntSource source, Enum<?> valueID)
@@ -291,9 +284,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
 		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
 		public Integer(Object source, String valueName, boolean getFromMethod)
@@ -351,7 +342,6 @@ public abstract class Series implements EventListener, IUpdatableSource
 		protected Enum<?> valueID;
 
 		/** Create a statistic probe on a collection of IFloatSource objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source The collection containing IFloatSource object.
 		 *  @param valueID The value identifier defined by source object. */
 		public Float(IFloatSource source, Enum<?> valueID)
@@ -373,9 +363,7 @@ public abstract class Series implements EventListener, IUpdatableSource
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
 		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
 		public Float(Object source, String valueName, boolean getFromMethod)

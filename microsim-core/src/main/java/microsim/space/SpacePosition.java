@@ -2,7 +2,7 @@ package microsim.space;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class SpacePosition implements Serializable, Comparable<SpacePosition> {

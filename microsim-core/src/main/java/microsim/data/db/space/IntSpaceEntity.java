@@ -1,6 +1,6 @@
 package microsim.data.db.space;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class IntSpaceEntity implements IIntSpaceEntity {

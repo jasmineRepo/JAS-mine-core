@@ -2,8 +2,8 @@ package microsim.data.db.space;
 
 import java.lang.reflect.Field;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import microsim.engine.SimulationEngine;
 import microsim.space.IntSpace;

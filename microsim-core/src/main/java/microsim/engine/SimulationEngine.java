@@ -128,10 +128,6 @@ public class SimulationEngine extends Thread {
 
 	/**
 	 * Build a new SimEngine with the given time unit.
-	 * 
-	 * @param timeUnit
-	 *            The time uint id. See the public constants in the SimTime
-	 *            class.
 	 */
 	protected SimulationEngine() {
 		eventQueue = new EventQueue();
@@ -382,8 +378,8 @@ public class SimulationEngine extends Thread {
 	 * Notify the engine to manage a SimModel. This method is mandatory to let a
 	 * model work. The current event queue is joined to the given model.
 	 * 
-	 * @param model
-	 *            The model to be added.
+	 * @param simulationManager
+	 *            The simulationManager to be added.
 	 */
 	public SimulationManager addSimulationManager(SimulationManager simulationManager) {
 		modelMap.put(simulationManager.getId(), simulationManager);

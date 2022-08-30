@@ -112,7 +112,6 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
 	*  specified destination, only if the destination cell is empty.
 	*  @param destinationX The x destination coordinate.
 	*  @param destinationY The y destination coordinate.
-	*  @param object An object implementing IGridPosition interface.
 	*  @return true if object has been moved, false otherwise.*/
    public boolean moveGridPosition(SpacePosition position, int destinationX, int destinationY)
    {

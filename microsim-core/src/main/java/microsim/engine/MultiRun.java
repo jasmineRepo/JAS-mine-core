@@ -62,13 +62,6 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	
 	/**
 	 * Create a new multi run session.
-	 * 
-	 * @param title
-	 *            is the title of the multi run control panel (see MultiRunFrame
-	 *            API).
-	 * @param maxRuns
-	 *            is the length of the progress bar. It is not so important. It
-	 *            has only a simbolic meaning.
 	 */
 	public MultiRun() {		
 		counter = 0;
@@ -152,7 +145,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	 * Sim.EVENT_SIMULATION_END signal. When it is raised the MultiRun class
 	 * shutdowns current run and invokes the <i>nextModel()</i> method.
 	 * 
-	 * @param actionType
+	 * @param event
 	 *            a valid system eventID.
 	 */
 	public void onEngineEvent(SystemEventType event) {
@@ -254,7 +247,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 
 	/**
 	 * Sets whether to copy the input files into a new input folder within a new output folder for each simulation run
-	 * @param copyInputFolderStructure - set to true if wanting a copy of the input files to be stored in the output folder for each simulation run, otherwise set to false
+	 * @param copyInputFolderStructure_ - set to true if wanting a copy of the input files to be stored in the output folder for each simulation run, otherwise set to false
 	 * @author richardsonr
 	 */
 	public static void setCopyInputFolderStructure(boolean copyInputFolderStructure_) {

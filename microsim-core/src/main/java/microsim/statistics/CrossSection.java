@@ -45,7 +45,6 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */
 	public void onEvent(Enum<?> type) {
@@ -85,7 +84,6 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -196,7 +194,6 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		}		
 
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -315,7 +312,6 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
@@ -433,7 +429,6 @@ public abstract class CrossSection implements EventListener, IUpdatableSource, I
 		}		
 		
 		/** Create a basic statistic probe on a collection of objects.
-		 *  @param name Name of the statistic object.
 		 *  @param source A collection of generic objects.
 		 *  @param objectClass The class of the objects contained by collection source.
 		 *  @param valueName The name of the field or the method returning the variable to be probed.
