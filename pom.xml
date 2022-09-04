@@ -89,11 +89,11 @@
 			<version>2.7.10</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>colt</groupId>
-			<artifactId>colt</artifactId>
-			<version>1.2.0</version> <!-- Outdated, replace?-->
-		</dependency>
+        <dependency>
+            <groupId>com.github.MRC-CSO-SPHSU</groupId>
+            <artifactId>Mateba</artifactId>
+            <version>f34766e</version>
+        </dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
@@ -102,18 +102,18 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.1.1.Final</version> <!-- JPA 3.0-->
+			<version>6.1.2.Final</version> <!-- JPA 3.0-->
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>4.6.1</version>
+			<version>4.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>4.6.1</version>
+			<version>4.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -144,7 +144,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
+			<artifactId>commons-math3</artifactId><!--  todo replace with 4.0 -->
 			<version>3.6.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -161,7 +161,7 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.29.0-GA</version>
+			<version>3.29.1-GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -201,6 +201,18 @@
 			<id>projectlombok.org</id>
 			<url>https://projectlombok.org/mavenrepo</url>
 		</repository>
-	</repositories>
+
+		<repository>
+			<id>apache</id>
+			<name>apache_snapshots</name>
+			<url>https://repository.apache.org/snapshots</url>
+		</repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
+    </repositories>
 		
 </project>
