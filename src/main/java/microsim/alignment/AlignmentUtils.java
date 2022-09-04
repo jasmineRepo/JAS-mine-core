@@ -26,4 +26,14 @@ public interface AlignmentUtils<T> {
         else list.addAll(agents);
         return list;
     }
+
+    /**
+     * Validates provided input values.
+     * @param value A probability value.
+     * @throws IllegalArgumentException if the value is out of {@code [0, 1]} range.
+     */
+    default void validateProbabilityValue(final double value) {
+        if (value < 0. || value > 1.)
+            throw new IllegalArgumentException("Probability value must lie in the closed range [0,1].");
+    }
 }

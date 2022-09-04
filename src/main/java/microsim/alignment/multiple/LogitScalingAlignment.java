@@ -136,9 +136,9 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      *                                      probabilities must be equal to these values.
      * @implNote The total number of iterations defaults to 50. The error threshold of the numerical scheme is 1e-15.
      */
-    final public void align(@NonNull Collection<T> agents, @Nullable Predicate<T> filter,
-                            @NonNull AlignmentMultiProbabilityClosure<T> closure,
-                            double @NonNull [] targetProbabilityDistribution) {
+    final public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                            final @NonNull AlignmentMultiProbabilityClosure<T> closure,
+                            final double @NonNull [] targetProbabilityDistribution) {
         if (agents.isEmpty()) return;
         targetDistribution = targetProbabilityDistribution;
         weightedModel = isWeighted(agents);
@@ -212,7 +212,7 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      * are not possible. In the case of an empty list returns false for the sake of consistency. The actual value is
      * irrelevant in this case since any empty agent list causes early exit.
      */
-    boolean isWeighted(@NotNull Collection<T> agentCollection) {
+    boolean isWeighted(final @NotNull Collection<T> agentCollection) {
         if (agentCollection.isEmpty())
             throw new IllegalArgumentException("Empty input is ambiguous.");
         val scratch = agentCollection.iterator().next();

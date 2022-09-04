@@ -1,39 +1,53 @@
 package microsim.alignment.probability;
 
+import cern.jet.random.engine.RandomEngine;
+import lombok.extern.java.Log;
+import lombok.val;
 import microsim.alignment.AlignmentUtils;
+import microsim.engine.SimulationEngine;
 import org.apache.commons.collections4.Predicate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.stream.IntStream;
 
-import static jamjam.Sum.sum;
+import static jamjam.Mean.mean;
 
 /**
  * A class for multiplicative scaling alignment method. All probabilities are extracted from the collection
- * {@code agents} using provided {@code filter}. Further steps involve calculating the expected number of agents in this
- * state, computing the correction multiplicative factor, and correcting individual probabilities via {@code closure}.
+ * {@code agents} using provided {@code filter}. Further steps involve calculation of the ration between the desired
+ * transition rate and the actual transition to be used as a scaling factor for probabilities.
+ *
  * @param <T> A class usually representing an agent.
  * @see <a href="https://www.jasss.org/17/1/15.html">Jinjing Li and Cathal O'Donoghue, Evaluating Binary Alignment
  * Methods in Microsimulation Models, Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
+ * @see <a href="https://www.jasss.org/17/1/15.html">Li, Jinjing and O'Donoghue, Cathal (2014) 'Evaluating Binary
+ * Alignment Methods in Microsimulation Models' Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
  */
+@SuppressWarnings("unused")
+@Log
 public class MultiplicativeScalingAlignment<T> implements AlignmentUtils<T> {
 
-	public void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure,
-					  double targetProbability) {
-		// TODO input validation, split the code
-		if (targetProbability < 0. || targetProbability > 1.)
-			throw new IllegalArgumentException("Target probability must lie in [0,1]");
+    public double @NotNull [] align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                                    final @NotNull AlignmentProbabilityClosure<T> closure,
+                                    final double targetProbability) {
+        validateProbabilityValue(targetProbability);
+        val agentList = extractAgentList(agents, filter);
+        log.log(Level.INFO, "The total number of filtered individuals is %d".formatted(agentList.size()));
+        val l = agentList.size();
 
-		List<T> agentList = extractAgentList(agents, filter);
+        val probabilities = agentList.stream().mapToDouble(closure::getProbability).toArray();
 
-		double[] probabilities = new double[agentList.size()];
+        val averageRatio = targetProbability / mean(probabilities);
 
-		for (var agentId = 0; agentId < agentList.size(); agentId++)
-			probabilities[agentId] = closure.getProbability(agentList.get(agentId));
-		double sum = sum(probabilities);
+        IntStream.range(0, l).forEach(i -> probabilities[i] *= averageRatio);
 
-		double mFactor = targetProbability * agentList.size() / sum;
+        val randomValues = new double[l];
+        for (int i = 0; i < l; i++)
+            randomValues[i] = SimulationEngine.getRnd().nextDouble(RandomEngine.unitIntervalTypes.OPEN);
 
-		for (T agent : agentList) closure.align(agent, closure.getProbability(agent) * mFactor);
-	}
+        return IntStream.range(0, l).mapToDouble(i -> randomValues[i] < probabilities[i] ? 1 : 0).toArray();
+    }
 }

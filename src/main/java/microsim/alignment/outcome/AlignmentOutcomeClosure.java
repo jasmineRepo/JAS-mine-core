@@ -2,8 +2,8 @@ package microsim.alignment.outcome;
 
 public interface AlignmentOutcomeClosure<T> {
 
-	boolean getOutcome(T agent);
-	
-	void resample(T agent);
-	
+    boolean getOutcome(T agent);
+
+    void resample(T agent);
+
 }

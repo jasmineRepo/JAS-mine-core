@@ -53,12 +53,12 @@ class LogitScalingAlignmentTest {
     static class C implements AlignmentMultiProbabilityClosure<A> {
 
         @Override
-        public double[] getProbability(A agent) {
+        public double @NotNull [] getProbability(@NotNull A agent) {
             return agent.getProbability();
         }
 
         @Override
-        public void align(A agent, double[] alignedProbability) {
+        public void align(@NotNull A agent, double @NotNull [] alignedProbability) {
             agent.setProbability(alignedProbability);
         }
     }
@@ -96,12 +96,12 @@ class LogitScalingAlignmentTest {
     static class Cprime implements AlignmentMultiProbabilityClosure<Aprime> {
 
         @Override
-        public double[] getProbability(Aprime agent) {
+        public double @NotNull [] getProbability(@NotNull Aprime agent) {
             return agent.getProbability();
         }
 
         @Override
-        public void align(Aprime agent, double[] alignedProbability) {
+        public void align(@NotNull Aprime agent, double @NotNull [] alignedProbability) {
             agent.setProbability(alignedProbability);
         }
     }
