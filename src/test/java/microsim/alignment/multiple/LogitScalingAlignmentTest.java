@@ -17,102 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class LogitScalingAlignmentTest {
     LogitScalingAlignment<A> testClass = new LogitScalingAlignment<>();
 
-    static class A implements Weight {
-        @Setter @Getter private double weight;
-        @Setter @Getter double [] probability;
-    }
-    //get collection of As;
-
-    static class B implements Predicate<A> {
-
-        @Override
-        public boolean test(A a) {
-            return false;
-        }
-
-        @NotNull
-        @Override
-        public Predicate<A> and(@NotNull Predicate<? super A> other) {
-            return Predicate.super.and(other);
-        }
-
-        @NotNull
-        @Override
-        public Predicate<A> negate() {
-            return Predicate.super.negate();
-        }
-
-        @NotNull
-        @Override
-        public Predicate<A> or(@NotNull Predicate<? super A> other) {
-            return Predicate.super.or(other);
-        }
-    }
-    // get a filter B;
-
-    static class C implements AlignmentMultiProbabilityClosure<A> {
-
-        @Override
-        public double @NotNull [] getProbability(@NotNull A agent) {
-            return agent.getProbability();
-        }
-
-        @Override
-        public void align(@NotNull A agent, double @NotNull [] alignedProbability) {
-            agent.setProbability(alignedProbability);
-        }
-    }
-
-    static class Aprime {
-        @Setter @Getter double [] probability;
-    }
-
-    static class Bprime implements Predicate<Aprime> {
-
-        @Override
-        public boolean test(Aprime a) {
-            return false;
-        }
-
-        @NotNull
-        @Override
-        public Predicate<Aprime> and(@NotNull Predicate<? super Aprime> other) {
-            return Predicate.super.and(other);
-        }
-
-        @NotNull
-        @Override
-        public Predicate<Aprime> negate() {
-            return Predicate.super.negate();
-        }
-
-        @NotNull
-        @Override
-        public Predicate<Aprime> or(@NotNull Predicate<? super Aprime> other) {
-            return Predicate.super.or(other);
-        }
-    }
-
-    static class Cprime implements AlignmentMultiProbabilityClosure<Aprime> {
-
-        @Override
-        public double @NotNull [] getProbability(@NotNull Aprime agent) {
-            return agent.getProbability();
-        }
-
-        @Override
-        public void align(@NotNull Aprime agent, double @NotNull [] alignedProbability) {
-            agent.setProbability(alignedProbability);
-        }
-    }
-
     @Test
     void align() {
         var scratchCollection = new ArrayList<A>();
         testClass.align(scratchCollection,
-                null,
-                new C(),
-                new double[]{0.5, 0.5});
+            null,
+            new C(),
+            new double[]{0.5, 0.5});
     }
 
     @Test
@@ -126,9 +37,9 @@ class LogitScalingAlignmentTest {
             scratchCollection.add(scratch);
         }
         testClass.align(scratchCollection,
-                null,
-                new C(),
-                new double[]{0.9, 0.1});
+            null,
+            new C(),
+            new double[]{0.9, 0.1});
     }
 
     @Test
@@ -142,9 +53,9 @@ class LogitScalingAlignmentTest {
             scratchCollection.add(scratch);
         }
         testClass.align(scratchCollection,
-                null,
-                new C(),
-                new double[]{0.9, 0.1});
+            null,
+            new C(),
+            new double[]{0.9, 0.1});
     }
 
     @Test
@@ -158,9 +69,9 @@ class LogitScalingAlignmentTest {
             scratchCollection.add(scratch);
         }
         testClass.align(scratchCollection,
-                null,
-                new C(),
-                new double[]{0.9, 0.1});
+            null,
+            new C(),
+            new double[]{0.9, 0.1});
     }
 
     @Test
@@ -168,9 +79,9 @@ class LogitScalingAlignmentTest {
         var scratchCollection = new ArrayList<Aprime>();
         LogitScalingAlignment<Aprime> localTestClass = new LogitScalingAlignment<>();
         localTestClass.align(scratchCollection,
-                null,
-                new Cprime(),
-                new double[]{0.5, 0.5});
+            null,
+            new Cprime(),
+            new double[]{0.5, 0.5});
     }
 
     @Test
@@ -184,9 +95,9 @@ class LogitScalingAlignmentTest {
         }
         LogitScalingAlignment<Aprime> localTestClass = new LogitScalingAlignment<>();
         localTestClass.align(scratchCollection,
-                null,
-                new Cprime(),
-                new double[]{0.9, 0.1});
+            null,
+            new Cprime(),
+            new double[]{0.9, 0.1});
     }
 
     @Test
@@ -301,7 +212,7 @@ class LogitScalingAlignmentTest {
         testClass.probSumOverAgents = new double[]{23. / 40, 47. / 40, 9. / 40, 41. / 40};
         testClass.generateGammaValues();
         assertArrayEquals(new double[]{1.3043478260869565, 0.6382978723404255, 3.333333333333333, 0.7317073170731708},
-                testClass.gammaValues);
+            testClass.gammaValues);
     }
 
     @Test
@@ -320,9 +231,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.gammaValues = new double[]{2, 2, 2, 2};
         testClass.probSumOverChoices = new double[testClass.totalAgentNumber];
         testClass.executeGammaTransform();
@@ -334,9 +245,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.gammaValues = new double[]{3, 3, 3, 3};
         testClass.probSumOverChoices = new double[testClass.totalAgentNumber];
         testClass.executeGammaTransform();
@@ -348,9 +259,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.2, 0.3}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.2, 0.3}};
         testClass.gammaValues = new double[]{2, 3, 3, 2};
         testClass.probSumOverChoices = new double[testClass.totalAgentNumber];
         testClass.executeGammaTransform();
@@ -362,9 +273,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.alphaValues = new double[]{2, 2, 2};
         testClass.probSumOverAgents = new double[testClass.totalChoiceNumber];
         testClass.tempAgents = new double[testClass.totalAgentNumber];
@@ -377,9 +288,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.alphaValues = new double[]{3, 3, 3};
         testClass.probSumOverAgents = new double[testClass.totalChoiceNumber];
         testClass.tempAgents = new double[testClass.totalAgentNumber];
@@ -392,9 +303,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.alphaValues = new double[]{2, 3, 2};
         testClass.probSumOverAgents = new double[testClass.totalChoiceNumber];
         testClass.tempAgents = new double[testClass.totalAgentNumber];
@@ -408,9 +319,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{0.5, 0.5, 0.0, 0.0},
-                new double[]{0.2, 0.3, 0.3, 0.2}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{0.5, 0.5, 0.0, 0.0},
+            new double[]{0.2, 0.3, 0.3, 0.2}};
         testClass.targetShare = new double[]{0.75, 0.75, 0.75, 0.75};
 
         testClass.gammaValues = new double[testClass.totalChoiceNumber];
@@ -434,16 +345,16 @@ class LogitScalingAlignmentTest {
         assertArrayEquals(new double[]{0.9375, 0.75, 1.25, 1.2499999999999998}, testClass.gammaValues);
         assertArrayEquals(new double[]{1.11875, 0.84375, 1.0374999999999999}, testClass.probSumOverChoices);
         assertArrayEquals(new double[]{0.893854748603352, 1.1851851851851851, 0.9638554216867471},
-                testClass.alphaValues);
+            testClass.alphaValues);
         assertArrayEquals(new double[][]{
-                        new double[]{0.08379888268156425, 0.13407821229050282, 0.3351955307262570, 0.44692737430167595},
-                        new double[]{0.5555555555555556, 0.4444444444444444, 0., 0.},
-                        new double[]{0.1807228915662651, 0.21686746987951808, 0.3614457831325302, 0.24096385542168675}},
-                testClass.probabilities);
+                new double[]{0.08379888268156425, 0.13407821229050282, 0.3351955307262570, 0.44692737430167595},
+                new double[]{0.5555555555555556, 0.4444444444444444, 0., 0.},
+                new double[]{0.1807228915662651, 0.21686746987951808, 0.3614457831325302, 0.24096385542168675}},
+            testClass.probabilities);
 
         assertArrayEquals(new double[]{0.44692737430167595, 0., 0.24096385542168675}, testClass.tempAgents);
         assertArrayEquals(new double[]{0.82007732980338486161, 0.79539012661446531003, 0.6966413138587872,
-                0.68789122972336272464}, testClass.probSumOverAgents);
+            0.68789122972336272464}, testClass.probSumOverAgents);
     }
 
     @Test
@@ -452,9 +363,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 4;
         testClass.probabilities = new double[][]{
-                new double[]{0.1, 0.2, 0.3, 0.4},
-                new double[]{1., 1., 0.0, 0.0},
-                new double[]{0.6, 0.9, 0.9, 0.6}};
+            new double[]{0.1, 0.2, 0.3, 0.4},
+            new double[]{1., 1., 0.0, 0.0},
+            new double[]{0.6, 0.9, 0.9, 0.6}};
         testClass.targetShare = new double[]{0.75, 0.75, 0.75, 0.75};
 
         testClass.gammaValues = new double[testClass.totalChoiceNumber];
@@ -475,20 +386,20 @@ class LogitScalingAlignmentTest {
         testClass.probabilityAdjustmentCycle();
 
         assertArrayEquals(new double[]{0.44117647058823529412, 0.35714285714285714286, 0.62500000000000000000,
-                0.75000000000000000000}, testClass.gammaValues);
+            0.75000000000000000000}, testClass.gammaValues);
         assertArrayEquals(new double[]{0.603046218487395, 0.79831932773109243697, 1.5986344537815125},
-                testClass.probSumOverChoices);
+            testClass.probSumOverChoices);
         assertArrayEquals(new double[]{1.6582476920397143355, 2.5052631578947368421, 1.8766016164005521},
-                testClass.alphaValues);
+            testClass.alphaValues);
         assertArrayEquals(new double[][]{
-                        new double[]{0.073157986413516808918, 0.11844626371712245253, 0.31092144225744643790, 0.49747430761191436},
-                        new double[]{1.1052631578947367, 0.894736842105263, 0, 0},
-                        new double[]{0.49674748669426383, 0.6031933767001775, 1.0555884092253104672, 0.84447072738024837374}},
-                testClass.probabilities);
+                new double[]{0.073157986413516808918, 0.11844626371712245253, 0.31092144225744643790, 0.49747430761191436},
+                new double[]{1.1052631578947367, 0.894736842105263, 0, 0},
+                new double[]{0.49674748669426383, 0.6031933767001775, 1.0555884092253104672, 0.84447072738024837374}},
+            testClass.probabilities);
 
         assertArrayEquals(new double[]{0.49747430761191436, 0., 0.84447072738024837374}, testClass.tempAgents);
         assertArrayEquals(new double[]{1.6751686310025174003, 1.6163764825225630202, 1.3665098514827569051,
-                1.3419450349921629}, testClass.probSumOverAgents);
+            1.3419450349921629}, testClass.probSumOverAgents);
 
     }
 
@@ -498,9 +409,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 3;
         testClass.probabilities = new double[][]{
-                new double[]{0, 1, 0},
-                new double[]{1, 0, 0},
-                new double[]{0, 0, 1}};
+            new double[]{0, 1, 0},
+            new double[]{1, 0, 0},
+            new double[]{0, 0, 1}};
         testClass.targetShare = new double[]{0.6, 0.6, 1.2};
 
         testClass.gammaValues = new double[testClass.totalChoiceNumber];
@@ -524,12 +435,12 @@ class LogitScalingAlignmentTest {
         assertArrayEquals(new double[]{0.6, 0.6, 1.2}, testClass.gammaValues);
         assertArrayEquals(new double[]{0.6, 0.6, 1.2}, testClass.probSumOverChoices);
         assertArrayEquals(new double[]{1.6666666666666667, 1.6666666666666667, 0.8333333333333334},
-                testClass.alphaValues);
+            testClass.alphaValues);
         assertArrayEquals(new double[][]{
-                        new double[]{0, 1, 0},
-                        new double[]{1, 0, 0},
-                        new double[]{0, 0, 1}},
-                testClass.probabilities);
+                new double[]{0, 1, 0},
+                new double[]{1, 0, 0},
+                new double[]{0, 0, 1}},
+            testClass.probabilities);
 
         assertArrayEquals(new double[]{0, 0, 1}, testClass.tempAgents);
         assertArrayEquals(new double[]{1, 1, 1}, testClass.probSumOverAgents);
@@ -541,9 +452,9 @@ class LogitScalingAlignmentTest {
         testClass.totalAgentNumber = 3;
         testClass.totalChoiceNumber = 3;
         testClass.probabilities = new double[][]{
-                new double[]{0, 1, 0},
-                new double[]{2, 0, 0},
-                new double[]{0, 0, 3}};
+            new double[]{0, 1, 0},
+            new double[]{2, 0, 0},
+            new double[]{0, 0, 3}};
         testClass.targetShare = new double[]{0.6, 0.6, 1.2};
 
         testClass.gammaValues = new double[testClass.totalChoiceNumber];
@@ -567,10 +478,10 @@ class LogitScalingAlignmentTest {
         assertArrayEquals(new double[]{0.6, 0.6, 1.2}, testClass.probSumOverChoices);
         assertArrayEquals(new double[]{1.6666666666666667, 3.3333333333333335, 2.5}, testClass.alphaValues);
         assertArrayEquals(new double[][]{
-                        new double[]{0, 1, 0},
-                        new double[]{2, 0, 0},
-                        new double[]{0, 0, 3}},
-                testClass.probabilities);
+                new double[]{0, 1, 0},
+                new double[]{2, 0, 0},
+                new double[]{0, 0, 3}},
+            testClass.probabilities);
 
         assertArrayEquals(new double[]{0, 0, 3}, testClass.tempAgents);
         assertArrayEquals(new double[]{2, 1, 3}, testClass.probSumOverAgents);
@@ -639,9 +550,9 @@ class LogitScalingAlignmentTest {
             testClass.filteredAgentList.add(scratch);
         }
         testClass.probabilities = new double[][]{
-                new double[]{0, 1, 0},
-                new double[]{1, 0, 0},
-                new double[]{0, 0, 1}
+            new double[]{0, 1, 0},
+            new double[]{1, 0, 0},
+            new double[]{0, 0, 1}
         };
 
         testClass.correctProbabilities(scratchClosure);
@@ -663,14 +574,107 @@ class LogitScalingAlignmentTest {
             testClass.filteredAgentList.add(scratch);
         }
         testClass.probabilities = new double[][]{
-                new double[]{0, 1, 0},
-                new double[]{2, 0, 0},
-                new double[]{0, 0, 3}
+            new double[]{0, 1, 0},
+            new double[]{2, 0, 0},
+            new double[]{0, 0, 3}
         };
 
         testClass.correctProbabilities(scratchClosure);
         for (var i = 0; i < testClass.totalAgentNumber; i++) {
             assertArrayEquals(testClass.probabilities[i], testClass.filteredAgentList.get(i).getProbability());
+        }
+    }
+
+    static class A implements Weight {
+        @Setter
+        @Getter
+        double[] probability;
+        @Setter
+        @Getter
+        private double weight;
+    }
+
+    static class B implements Predicate<A> {
+
+        @Override
+        public boolean test(A a) {
+            return false;
+        }
+
+        @NotNull
+        @Override
+        public Predicate<A> and(@NotNull Predicate<? super A> other) {
+            return Predicate.super.and(other);
+        }
+
+        @NotNull
+        @Override
+        public Predicate<A> negate() {
+            return Predicate.super.negate();
+        }
+
+        @NotNull
+        @Override
+        public Predicate<A> or(@NotNull Predicate<? super A> other) {
+            return Predicate.super.or(other);
+        }
+    }
+
+    static class C implements AlignmentMultiProbabilityClosure<A> {
+
+        @Override
+        public double @NotNull [] getProbability(@NotNull A agent) {
+            return agent.getProbability();
+        }
+
+        @Override
+        public void align(@NotNull A agent, double @NotNull [] alignedProbability) {
+            agent.setProbability(alignedProbability);
+        }
+    }
+
+    static class Aprime {
+        @Setter
+        @Getter
+        double[] probability;
+    }
+
+    static class Bprime implements Predicate<Aprime> {
+
+        @Override
+        public boolean test(Aprime a) {
+            return false;
+        }
+
+        @NotNull
+        @Override
+        public Predicate<Aprime> and(@NotNull Predicate<? super Aprime> other) {
+            return Predicate.super.and(other);
+        }
+
+        @NotNull
+        @Override
+        public Predicate<Aprime> negate() {
+            return Predicate.super.negate();
+        }
+
+        @NotNull
+        @Override
+        public Predicate<Aprime> or(@NotNull Predicate<? super Aprime> other) {
+            return Predicate.super.or(other);
+        }
+    }
+
+    static class Cprime implements AlignmentMultiProbabilityClosure<Aprime> {
+
+        @Override
+        public double @NotNull [] getProbability(@NotNull Aprime agent) {
+            return agent.getProbability();
+        }
+
+        @Override
+        public void align(@NotNull Aprime agent, double @NotNull [] alignedProbability) {
+            agent.setProbability(alignedProbability);
         }
     }
 }
