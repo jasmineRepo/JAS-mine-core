@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,7 +15,7 @@
             </resource>
         </resources> <!-- fixme probably not needed, find where logs are stored -->
         <plugins>
-			<!-- Code Coverage report generation -->
+            <!-- Code Coverage report generation -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -48,7 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M6</version>
+                <version>3.0.0-M7</version>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -66,7 +66,7 @@
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-					<!-- bind to the packaging phase -->
+                        <!-- bind to the packaging phase -->
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -87,6 +87,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>output/**/csv/*.csv</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -132,7 +137,8 @@
         </dependency>
         <dependency>
             <groupId>com.melloware</groupId>
-            <artifactId>commons-beanutils2</artifactId><!-- TODO replace with the official commons release when it's out -->
+            <artifactId>commons-beanutils2
+            </artifactId><!-- TODO replace with the official commons release when it's out -->
             <version>2.0.0</version>
         </dependency>
         <dependency>
@@ -145,7 +151,7 @@
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.2</version>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -161,7 +167,7 @@
             <artifactId>commons-math3</artifactId><!--  todo replace with 4.0 -->
             <version>3.6.1</version>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -201,7 +207,7 @@
             <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
         <dependency>
             <groupId>org.assertj</groupId><!-- todo check for updates, try to build with good dependencies -->
             <artifactId>assertj-core</artifactId>
