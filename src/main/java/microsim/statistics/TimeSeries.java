@@ -1,9 +1,8 @@
 package microsim.statistics;
 
-import cern.colt.list.DoubleArrayList;
-import cern.colt.list.FloatArrayList;
-import cern.colt.list.IntArrayList;
-import cern.colt.list.LongArrayList;
+import cern.mateba.list.tdouble.DoubleArrayList;
+import cern.mateba.list.tint.IntArrayList;
+import cern.mateba.list.tlong.LongArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import microsim.engine.SimulationEngine;
@@ -72,17 +71,6 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	/**
 	 * Add a new series.
 	 * @param source
-	 *            The FloatSource object.
-	 * @param valueID
-	 *            The value identifier defined by source object.
-	 */
-	public void addSeries(FloatSource source, Enum<?> valueID) {
-		series.add(new Series.Float(source, valueID));
-	}
-
-	/**
-	 * Add a new series.
-	 * @param source
 	 *            The IntSource object.
 	 * @param valueID
 	 *            The value identifier defined by source object.
@@ -118,9 +106,6 @@ public class TimeSeries implements EventListener, UpdatableSource {
 		if (ReflectionUtils.isDoubleSource(target.getClass(), variableName,
 				getFromMethod))
 			aSeries = new Series.Double(target, variableName, getFromMethod);
-		else if (ReflectionUtils.isFloatSource(target.getClass(), variableName,
-				getFromMethod))
-			aSeries = new Series.Float(target, variableName, getFromMethod);
 		else if (ReflectionUtils.isIntSource(target.getClass(), variableName,
 				getFromMethod))
 			aSeries = new Series.Integer(target, variableName, getFromMethod);
@@ -264,10 +249,6 @@ public class TimeSeries implements EventListener, UpdatableSource {
 					} else if (s instanceof Series.Integer) {
 						IntArrayList dl;
 						dl = ((Series.Integer) s).getIntArrayList();
-						out.write("" + dl.get(i) + separator);
-					} else if (s instanceof Series.Float) {
-						FloatArrayList dl;
-						dl = ((Series.Float) s).getFloatArrayList();
 						out.write("" + dl.get(i) + separator);
 					} else {
 						LongArrayList dl;

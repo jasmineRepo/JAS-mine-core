@@ -1,5 +1,6 @@
 package microsim.engine;
 
+import cern.jet.random.engine.MersenneTwister;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
@@ -9,12 +10,13 @@ import microsim.event.EventQueue;
 import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
-import org.apache.commons.math3.random.RandomGenerator;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serial;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -53,53 +55,53 @@ import java.util.logging.Level;
 	 *
 	 * @return The current random generator.
 	 */
-	@Getter private static Random rnd;
+	@Getter private static MersenneTwister rnd;
 
 	/**
 	 * Return the current random seed.
 	 *
 	 * @return The current random seed.
 	 */
-	@Getter private long randomSeed;
+	@Getter private int randomSeed;
 
 	@Getter protected ArrayList<EngineListener> engineListeners;
 
 	@Getter private boolean runningStatus = false;
 
-	/** If set to true during the build phase of a simulation, 
+	/** If set to true during the build phase of a simulation,
 	 * the simulation run will not be connected to an input / output database.
-	 * This may speed up the building and execution of the simulation, however the relational 
-	 * database management features provided by JAS-mine cannot then be used and data cannot 
-	 * be persisted to the output database. Any data should be exported to CSV files instead.  
+	 * This may speed up the building and execution of the simulation, however the relational
+	 * database management features provided by JAS-mine cannot then be used and data cannot
+	 * be persisted to the output database. Any data should be exported to CSV files instead.
 	 * If an attempt is made to import data from an input database during the simulation, an
-	 * exception will be thrown. 
-	 * 
-	 * In older versions of JAS-mine, it was possible to control this field on the fly via the 
-	 * JAS-mine GUI, so all data persistence could be enabled or disabled during the simulation.  
-	 * This was only possible when the turnOffDatabaseConnection was disabled (set to false) during the 
+	 * exception will be thrown.
+	 *
+	 * In older versions of JAS-mine, it was possible to control this field on the fly via the
+	 * JAS-mine GUI, so all data persistence could be enabled or disabled during the simulation.
+	 * This was only possible when the turnOffDatabaseConnection was disabled (set to false) during the
 	 * build phase of the simulation (before execution of the simulation).  However, this option has now
-	 * been removed from the GUI to avoid misuse by inexperienced users who might attempt to 
-	 * import / export data from / from the database after building the simulation with 
-	 * turnOffDatabaseConnection set to true, which, as the database connection is not established, 
+	 * been removed from the GUI to avoid misuse by inexperienced users who might attempt to
+	 * import / export data from / from the database after building the simulation with
+	 * turnOffDatabaseConnection set to true, which, as the database connection is not established,
 	 * will not work and may result in an exception being thrown.
-	 * 
-	 * It is still possible to set this field programmatically, for example, in the Start class of 
+	 *
+	 * It is still possible to set this field programmatically, for example, in the Start class of
 	 * a standard JAS-mine project (e.g. created using the JAS-mine Plugin for Eclipse IDE),
 	 * using the Simulation Engine's setTurnOffDatabaseConnection() method. */
 	@Getter private boolean turnOffDatabaseConnection = false;
-	
-	/** 
+
+	/**
 	 * (Quando costruisco un modello se è disabilitato silent mode viene creato il db. Durante
 	 * il run posso dinamicamente abilitare o disabilitare. Nel caso invece sia partito in turnOffDatabaseConnection
 	 * il db non esiste e quindi il flag non può essere cambiato.) */
 	@Getter private boolean turnOffDatabaseConnectionAvailable = true;
-	
+
 	@Setter @Getter private ClassLoader classLoader = null;
-	
-	private static SimulationEngine instance;	
-		
+
+	private static SimulationEngine instance;
+
 	@Getter private Class<?> builderClass = null;
-	
+
 	@Setter @Getter private ExperimentBuilder experimentBuilder = null;
 
 	/**
@@ -112,57 +114,19 @@ import java.util.logging.Level;
 		eventQueue = new EventQueue();
 		models = new ArrayList<>();
 		modelMap = new HashMap<>();
-		randomSeed = System.currentTimeMillis();
-		rnd = new RandomNumberGenerator(randomSeed);
+		randomSeed = (int) System.currentTimeMillis();
+		rnd = new MersenneTwister(randomSeed);
 		engineListeners = new ArrayList<>();
-		
+
 		instance = this;
-	}
-	
-	/* This class enables the construction of an apache commons math3
-	 * MultivariateNormalDistribution class that uses the SimulationEngine's rnd object.
-	 * 
-	 * RandomNumberGenerator is basically the Java.util.Random object as previously, 
-	 * however now it implements the RandomGenerator interface from apache commons math3,
-	 * which is compatible with Java.util.Random
-	 * 
-	 * @author Ross Richardson
-	 *
-	 */
-	static class RandomNumberGenerator extends Random implements RandomGenerator {
-
-		@Serial private static final long serialVersionUID = 5942825728562046996L;
-
-		RandomNumberGenerator(long seed) {
-			super(seed);
-		}
-		
-		@Override public void setSeed(int seed) {
-			setSeed((long)seed);
-		}
-
-		@Override public void setSeed(int[] seed) {
-			throw new RuntimeException("SimulationEngine's RandomNumberGenerator class "
-					+ "is derived from the Java.util.Random class, which doesn't "
-					+ "implement a constructor taking an int[] argument.  This method "
-					+ "should not be used!\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-		}
 	}
 
 	public void setTurnOffDatabaseConnection(boolean turnOffDatabaseConnection) {
 		if (turnOffDatabaseConnection && ! turnOffDatabaseConnectionAvailable)
 			return;
-		
+
 		this.turnOffDatabaseConnection = turnOffDatabaseConnection;
 		ExperimentManager.getInstance().saveExperimentOnDatabase = ! turnOffDatabaseConnection;
-	}
-
-	@Deprecated
-	public void setBuilderClass(Class<?> builderClass) {
-		if (! ExperimentBuilder.class.isAssignableFrom(builderClass)) 
-			throw new RuntimeException(builderClass + " does not implement ExperimentBuilder interface!");
-		
-		this.builderClass = builderClass;
 	}
 
 	public static @NotNull SimulationEngine getInstance() {
@@ -176,7 +140,7 @@ import java.util.logging.Level;
 
 	/**
 	 * Install a listener for events generated by the simulation engine.
-	 * 
+	 *
 	 * @param engineListener
 	 *            An object implementing the ISimEngineListener interface.
 	 */
@@ -197,13 +161,13 @@ import java.util.logging.Level;
 			}
 		else if (experimentBuilder != null)
 			experimentBuilder.buildExperiment(this);
-		
+
 		notifySimulationListeners(SystemEventType.Setup);
 	}
-	
+
 	/**
 	 * Return an array representing the running SimModels.
-	 * 
+	 *
 	 * @return A list of running models.
 	 */
 	public SimulationManager[] getModelArray() {
@@ -212,7 +176,7 @@ import java.util.logging.Level;
 
 	/**
 	 * Return a reference to the current SimTime.
-	 * 
+	 *
 	 * @return The current time object.
 	 */
 	public double getTime() {
@@ -221,7 +185,7 @@ import java.util.logging.Level;
 
 	/**
 	 * Make forSteps simulation steps.
-	 * 
+	 *
 	 * @param forSteps
 	 *            The number of steps to be done.
 	 * @throws SimulationException //TODO finish this
@@ -230,14 +194,14 @@ import java.util.logging.Level;
 		for (int i = 0; i < forSteps; i++)
 			step();
 	}
-	
+
 	public void reset() {
 		pause();
 		eventQueue = new EventQueue();
 		models = new ArrayList<>();
 		modelMap = new HashMap<>();
-		randomSeed = System.currentTimeMillis();
-		rnd = new RandomNumberGenerator(randomSeed);
+		randomSeed = (int) System.currentTimeMillis();
+		rnd = new MersenneTwister(randomSeed);
 	}
 
 	/**
@@ -252,7 +216,7 @@ import java.util.logging.Level;
 			buildModels();
 
 		setRunningStatus(true);
-		
+
 		notifySimulationListeners(SystemEventType.Start);
 	}
 
@@ -261,7 +225,7 @@ import java.util.logging.Level;
 	 */
 	public void pause() {
 		setRunningStatus(false);
-		
+
 		notifySimulationListeners(SystemEventType.Stop);
 	}
 
@@ -285,7 +249,7 @@ import java.util.logging.Level;
 		modelMap.put(simulationManager.getId(), simulationManager);
 		models.add(simulationManager);
 		simulationManager.setEngine(this);
-		
+
 		return simulationManager;
 	}
 
@@ -297,22 +261,22 @@ import java.util.logging.Level;
 			simulationManager = (SimulationManager) Class.forName(managerClassName).newInstance();
 		return addSimulationManager(simulationManager);
 	}
-	
+
 	/** Call the buildModel() method of each active SimModel. */
 	public void buildModels() {
 		currentExperiment = ExperimentManager.getInstance().createExperiment(multiRunId);
-		
+
 		turnOffDatabaseConnectionAvailable = (! turnOffDatabaseConnection);
-		
+
 		notifySimulationListeners(SystemEventType.Build);
-		
-		try {			
+
+		try {
 			currentExperiment = ExperimentManager.getInstance()
 							.setupExperiment(currentExperiment, models.toArray(new SimulationManager[models.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if (modelBuild)
 			return;
 
@@ -326,7 +290,7 @@ import java.util.logging.Level;
 
 	/**
 	 * Return true if buildModels() method has been called. False otherwise.
-	 * 
+	 *
 	 * @return True is models have been built, false otherwise.
 	 */
 	public boolean getModelBuildStatus() {
@@ -336,7 +300,7 @@ import java.util.logging.Level;
 	/**
 	 * Dispose from memory all running models. Return an array representing the
 	 * Class of each disposed models. It is used by rebuildModels().
-	 * 
+	 *
 	 * @return The list of disposed models.
 	 */
 	public synchronized Class<?>[] disposeModels() {
@@ -353,11 +317,11 @@ import java.util.logging.Level;
 		}
 		models.clear();
 		modelMap.clear();
-		
+
 		System.gc();
 
 		turnOffDatabaseConnectionAvailable = true;
-		
+
 		return cls;
 	}
 
@@ -370,21 +334,21 @@ import java.util.logging.Level;
 		currentRunNumber = k + 1;
 
 		eventQueue.clear();
-		
+
 		setRandomSeed(randomSeed);
-		
+
 		notifySimulationListeners(SystemEventType.Restart);
 		setup();
 	}
 
 	/**
 	 * Set the current random seed.
-	 * 
+	 *
 	 * @param newSeed
 	 *            The new random seed.
 	 */
-	public void setRandomSeed(long newSeed) {
-		rnd.setSeed(newSeed);
+	public void setRandomSeed(int newSeed) {
+		rnd = new MersenneTwister(randomSeed);
 		randomSeed = newSeed;
 	}
 
@@ -400,7 +364,7 @@ import java.util.logging.Level;
 
 	/**
 	 * React to system events.
-	 * 
+	 *
 	 * @param actionType
 	 *            Reacts in case of EVENT_SIMULATION_END,
 	 *            EVENT_SIMULATION_RESTART, EVENT_SHUTDOWN events.
@@ -451,7 +415,7 @@ import java.util.logging.Level;
 				listener.onEngineEvent(event);
 			}
 	}
-	
+
 	/**
 	 * Start the independent thread running simulation. It fire events only if
 	 * running status is set to true.
@@ -462,7 +426,7 @@ import java.util.logging.Level;
 		 * while (true) { try { this.yield(); if (EVENT_TRESHOLD > 0)
 		 * sleep(EVENT_TRESHOLD); } catch (Exception e) {
 		 * System.out.println("Interrupt: " + e.getMessage()); }
-		 * 
+		 *
 		 * if (runningStatus) step(); }
 		 */
 		while (true) {
@@ -487,7 +451,6 @@ import java.util.logging.Level;
 			else
 				this.yield();
 		}
-
 	}
 
 	public Experiment getCurrentExperiment() {
