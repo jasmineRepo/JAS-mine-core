@@ -2,7 +2,6 @@ package microsim.statistics.functions;
 
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
@@ -21,13 +20,6 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 		Mean,
 		/**	Represent the variance function argument for the getDoubleValue method. */
 		Variance;
-	}
-
-	/** Create a mean function on a float array source.
-	 * @param source The data source.
-	 */
-	public MeanVarianceArrayFunction(FloatArraySource source) {
-		super(source);
 	}
 
 	/** Create a mean function on an integer array source.
@@ -74,19 +66,6 @@ public class MeanVarianceArrayFunction extends AbstractArrayFunction implements 
 	 */
 	public void apply(double[] data) {
 
-		double sum = 0.0;
-		double sumOfSquares = 0.0;
-		for (double d : data) {
-			sum += d;
-			sumOfSquares += (d * d);
-		}
-		setValues(data.length, sum, sumOfSquares);
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
-	 */
-	public void apply(float[] data) {
 		double sum = 0.0;
 		double sumOfSquares = 0.0;
 		for (double d : data) {

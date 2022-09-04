@@ -3,8 +3,6 @@ package microsim.statistics.functions;
 import microsim.statistics.*;
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
-import microsim.statistics.FloatSource;
 
 /**
  * This class computes the sum of an array of source values. According to the source data type
@@ -12,13 +10,6 @@ import microsim.statistics.FloatSource;
  * <i>DoubleSource</i> interface.
  */
 public abstract class SumArrayFunction extends AbstractArrayFunction implements DoubleSource {
-
-	/** Create a sum function on a float array source.
-	 * @param source The data source.
-	 */
-	public SumArrayFunction(FloatArraySource source) {
-		super(source);
-	}
 
 	/** Create a sum function on an integer array source.
 	 * @param source The data source.
@@ -144,44 +135,6 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public double getDoubleValue(Enum<?> variableID) {
 			return isum;
-		}
-	}
-
-	/**
-	 * SumFunction operating on float source values.
-	 */
-	public static class Float extends SumArrayFunction implements FloatSource
-	{
-		/** Create a sum function on an float array source.
-		 * @param source The data source.
-		 */
-		public Float(FloatArraySource source) {
-			super(source);
-		}
-
-		protected float fsum;
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-		 */
-		public void apply(float[] data) {
-			fsum = 0;
-
-			for (float datum : data) fsum += datum;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public float getFloatValue(Enum<?> id) {
-			return fsum;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public double getDoubleValue(Enum<?> variableID) {
-			return fsum;
 		}
 	}
 }

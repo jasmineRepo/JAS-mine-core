@@ -4,7 +4,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
@@ -30,13 +29,6 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 		P90,
 		P95,
 		P99;
-	}
-
-	/** Create a percentile function on a float array source.
-	 * @param source The data source.
-	 */
-	public PercentileArrayFunction(FloatArraySource source) {
-		super(source);
 	}
 
 	/** Create a percentile function on an integer array source.
@@ -82,13 +74,6 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 		p90 = stats.getPercentile(90);
 		p95 = stats.getPercentile(95);
 		p99 = stats.getPercentile(99);
-
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
-	 */
-	public void apply(float[] data) {
 
 	}
 

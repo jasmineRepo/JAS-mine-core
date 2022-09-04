@@ -2,7 +2,6 @@ package microsim.statistics.weighted.functions;
 
 import microsim.statistics.DoubleSource;
 import microsim.statistics.weighted.WeightedDoubleArraySource;
-import microsim.statistics.weighted.WeightedFloatArraySource;
 import microsim.statistics.weighted.WeightedIntArraySource;
 import microsim.statistics.weighted.WeightedLongArraySource;
 
@@ -16,13 +15,6 @@ import microsim.statistics.weighted.WeightedLongArraySource;
  * <i>DoubleSource</i> interface.
  */
 public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction implements DoubleSource {
-
-	/** Create a mean function on a float array source.
-	 * @param source The data source.
-	 */
-	public Weighted_MeanArrayFunction(WeightedFloatArraySource source) {
-		super(source);
-	}
 
 	/** Create a mean function on an integer array source.
 	 * @param source The data source.

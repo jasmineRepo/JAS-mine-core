@@ -2,7 +2,6 @@ package microsim.statistics.functions;
 
 import microsim.event.CommonEventType;
 import microsim.exception.SimulationRuntimeException;
-import microsim.statistics.FloatSource;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.IntSource;
 import microsim.statistics.LongSource;
@@ -16,12 +15,10 @@ import microsim.statistics.LongSource;
 public class MovingAverageTraceFunction extends AbstractFunction implements DoubleSource  {
 
 	protected static final int TYPE_DBL = 0;
-	protected static final int TYPE_FLT = 1;
-	protected static final int TYPE_INT = 2;
-	protected static final int TYPE_LNG = 3;
+	protected static final int TYPE_INT = 1;
+	protected static final int TYPE_LNG = 2;
 
 	protected DoubleSource dblSource;
-	protected FloatSource fltSource;
 	protected IntSource intSource;
 	protected LongSource lngSource;
 
@@ -40,17 +37,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements Doub
 	public MovingAverageTraceFunction(DoubleSource source, Enum<?> valueID, int windowSize) {
 		super();
 		dblSource = source;
-		len = windowSize;
-		this.valueID = valueID;
-		values = new double[len];
-	}
-
-	/** Create a basic statistic probe on a FloatSource object.
-	 *  @param source The FloatSource object.
-	 *  @param valueID The value identifier defined by source object. */
-	public MovingAverageTraceFunction(FloatSource source, Enum<?> valueID, int windowSize) {
-		super();
-		fltSource = source;
 		len = windowSize;
 		this.valueID = valueID;
 		values = new double[len];
@@ -97,7 +83,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements Doub
 
 			switch (type) {
 				case TYPE_DBL -> values[len - 1] = dblSource.getDoubleValue(valueID);
-				case TYPE_FLT -> values[len - 1] = fltSource.getFloatValue(valueID);
 				case TYPE_LNG -> values[len - 1] = lngSource.getLongValue(valueID);
 				case TYPE_INT -> values[len - 1] = intSource.getIntValue(valueID);
 			}
@@ -118,7 +103,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements Doub
 
 			switch (type) {
 				case TYPE_DBL -> values[len - 1] = dblSource.getDoubleValue(valueID);
-				case TYPE_FLT -> values[len - 1] = fltSource.getFloatValue(valueID);
 				case TYPE_LNG -> values[len - 1] = lngSource.getLongValue(valueID);
 				case TYPE_INT -> values[len - 1] = intSource.getIntValue(valueID);
 			}

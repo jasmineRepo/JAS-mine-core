@@ -2,7 +2,6 @@ package microsim.statistics.weighted.functions;
 
 import microsim.statistics.UpdatableSource;
 import microsim.statistics.weighted.WeightedDoubleArraySource;
-import microsim.statistics.weighted.WeightedFloatArraySource;
 import microsim.statistics.weighted.WeightedIntArraySource;
 import microsim.statistics.weighted.WeightedLongArraySource;
 import microsim.statistics.functions.AbstractFunction;
@@ -16,12 +15,10 @@ import microsim.statistics.functions.AbstractFunction;
 public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 
 	protected static final int TYPE_DBL = 0;
-	protected static final int TYPE_FLT = 1;
-	protected static final int TYPE_INT = 2;
-	protected static final int TYPE_LNG = 3;
+	protected static final int TYPE_INT = 1;
+	protected static final int TYPE_LNG = 2;
 
 	protected WeightedDoubleArraySource dblSource;
-	protected WeightedFloatArraySource fltSource;
 	protected WeightedIntArraySource intSource;
 	protected WeightedLongArraySource lngSource;
 	protected int type;
@@ -35,16 +32,6 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		super();
 		type = TYPE_DBL;
 		dblSource = source;
-	}
-
-	/** Create a function on a float array source.
-	 * @param source The data source.
-	 */
-	public AbstractWeightedArrayFunction(WeightedFloatArraySource source)
-	{
-		super();
-		type = TYPE_FLT;
-		fltSource = source;
 	}
 
 	/** Create a function on an integer array source.
@@ -79,11 +66,6 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 					((UpdatableSource) dblSource).updateSource();
 				apply(dblSource.getDoubleArray(), dblSource.getWeights());
 			}
-			case TYPE_FLT -> {
-				if (fltSource instanceof UpdatableSource)
-					((UpdatableSource) fltSource).updateSource();
-				apply(fltSource.getFloatArray(), fltSource.getWeights());
-			}
 			case TYPE_INT -> {
 				if (intSource instanceof UpdatableSource)
 					((UpdatableSource) intSource).updateSource();
@@ -110,20 +92,6 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 			throw new IllegalArgumentException("Error: length of data array ( = " + data.length + " and length of weights array ( = " + weights.length + " do not match!");
 		}
 		throw new UnsupportedOperationException("This function class cannot be applied to arrays of double values.");
-	}
-
-	/**
-	 * Apply the function on a the given array of float values.
-	 * @param data A source array of values.
-	 * @param weights An array of weights.
-	 * @throws UnsupportedOperationException If the function is not able to work on double data type.
-	 */
-	public void apply(float[] data, double[] weights)
-	{
-		if(data.length != weights.length) {
-			throw new IllegalArgumentException("Error: length of data array ( = " + data.length + " and length of weights array ( = " + weights.length + " do not match!");
-		}
-		throw new UnsupportedOperationException("This function class cannot be applied to arrays of float values.");
 	}
 
 	/**

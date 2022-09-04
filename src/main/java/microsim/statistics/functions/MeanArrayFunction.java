@@ -2,7 +2,6 @@ package microsim.statistics.functions;
 
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
@@ -12,13 +11,6 @@ import microsim.statistics.LongArraySource;
  * <i>DoubleSource</i> interface.
  */
 public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSource {
-
-	/** Create a mean function on a float array source.
-	 * @param source The data source.
-	 */
-	public MeanArrayFunction(FloatArraySource source) {
-		super(source);
-	}
 
 	/** Create a mean function on an integer array source.
 	 * @param source The data source.
@@ -53,22 +45,6 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 
 			double sum = 0.0;
 			for (double datum : data) {
-				sum += datum;
-			}
-			mean = sum / data.length;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
-	 */
-	public void apply(float[] data) {
-
-		mean = 0.0;
-		if (data.length != 0) {
-
-			double sum = 0.0;
-			for (float datum : data) {
 				sum += datum;
 			}
 			mean = sum / data.length;

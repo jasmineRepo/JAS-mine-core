@@ -61,25 +61,6 @@ public class ReflectionUtils {
 		}
 	}
 
-	public static boolean isFloatSource(Class<?> trgClass, String varName,
-			boolean isMethod) {
-		if (!isMethod) {
-			Field fld = searchField(trgClass, varName);
-
-			if (fld == null)
-				return false;
-			else
-				return (fld.getType() == float.class);
-		} else {
-			Method mtd = searchMethod(trgClass, varName);
-
-			if (mtd == null)
-				return false;
-			else
-				return (mtd.getReturnType() == float.class);
-		}
-	}
-
 	public static boolean isIntSource(Class<?> trgClass, String varName,
 			boolean isMethod) {
 		if (!isMethod) {
@@ -105,9 +86,9 @@ public class ReflectionUtils {
 			try {
 				Field[] flds = cl.getDeclaredFields();
 				AccessibleObject.setAccessible(flds, true);
-				for (int i = 0; i < flds.length; i++)
-					if (flds[i].getName().equals(fieldName))
-						return flds[i];
+                for (Field fld : flds)
+                    if (fld.getName().equals(fieldName))
+                        return fld;
 
 				cl = cl.getSuperclass();
 			} catch (SecurityException e) {
@@ -127,9 +108,9 @@ public class ReflectionUtils {
 			try {
 				Method[] mtds = cl.getDeclaredMethods();
 				AccessibleObject.setAccessible(mtds, true);
-				for (int i = 0; i < mtds.length; i++)
-					if (mtds[i].getName().equals(methodName))
-						return mtds[i];
+                for (Method mtd : mtds)
+                    if (mtd.getName().equals(methodName))
+                        return mtd;
 
 				cl = cl.getSuperclass();
 			} catch (SecurityException e) {

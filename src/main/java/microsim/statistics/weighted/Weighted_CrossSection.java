@@ -7,7 +7,6 @@ import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.*;
 import microsim.statistics.reflectors.DoubleInvoker;
-import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
@@ -262,126 +261,6 @@ public abstract class Weighted_CrossSection implements EventListener, UpdatableS
 		}
 
 	}
-
-
-
-
-	public static class Float extends Weighted_CrossSection implements WeightedFloatArraySource
-	{
-		protected float[] valueList;
-		protected double[] weights;
-
-		protected FloatInvoker invoker;
-		protected Collection<? extends Weight> target;
-		protected Enum<?> valueID;
-
-		/** Create a statistic probe on a collection of FloatSource objects.
-		 *  @param source The collection containing FloatSource object.
-		 *  @param valueID The value identifier defined by source object. */
-		public Float(Collection<? extends Weight> source, Enum<?> valueID)
-		{
-			target = source;
-			this.valueID = valueID;
-		}
-
-		/** Create a statistic probe on a collection of FloatSource objects.
-		 *  It uses the FloatSource.DEFAULT variable id.
-		 *  @param source The collection containing FloatSource object.
-		 */
-		public Float(Collection<? extends Weight> source)
-		{
-			target = source;
-			this.valueID = FloatSource.Variables.Default;
-		}
-
-		/** Create a basic statistic probe on a collection of objects.
-		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
-		 *  @param valueName The name of the field or the method returning the variable to be probed.
-		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
-		public Float(Collection<? extends Weight> source, Class<? extends Weight> objectClass,	String valueName, boolean getFromMethod)
-		{
-			target = source;
-			this.valueID = FloatSource.Variables.Default;
-			invoker = new FloatInvoker(objectClass, valueName, getFromMethod);
-		}
-
-		public float[] getFloatArray()
-		{
-			return valueList;
-		}
-
-		public String toString()
-		{
-			StringBuilder buf = new StringBuilder();
-			buf.append("CrossSection.Float [");
-			int size = valueList.length - 1;
-			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i]).append(" ");
-			}
-			buf.append(valueList[size]).append("]; weights [");
-			for (int i = 0; i < size; i++) {
-				buf.append(weights[i]).append(" ");
-			}
-			buf.append(weights[size]).append("]");
-			return buf.toString();
-		}
-
-		public void updateSource() {
-			if (timeChecker.isUpToDate())
-				return;
-
-			valueList = new float[target.size()];
-			sourceList = new Weight[valueList.length];
-			weights = new double[valueList.length];
-
-			int i = 0;
-			if (filter != null)
-			{
-				if (invoker != null)
-					for (Weight obj : target) {
-						if (filter.isFiltered(obj)) {
-							valueList[i] = invoker.getFloat(obj);
-							weights[i] = obj.getWeight();
-							sourceList[i++] = obj;
-						}
-					}
-				else
-					for (Weight obj : target) {
-						if (filter.isFiltered(obj)) {
-							valueList[i] = ((FloatSource) obj).getFloatValue(valueID);
-							weights[i] = obj.getWeight();
-							sourceList[i++] = obj;
-						}
-					}
-				valueList = cern.mateba.Arrays.trimToCapacity(valueList, i);
-				weights = cern.mateba.Arrays.trimToCapacity(weights, i);
-				sourceList = cern.mateba.Arrays.trimToCapacity(sourceList, i);
-			}
-			else
-				if (invoker != null)
-					for (Weight o : target) {
-						valueList[i] = invoker.getFloat(o);
-						weights[i] = o.getWeight();
-						sourceList[i++] = o;
-					}
-				else
-					for (Weight o : target) {
-						valueList[i] = ((FloatSource) o).getFloatValue(valueID);
-						weights[i] = o.getWeight();
-						sourceList[i++] = o;
-					}
-
-		}
-
-		@Override
-		public double[] getWeights() {
-			return weights;
-		}
-
-	}
-
-
 
 	public static class Long extends Weighted_CrossSection implements WeightedLongArraySource
 	{

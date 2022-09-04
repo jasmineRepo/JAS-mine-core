@@ -3,7 +3,6 @@ package microsim.statistics.functions;
 import microsim.statistics.*;
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
 import microsim.statistics.LongSource;
 
 /**
@@ -12,13 +11,6 @@ import microsim.statistics.LongSource;
  * <i>DoubleSource</i> interface.
  */
 public abstract class MaxArrayFunction extends AbstractArrayFunction implements DoubleSource {
-
-	/** Create a maximum function on a float array source.
-	 * @param source The data source.
-	 */
-	public MaxArrayFunction(FloatArraySource source) {
-		super(source);
-	}
 
 	/** Create a maximum function on an integer array source.
 	 * @param source The data source.
@@ -150,46 +142,6 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public double getDoubleValue(Enum<?> variableID) {
 			return imax;
-		}
-	}
-
-	/**
-	 * MaxFunction operating on float source values.
-	 */
-	public static class Float extends MaxArrayFunction implements FloatSource
-	{
-		/** Create a maximum function on an float array source.
-		 * @param source The data source.
-		 */
-		public Float(FloatArraySource source) {
-			super(source);
-		}
-
-		protected float fmax;
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-		 */
-		public void apply(float[] data) {
-			fmax = java.lang.Float.MIN_VALUE;
-
-			for (float datum : data)
-				if (fmax < datum)
-					fmax = datum;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public float getFloatValue(Enum<?> id) {
-			return fmax;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public double getDoubleValue(Enum<?> variableID) {
-			return fmax;
 		}
 	}
 }

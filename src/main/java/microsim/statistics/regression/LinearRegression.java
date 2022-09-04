@@ -220,9 +220,6 @@ public class LinearRegression implements LinReg {
 							} else if (value.getClass().isEnum()) {
 								final String e = value.toString();
 								propertyMap.put(key, e);
-							} else if (value.getClass().equals(Float.class)) {
-								final Float r = (Float) value;
-								propertyMap.put(key, r.toString());
 							}
 						}
 					}
@@ -490,9 +487,6 @@ public class LinearRegression implements LinReg {
 				if (value.getClass().equals(Double.class)) {
 					final Double r = (Double) value;
 					resultMap.put(key, r);
-				} else if (value.getClass().equals(Float.class)) {
-					final Float r = (Float) value;
-					resultMap.put(key, r.doubleValue());
 				} else if (value.getClass().equals(Long.class)) {
 					final Long r = (Long) value;
 					resultMap.put(key, r.doubleValue());
@@ -538,9 +532,6 @@ public class LinearRegression implements LinReg {
 				} else if (value.getClass().isEnum()) {
 					final String e = value.toString();
 					resultMap.put(key, e);
-				} else if (value.getClass().equals(Float.class)) {
-					final Float r = (Float) value;
-					resultMap.put(key, r.toString());
 				}
 			}
 		}

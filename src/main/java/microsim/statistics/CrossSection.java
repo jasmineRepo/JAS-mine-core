@@ -5,7 +5,6 @@ import lombok.Setter;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.reflectors.DoubleInvoker;
-import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
@@ -351,114 +350,6 @@ public abstract class CrossSection implements EventListener, UpdatableSource, So
 					}
 
 		}
-	}
-
-	public static class Float extends CrossSection implements FloatArraySource
-	{
-		protected float[] valueList;
-
-		protected FloatInvoker invoker;
-		protected Collection<?> target;
-		protected Enum<?> valueID;
-
-		/** Create a statistic probe on a collection of FloatSource objects.
-		 *  @param source The collection containing FloatSource object.
-		 *  @param valueID The value identifier defined by source object. */
-		public Float(Collection<?> source, Enum<?> valueID)
-		{
-			target = source;
-			this.valueID = valueID;
-		}
-
-		/** Create a statistic probe on a collection of FloatSource objects.
-		 *  It uses the FloatSource.DEFAULT variable id.
-		 *  @param source The collection containing FloatSource object.
-		 */
-		public Float(Collection<?> source)
-		{
-			target = source;
-			this.valueID = FloatSource.Variables.Default;
-		}
-
-		/** Create a basic statistic probe on a collection of objects.
-		 *  @param source A collection of generic objects.
-		 *  @param objectClass The class of the objects contained by collection source.
-		 *  @param valueName The name of the field or the method returning the variable to be probed.
-		 *  @param getFromMethod Specifies if valueName is a method or a property value. */
-		public Float(Collection<?> source, Class<?> objectClass,	String valueName, boolean getFromMethod)
-		{
-			target = source;
-			this.valueID = FloatSource.Variables.Default;
-			invoker = new FloatInvoker(objectClass, valueName, getFromMethod);
-		}
-
-		public float[] getFloatArray()
-		{
-			return valueList;
-		}
-
-		public double[] getDoubleArray()
-		{
-			double[] list = new double[valueList.length];
-			for (int i = 0; i < valueList.length; i++)
-				list[i] = valueList[i];
-
-			return list;
-		}
-
-		public String toString()
-		{
-			StringBuilder buf = new StringBuilder();
-			buf.append("CrossSection.Double [");
-			int size = valueList.length - 1;
-			for (int i = 0; i < size; i++) {
-				buf.append(valueList[i]).append(" ");
-			}
-			buf.append(valueList[size]).append("]");
-			return buf.toString();
-		}
-
-		public void updateSource() {
-			if (timeChecker.isUpToDate())
-				return;
-
-			valueList = new float[target.size()];
-			sourceList = new Object[valueList.length];
-
-			int i = 0;
-			if (filter != null)
-			{
-				if (invoker != null)
-					for (Object obj : target) {
-						if (filter.isFiltered(obj)) {
-							valueList[i] = invoker.getFloat(obj);
-							sourceList[i++] = obj;
-						}
-					}
-				else
-					for (Object obj : target) {
-						if (filter.isFiltered(obj)) {
-							valueList[i] = ((FloatSource) obj).getFloatValue(valueID);
-							sourceList[i++] = obj;
-						}
-					}
-				valueList = cern.mateba.Arrays.trimToCapacity(valueList, i);
-				sourceList = cern.mateba.Arrays.trimToCapacity(sourceList, i);
-			}
-			else
-				if (invoker != null)
-					for (Object o : target) {
-						valueList[i] = invoker.getFloat(o);
-						sourceList[i++] = o;
-					}
-				else
-					for (Object o : target) {
-						valueList[i] = ((FloatSource) o).getFloatValue(valueID);
-						sourceList[i++] = o;
-					}
-
-		}
-
 	}
 
 	/** Return the current status of the time checker. A time checker avoid the object to update

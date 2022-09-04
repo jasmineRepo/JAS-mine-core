@@ -2,7 +2,6 @@ package microsim.statistics.functions;
 
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
-import microsim.statistics.FloatArraySource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
@@ -15,14 +14,6 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 
 	protected double mean;
 	protected int window;
-
-	/** Create a count function on a float array source.
-	 * @param source The data source.
-	 */
-	public MovingAverageArrayFunction(FloatArraySource source, int window) {
-		super(source);
-		this.window = window;
-	}
 
 	/** Create a count function on an integer array source.
 	 * @param source The data source.
@@ -52,24 +43,6 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
 	public void apply(double[] data) {
-		int firstElement = data.length - window;
-		if (firstElement < 0)
-			firstElement = 0;
-		double vals = window;
-		if (data.length < window)
-			vals = data.length;
-
-		double sum = 0.0;
-		for (int i = firstElement; i < data.length ; i++) {
-			sum += data[i];
-		}
-		mean = sum / vals;
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
-	 */
-	public void apply(float[] data) {
 		int firstElement = data.length - window;
 		if (firstElement < 0)
 			firstElement = 0;

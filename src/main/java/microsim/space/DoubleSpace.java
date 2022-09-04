@@ -60,7 +60,7 @@ public class DoubleSpace extends AbstractSpace<Double>
    *  @return The Double wrapper for value stored at x,y position of the grid. */
   public Double get(int x, int y)
   {
-    return new Double(m[at(x, y)]);
+    return m[at(x, y)];
   }
 
   /** Return the value at given position.
@@ -76,7 +76,7 @@ public class DoubleSpace extends AbstractSpace<Double>
    *  @param x The x coordinate. WARNING: No bounds checking for fast access.
    *  @param y The y coordinate. WARNING: No bounds checking for fast access.
    *  @param obj An object wrapper for a number class.
-   *          It is possible to pass Interger, Double, Float or Long values.
+   *          It is possible to pass Interger, Double, or Long values.
    */
   public void set(int x, int y, Object obj)
   {

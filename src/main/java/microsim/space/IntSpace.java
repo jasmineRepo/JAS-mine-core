@@ -115,7 +115,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 	 *            The y coordinate. WARNING: No bounds checking for fast access.
 	 * @param obj
 	 *            An object wrapper for a number class. It is possible to pass
-	 *            Interger, Double, Float or Long values.
+	 *            Interger, Double, or Long values.
 	 */
 	public void set(int x, int y, Object obj) {
 		if (obj == null) {

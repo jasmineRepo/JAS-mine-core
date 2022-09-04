@@ -4,13 +4,11 @@ import lombok.Getter;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.exception.SimulationRuntimeException;
-import microsim.statistics.FloatSource;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.IntSource;
 import microsim.statistics.LongSource;
 import microsim.statistics.UpdatableSource;
 import microsim.statistics.reflectors.DoubleInvoker;
-import microsim.statistics.reflectors.FloatInvoker;
 import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
@@ -346,96 +344,5 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 			else
 				return 0.0;
 		}
-	}
-
-	/**
-	 * An implementation of the MemorylessSeries class, which manages float type data sources.
-	 */
-	public static class Float extends MultiTraceFunction implements FloatSource {
-		@Getter protected float max = java.lang.Float.MIN_VALUE;
-		@Getter protected float min = java.lang.Float.MAX_VALUE;
-		@Getter protected float sum = 0.0f;
-		protected double sumSquare = 0.0;
-
-		protected FloatSource target;
-		private final Enum<?> valueID;
-
-		@Getter private float lastRead;
-
-		/** Create a basic statistic probe on a IDblSource object.
-		 *  @param source The IDblSource object.
-		 *  @param valueID The value identifier defined by source object. */
-		public Float(FloatSource source, Enum<?> valueID) {
-			target = source;
-			this.valueID = valueID;
-		}
-
-		/** Create a basic statistic probe on a generic object.
-		  *  @param source A generic source object.
-		  *  @param valueName The name of the field or the method returning the variable to be probed.
-		  *  @param getFromMethod Specifies if valueName is a method or a property value. */
-		public Float(Object source, String valueName, boolean getFromMethod) {
-			target = new FloatInvoker(source, valueName, getFromMethod);
-			valueID = FloatSource.Variables.Default;
-		}
-
-		/** Read the source values and update statistics.*/
-		public void updateSource() {
-			super.updateSource();
-			if (target instanceof UpdatableSource)
-				((UpdatableSource) target).updateSource();
-			lastRead = target.getFloatValue(valueID);
-
-			if (lastRead < min)
-				min = lastRead;
-			if (lastRead > max)
-				max = lastRead;
-			sum += lastRead;
-			sumSquare += (lastRead * lastRead);
-		}
-
-		/** Return the result of a given statistic.
-				*  @param valueID One of the F_ constants representing available statistics.
-				*  @return The computed value.
-				*  @throws UnsupportedOperationException If the given valueID is not supported.*/
-		public double getDoubleValue(Enum<?> valueID) {
-			if (valueID.equals( FloatSource.Variables.Default))
-				return lastRead;
-			return switch ((MultiTraceFunction.Variables) valueID) {
-				case LastValue -> lastRead;
-				case Max -> max;
-				case Min -> min;
-				case Sum -> sum;
-				default -> super.getDoubleValue(valueID);
-			};
-		}
-		/** Return the result of a given statistic.
-			*  @param valueID One of the F_ constants representing available statistics.
-			*  @return The computed value.
-			*  @throws UnsupportedOperationException If the given valueID is not supported.*/
-		public float getFloatValue(Enum<?> valueID) {
-			return switch ((MultiTraceFunction.Variables) valueID) {
-				case LastValue -> lastRead;
-				case Max -> max;
-				case Min -> min;
-				case Mean -> (float) getMean();
-				case Variance -> (float) getVariance();
-				case Sum -> sum;
-				default -> throw new UnsupportedOperationException(valueID + " is not a defined function for " + getClass() + ".");
-			};
-		}
-
-		/** The variance function.
-		 *  @return The variance value.*/
-		public double getVariance() {
-			return count > 1 ? (sumSquare - ( (sum * sum) / count) ) / (count - 1) : 0.;
-		}
-
-		/** The mean function.
-			*  @return The mean value.*/
-		public double getMean() {
-			return count > 0 ? sum / count : 0.;
-		}
-
 	}
 }
