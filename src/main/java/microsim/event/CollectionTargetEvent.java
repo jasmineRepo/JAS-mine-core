@@ -22,7 +22,7 @@ public class CollectionTargetEvent extends Event {
 
 	/**
 	 * Create a collection event using late binding method call.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public CollectionTargetEvent(Collection<?> elements, Class<?> objectType,
@@ -38,7 +38,7 @@ public class CollectionTargetEvent extends Event {
 
 	/**
 	 * Recycling method. See SimEvent for more details.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public void setForObject(Collection<?> elements, Class<?> objectType,

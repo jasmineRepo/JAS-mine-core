@@ -8,7 +8,7 @@ package microsim.space;
 
 /**
  * @author michele
- * 
+ *
  *         To change the template for this generated type comment go to
  *         Window>Preferences>Java>Code Generation>Code and Comments
  */
@@ -40,6 +40,6 @@ public interface ObjectSpace {
 			int destinationY);
 
 	public Object get(int x, int y);
-	
+
 	public void set(int x, int y, Object obj);
 }

@@ -19,7 +19,7 @@ public class ExcelAssistant {
 			default -> null;
 		};
 	}
-	
+
 	private static String getStringCellValue(Cell cell) {
 		return MultiKeyCoefficientMap.toStringKey(switch (cell.getCellType()) {
 			case STRING -> cell.getStringCellValue();
@@ -28,9 +28,9 @@ public class ExcelAssistant {
 			default -> null;
 		});
 	}
-	
+
 	/**
-	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, reading from the first line of the spreadsheet, and automatically finds the last line of the spreadsheet 
+	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, reading from the first line of the spreadsheet, and automatically finds the last line of the spreadsheet
 	 * (blank lines within the data are not allowed and will result in a NullPointerException).
 	 * @param excelFileName: the Excel workbook (.xls or .xlsx) that stores the data
 	 * @param sheetName: the Excel worksheet name that stores the data
@@ -56,28 +56,28 @@ public class ExcelAssistant {
 	 */
 	public static MultiKeyCoefficientMap loadCoefficientMap(String excelFileName, String sheetName, int keyColumns,
 															int valueColumns, int startLine, int endLine) {
-		
+
 		MultiKeyCoefficientMap map = null;
 
 		try {
 			FileInputStream fileInputStream = new FileInputStream(excelFileName);
-			Workbook workbook = WorkbookFactory.create(fileInputStream);			
+			Workbook workbook = WorkbookFactory.create(fileInputStream);
 			Sheet worksheet = workbook.getSheet(sheetName);
-						
+
 			Row headerRow = worksheet.getRow(startLine - 1);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
 			String[] keyVector = new String[keyColumns];
 			for (int j = 0; j < keyColumns; j++) {
 				Cell cell = headerRow.getCell((short) j, MissingCellPolicy.RETURN_BLANK_AS_NULL);
 				keyVector[j] = getStringCellValue(cell);
-			}	
+			}
 			String[] valueVector = new String[valueColumns];
 			for (int j = keyColumns; j < valueColumns + keyColumns; j++) {
 				Cell cell = headerRow.getCell((short) j, MissingCellPolicy.RETURN_BLANK_AS_NULL);
 				valueVector[j - keyColumns] = getStringCellValue(cell);
 			}
-			
+
 			map = new MultiKeyCoefficientMap(keyVector, valueVector);
-			
+
 			//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1 in loop index bounds.
 			for (int i = startLine; i <= Math.min(worksheet.getLastRowNum(), endLine - 1); i++) {
 				Row row = worksheet.getRow(i);
@@ -107,7 +107,7 @@ public class ExcelAssistant {
 					keyValueVector[keyValueVector.length - 1] = values;
 				}
 				map.putValue(keyValueVector);
-			}			
+			}
 		} catch (IOException | EncryptedDocumentException e) {
 			e.printStackTrace();
 		}

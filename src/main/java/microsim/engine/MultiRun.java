@@ -42,18 +42,18 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	@Setter protected static boolean copyInputFolderStructure = false;
 
 	@Setter @Getter private ExperimentBuilder experimentBuilder;
-		
+
 	@Setter @Getter private List<MultiRunListener> multiRunListeners;
-	
+
 	@Setter @Getter private List<EngineListener> engineListeners;
-	
+
 	@Setter @Getter private String multiRunId;
-	
+
 	@Setter @Getter private List<ParameterDomain> parameterDomains;
-	
+
 	/**
 	 * Create a new multi run session.
-	 * 
+	 *
 	 * //@param title
 	 *            is the title of the multi run control panel (see MultiRunFrame
 	 *            API).
@@ -61,14 +61,14 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	 *            is the length of the progress bar. It is not so important. It
 	 *            has only a simbolic meaning.
 	 */
-	public MultiRun() {		
+	public MultiRun() {
 		counter = 0;
-		
+
 		parameterDomains = new ArrayList<>();
 
 		executionActive = false;
 		toBeContinued = true;
-		
+
 		multiRunListeners = new ArrayList<>();
 		engineListeners = new ArrayList<>();
 		multiRunId = "Run " + counter;
@@ -79,13 +79,13 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	 * simulation is stopped and this method is called. If it returns true the
 	 * multi run will continue with the next run, otherwise the program will
 	 * exit.
-	 * 
+	 *
 	 * @return a value deciding if simulation is to be continued.
 	 */
 	public abstract boolean nextModel();
 
 	public abstract String setupRunLabel();
-	
+
 	/**
 	 * MultiRun is an independent thread. The run method controls the sequence
 	 * of simulations.
@@ -108,9 +108,9 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	/** The go method starts the multi-run simulation. */
 	public synchronized void go() {
 		counter++;
-		
+
 		engine = new SimulationEngine();
-		
+
 		if(counter==2) {
 			//After the first simulation (which by default copies the input files to the output folder),
 			// check the settings on whether to copy input files to new folder for each simulation run
@@ -121,16 +121,16 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 		engine.setMultiRunId(setupRunLabel());
 		engine.addEngineListener(this);
 		engine.setExperimentBuilder(Objects.requireNonNullElse(experimentBuilder, this));
-		
-		for (EngineListener engineListener : engineListeners) 
+
+		for (EngineListener engineListener : engineListeners)
 			engine.addEngineListener(engineListener);
-		
+
 		engine.setup();
-		
+
 		if (multiRunListeners != null)
-			for (MultiRunListener listener : multiRunListeners) 
+			for (MultiRunListener listener : multiRunListeners)
 				listener.beforeSimulationStart(engine);
-			
+
 		engine.startSimulation();
 	}
 
@@ -138,16 +138,16 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	 * Implementing the ISimEngineListener. This method monitors the
 	 * Sim.EVENT_SIMULATION_END signal. When it is raised the MultiRun class
 	 * shutdowns current run and invokes the <i>nextModel()</i> method.
-	 * 
+	 *
 	 * //@param actionType
 	 *            a valid system eventID.
 	 */
 	public void onEngineEvent(SystemEventType event) {
 		if (event.equals(SystemEventType.End)) {
 			if (multiRunListeners != null)
-				for (MultiRunListener listener : multiRunListeners) 
+				for (MultiRunListener listener : multiRunListeners)
 					listener.afterSimulationCompleted(engine);
-			
+
 			this.yield();
 			toBeContinued = nextModel();
 			engine.disposeModels();
@@ -155,7 +155,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 			engine = null;
 		}
 	}
-	
+
 	public MultiRun addParameterDomain(ParameterDomain parameterDomain) {
 		parameterDomains.add(parameterDomain);
 		return this;
@@ -165,13 +165,13 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 		return parameterDomains.stream().mapToInt(parameterDomain -> parameterDomain.getValues().length)
 				.reduce(1, (a, b) -> a * b);
 	}
-	
+
 	public Map<String, Object> getConfiguration(int counter) {
-		
+
 		HashMap<String, Object> current = new HashMap<>();
 		for (int i = 0; i < parameterDomains.size(); i++) {
 			ParameterDomain parameterDomain = parameterDomains.get(i);
-			
+
 			int residual = IntStream.range(i + 1, parameterDomains.size())
 					.map(j -> parameterDomains.get(j).getValues().length).reduce(1, (a, b) -> a * b);
 
@@ -179,7 +179,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 			current.put(parameterDomain.getName(), parameterDomain.getValues()[idx]);
 			counter -= residual * idx;
 		}
-		
+
 		return current;
 	}
 }

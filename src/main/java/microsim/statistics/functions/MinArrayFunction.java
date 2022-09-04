@@ -4,7 +4,7 @@ import microsim.statistics.*;
 
 /**
  * This class computes the minimum value in an array of source values. According to the source data type
- * there are four data-type oriented implementations. Each of them implements always the 
+ * there are four data-type oriented implementations. Each of them implements always the
  * <i>DoubleSource</i> interface.
  */
 public abstract class MinArrayFunction extends AbstractArrayFunction implements DoubleSource {
@@ -45,13 +45,13 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(double[] data) {
-			
+
 			min = java.lang.Double.MAX_VALUE;
 
 			for (double datum : data)
 				if (min > datum)
 					min = datum;
-				
+
 		}
 
 		/* (non-Javadoc)
@@ -61,7 +61,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 			return min;
 		}
 	}
-		
+
 	/**
 	 * MinFunction operating on long source values.
 	 */
@@ -80,7 +80,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(long[] data) {
-			
+
 			lmin = java.lang.Long.MAX_VALUE;
 
 			for (long datum : data)
@@ -102,7 +102,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 			return lmin;
 		}
 	}
-	
+
 	/**
 	 * MinFunction operating on integer source values.
 	 */
@@ -121,7 +121,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(int[] data) {
-			
+
 			imin = java.lang.Integer.MAX_VALUE;
 
 			for (int datum : data)
@@ -143,7 +143,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 			return imin;
 		}
 	}
-	
+
 	/**
 	 * MinFunction operating on float source values.
 	 *
@@ -162,7 +162,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 	 * You should have received a copy of the GNU Lesser General Public License along with this
 	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	 * Boston, MA 02111-1307, USA.
-	 * 
+	 *
 	 * @author Michele Sonnessa
 	 *
 	 */
@@ -181,7 +181,7 @@ public abstract class MinArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(float[] data) {
-			
+
 			fmin = java.lang.Float.MAX_VALUE;
 
 			for (float datum : data)

@@ -6,7 +6,7 @@ package microsim.statistics;
 public interface IntArraySource {
 	/**
 	 * Return the currently cached array of integer values.
-	 * @return An array of integer or a null pointer if the source is empty. 
-	 */	
+	 * @return An array of integer or a null pointer if the source is empty.
+	 */
 	int[] getIntArray();
 }

@@ -7,7 +7,7 @@ package microsim.space;
  * implementation a collection behaviour. So each grid can be iterated like an
  * ArrayList. The specific GridIterator has been implemented to iterate elements
  * storing their position on the grid.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -17,21 +17,21 @@ package microsim.space;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -41,7 +41,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Create a grid of given size.
-	 * 
+	 *
 	 * @param xSize
 	 *            The width of the grid.
 	 * @param ySize
@@ -59,7 +59,7 @@ public abstract class AbstractSpace<E> {
 	/**
 	 * Return the object contained at given position. The type depends on the
 	 * specific implementation of the Grid.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -70,7 +70,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Set the given Object at given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -83,7 +83,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Swap the content of the (x1, y1) and (x2, y2) cells of the grid.
-	 * 
+	 *
 	 * @param x1
 	 *            The x coordinate for the first cell.
 	 * @param y1
@@ -97,7 +97,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Return the width of the grid.
-	 * 
+	 *
 	 * @return The width.
 	 */
 	public int getXSize() {
@@ -106,7 +106,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Return the height of the grid.
-	 * 
+	 *
 	 * @return The height.
 	 */
 	public int getYSize() {
@@ -117,7 +117,7 @@ public abstract class AbstractSpace<E> {
 	 * Check the given x coordinate. If it is out of grid bounds the returning
 	 * value is truncated to the bound. For instance, if the grid is (100, 100)
 	 * the instruction <i>boundX(130)</i> returns 100.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate to be tested.
 	 * @return A safe value representing the x value if inbound, the bound
@@ -135,7 +135,7 @@ public abstract class AbstractSpace<E> {
 	 * Gets the extended Moore neighbors of the specified coordinate. Points are
 	 * returned by row starting with the "NW corner" and ending with the
 	 * "SE corner." The Point at x,y is not returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -160,7 +160,7 @@ public abstract class AbstractSpace<E> {
 	 * Gets the extended von Neumann neighbors of the specified coordinate.
 	 * Points are returned in west, east, north, south order with the most
 	 * distant object first. The Point at x,y is not returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -193,7 +193,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Returns the number of objects allocated in cell (x,y).
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -207,7 +207,7 @@ public abstract class AbstractSpace<E> {
 	 * Check the given y coordinate. If it is out of grid bounds the returning
 	 * value is truncated to the bound. For instance, if the grid is (100, 100)
 	 * the instruction <i>boundY(150)</i> returns 100.
-	 * 
+	 *
 	 * @param y
 	 *            The y coordinate to be tested.
 	 * @return A safe value representing the y value if inbound, the bound
@@ -227,7 +227,7 @@ public abstract class AbstractSpace<E> {
 	 * opposite bound. For instance, if the grid is (100, 100) the instruction
 	 * <i>torusX(130)</i> returns 30, because over 100 the counter starts again
 	 * from 0.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate to be tested.
 	 * @return A safe value representing the x value on the toroid.
@@ -246,7 +246,7 @@ public abstract class AbstractSpace<E> {
 	 * opposite bound. For instance, if the grid is (100, 100) the instruction
 	 * <i>torusY(150)</i> returns 50, because over 100 the counter starts again
 	 * from 0.
-	 * 
+	 *
 	 * @param y
 	 *            The y coordinate to be tested.
 	 * @return A safe value representing the y value on the toroid.
@@ -265,7 +265,7 @@ public abstract class AbstractSpace<E> {
 	 * the path in front of the bound. For instance, if the grid is (100, 100)
 	 * the instruction <i>reflectX(130)</i> returns 70, because over 100 the
 	 * path bounce on the wall and comes back.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate to be tested.
 	 * @return A safe value representing the x value on the walled grid.
@@ -285,7 +285,7 @@ public abstract class AbstractSpace<E> {
 	 * the path in front of the bound. For instance, if the grid is (100, 100)
 	 * the instruction <i>reflectY(140)</i> returns 60, because over 100 the
 	 * path bounce on the wall and comes back.
-	 * 
+	 *
 	 * @param y
 	 *            The y coordinate to be tested.
 	 * @return A safe value representing the y value on the walled grid.
@@ -300,7 +300,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Return the size of the grid. It is width * height.
-	 * 
+	 *
 	 * @return The number of cells in the grid.
 	 */
 	public abstract int size();
@@ -313,7 +313,7 @@ public abstract class AbstractSpace<E> {
 	 * level. WARNING If grids contains exactly the same values they are not
 	 * equals. Only the same implementation of the grid is considered equals to
 	 * itself.
-	 * 
+	 *
 	 * @param o
 	 *            The object to be compared.
 	 * @return True if objects are the same, false otherwise.
@@ -324,7 +324,7 @@ public abstract class AbstractSpace<E> {
 
 	/**
 	 * Return a string representing the content of the grid.
-	 * 
+	 *
 	 * @return The string representation of the grid like [elem1, elem2, .. ].
 	 */
 	public String toString() {

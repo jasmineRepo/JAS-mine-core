@@ -6,9 +6,9 @@ package microsim.statistics.weighted;
 public interface WeightedFloatArraySource {
 	/**
 	 * Return the currently cached array of float values.
-	 * @return An array of float or a null pointer if the source is empty. 
+	 * @return An array of float or a null pointer if the source is empty.
 	 */
 	float[] getFloatArray();
-	
+
 	double[] getWeights();
 }

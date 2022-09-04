@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 	protected int x;
 	protected int y;
-	
+
 	public SpacePosition() {
 		this (0, 0);
 	}
@@ -20,20 +20,20 @@ import java.io.Serializable;
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public SpacePosition(SpacePosition p) {
 		this.x = p.x;
 		this.y = p.y;
 	}
-	
+
 	public int getX() {
         return x;
     }
-	
+
 	public int getY() {
         return y;
     }
-	
+
 	public boolean equals(Object obj) {
         if (obj instanceof  SpacePosition) {
         	final SpacePosition pt = (SpacePosition) obj;
@@ -41,7 +41,7 @@ import java.io.Serializable;
         }
         return super.equals(obj);
     }
-	
+
 	public String toString() {
         return getClass().getName() + "[x=" + x + ",y=" + y + "]";
     }

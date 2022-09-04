@@ -33,9 +33,9 @@ import static java.util.Objects.isNull;
 	Set<String> fieldsForExport;
 	BufferedWriter bufferWriter;
 	String idFieldName;
-	
+
 	Collection<?> targetCollection;
-	
+
 	Object targetObject;
 	Field targetObjectIdField;
 
@@ -43,7 +43,7 @@ import static java.util.Objects.isNull;
 	 * Allows the exporting of all fields (including private and inherited fields) of an object to a {@code .csv} file
 	 * named after the object's class name. Note that only numbers, enums or strings are exported to {@code .csv} files.
 	 * The {@code serialVersionUID} of a class will also not be exported.
-	 * 
+	 *
 	 * @param target The object whose fields will be exported to a {@code .csv} file with a name equal to the object's
 	 *               class name. If the target is a {@code Collection} of objects, each member of the collection will
 	 *               have their individual fields exported to the .csv file, labelled by their id.

@@ -24,7 +24,7 @@ public class SidewalkAlignment<T> implements AlignmentUtils<T> {
 					  double targetProbability) {
 		if (targetProbability < 0. || targetProbability > 1.)
 			throw new IllegalArgumentException("Target probability must lie in [0,1]");
-		
+
 		List<T> list = extractAgentList(agents, filter);
 		if (list.size() == 0)
 			return;

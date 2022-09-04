@@ -6,7 +6,7 @@ package microsim.statistics.weighted;
 public interface WeightedDoubleArraySource {
 	/**
 	 * Return the currently cached array of double values.
-	 * @return An array of double or a null pointer if the source is empty. 
+	 * @return An array of double or a null pointer if the source is empty.
 	 */
 	double[] getDoubleArray();
 

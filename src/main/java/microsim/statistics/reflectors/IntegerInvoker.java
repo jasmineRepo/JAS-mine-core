@@ -22,7 +22,7 @@ public class IntegerInvoker implements IntSource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the target object.
 	 * @param fieldName
@@ -41,7 +41,7 @@ public class IntegerInvoker implements IntSource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the class of the target object.
 	 * @param fieldName
@@ -58,7 +58,7 @@ public class IntegerInvoker implements IntSource {
 			buildField(target, fieldName);
 	}
 
-	
+
 	private void buildField(Class<?> trgClass, String fieldName) {
 		method = null;
 		field = ReflectionUtils.searchField(trgClass, fieldName);
@@ -87,7 +87,7 @@ public class IntegerInvoker implements IntSource {
 
 	/**
 	 * Invoke the method of the target object and return its double result.
-	 * 
+	 *
 	 * @param target
 	 *            Object to be invoked.
 	 * @return The requested double value.
@@ -126,7 +126,7 @@ public class IntegerInvoker implements IntSource {
 	/**
 	 * Invoke the method of the object passed to constructor and return its
 	 * double result.
-	 * 
+	 *
 	 * @return The requested double value.
 	 */
 	public int getInt() {
@@ -136,7 +136,7 @@ public class IntegerInvoker implements IntSource {
 	/**
 	 * This is an implementation of the IDblSource interface. It calls the
 	 * getDouble() method.
-	 * 
+	 *
 	 * @param valueID
 	 *            This parameter is ignored. It is put for compatibility with
 	 *            the IDblSource interface.

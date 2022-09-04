@@ -17,12 +17,12 @@ public abstract class AbstractFunction implements EventListener, UpdatableSource
 	{
 		timeChecker = new TimeChecker();
 	}
-	
+
 	/**
 	 * Update the source, invoking the <i>updateSource()</i> method.
 	 * @param type Accepts only the jas.engine.Sim.EVENT_UPDATE value.
 	 * @throws UnsupportedOperationException if actionId is not equal to the jas.engine.Sim.EVENT_UPDATE value.
-	 */	
+	 */
 	public void onEvent(Enum<?> type) {
 		if (type.equals(CommonEventType.Update))
 			updateSource();
@@ -31,7 +31,7 @@ public abstract class AbstractFunction implements EventListener, UpdatableSource
 	}
 
 	/** Return the current status of the time checker. A time checker avoid the object to update
-	 * more than one time per simulation step. The default value is enabled (true). 
+	 * more than one time per simulation step. The default value is enabled (true).
 	 * @return True if the computer is currently checking time before update cached data, false if disabled.
 	 */
 	public boolean isCheckingTime() {
@@ -39,7 +39,7 @@ public abstract class AbstractFunction implements EventListener, UpdatableSource
 	}
 
 	/** Set the current status of the time checker. A time checker avoid the object to update
-	 * more than one time per simulation step. The default value is enabled (true). 
+	 * more than one time per simulation step. The default value is enabled (true).
 	 * @param b True if the computer is currently checking time before update cached data, false if disabled.
 	 */
 	public void setCheckingTime(boolean b) {
@@ -54,6 +54,6 @@ public abstract class AbstractFunction implements EventListener, UpdatableSource
 			return;
 		applyFunction();
 	}
-		
+
 	public abstract void applyFunction();
 }

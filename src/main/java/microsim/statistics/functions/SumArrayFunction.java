@@ -8,7 +8,7 @@ import microsim.statistics.FloatSource;
 
 /**
  * This class computes the sum of an array of source values. According to the source data type
- * there are four data-type oriented implementations. Each of them implements always the 
+ * there are four data-type oriented implementations. Each of them implements always the
  * <i>DoubleSource</i> interface.
  */
 public abstract class SumArrayFunction extends AbstractArrayFunction implements DoubleSource {
@@ -40,7 +40,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 	public SumArrayFunction(DoubleArraySource source) {
 		super(source);
 	}
-	
+
 	/**
 	 * SumFunction operating on double source values.
 	 */
@@ -62,7 +62,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 			dsum = 0.;
 
 			for (double datum : data) dsum += datum;
-					
+
 		}
 
 		/* (non-Javadoc)
@@ -70,7 +70,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public double getDoubleValue(Enum<?> id) {	return dsum; }
 	}
-	
+
 	/**
 	 * SumFunction operating on long source values.
 	 */
@@ -92,7 +92,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 			lsum = 0;
 
 			for (long datum : data) lsum += datum;
-					
+
 		}
 
 		/* (non-Javadoc)
@@ -107,7 +107,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 			return lsum;
 		}
 	}
-	
+
 	/**
 	 * SumFunction operating on integer source values.
 	 */
@@ -126,7 +126,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(int[] data) {
-			
+
 			isum = 0;
 
 			for (int datum : data) isum += datum;
@@ -146,7 +146,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 			return isum;
 		}
 	}
-	
+
 	/**
 	 * SumFunction operating on float source values.
 	 */
@@ -164,7 +164,7 @@ public abstract class SumArrayFunction extends AbstractArrayFunction implements 
 		/* (non-Javadoc)
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
-		public void apply(float[] data) {			
+		public void apply(float[] data) {
 			fsum = 0;
 
 			for (float datum : data) fsum += datum;

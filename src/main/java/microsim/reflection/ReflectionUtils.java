@@ -23,7 +23,7 @@ public class ReflectionUtils {
 				return (mtd.getReturnType() == String.class);
 		}
 	}
-	
+
 	public static boolean isDoubleSource(Class<?> trgClass, String varName,
 			boolean isMethod) {
 		if (!isMethod) {
@@ -41,7 +41,7 @@ public class ReflectionUtils {
 				return (mtd.getReturnType() == double.class);
 		}
 	}
-	
+
 	public static boolean isLongSource(Class<?> trgClass, String varName,
 			boolean isMethod) {
 		if (!isMethod) {
@@ -60,7 +60,7 @@ public class ReflectionUtils {
 				return (mtd.getReturnType() == long.class);
 		}
 	}
-	
+
 	public static boolean isFloatSource(Class<?> trgClass, String varName,
 			boolean isMethod) {
 		if (!isMethod) {
@@ -79,7 +79,7 @@ public class ReflectionUtils {
 				return (mtd.getReturnType() == float.class);
 		}
 	}
-	
+
 	public static boolean isIntSource(Class<?> trgClass, String varName,
 			boolean isMethod) {
 		if (!isMethod) {
@@ -98,7 +98,7 @@ public class ReflectionUtils {
 				return (mtd.getReturnType() == int.class);
 		}
 	}
-	
+
 	public static Field searchField(Class<?> trgClass, String fieldName) {
 		Class<?> cl = trgClass;
 		while (cl != null)

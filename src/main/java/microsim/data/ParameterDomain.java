@@ -10,16 +10,16 @@ public class ParameterDomain {
 
 	public ParameterDomain() {
 	}
-	
+
 	public ParameterDomain(String name, Object @Nullable [] values) {
 		this.name = name;
 		this.values = values;
 	}
 
 	@Setter	@Getter private String name;
-	
+
 	@Setter @Getter private Object @Nullable [] values;
-	
+
 	public @NotNull ParameterDomain addValue(Object value) {
 		val scratchLength = 1 + (values != null ? values.length : 0);
 		val scratchArray = new Object[scratchLength];

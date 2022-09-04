@@ -8,8 +8,8 @@ import microsim.statistics.IntSource;
 import microsim.statistics.LongArraySource;
 
 /**
- * This class computes the number of values in an array taken from a data source. 
- * The mean function return always an int value, so it implements the 
+ * This class computes the number of values in an array taken from a data source.
+ * The mean function return always an int value, so it implements the
  * <i>IntSource</i> interface and the standard  <i>DoubleSource</i> one.
  */
 public class CountArrayFunction extends AbstractArrayFunction implements DoubleSource, IntSource {
@@ -43,7 +43,7 @@ public class CountArrayFunction extends AbstractArrayFunction implements DoubleS
 	}
 
 	protected int count;
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
@@ -78,7 +78,7 @@ public class CountArrayFunction extends AbstractArrayFunction implements DoubleS
 	public double getDoubleValue(Enum<?> variableID) {
 		return (double) count;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#getInt()
 	 */

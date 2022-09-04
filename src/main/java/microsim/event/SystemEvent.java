@@ -38,9 +38,9 @@ public class SystemEvent extends Event
 
   SystemEventType type;
   SimulationEngine engine;
-  
+
   public SystemEvent(SimulationEngine engine, SystemEventType type)
-  {    
+  {
     this.type = type;
     this.engine = engine;
   }
@@ -72,14 +72,14 @@ public class SystemEvent extends Event
 	  case Setup:
 		  engine.setup();
 		  break;
-	  }    
+	  }
   }
 
   /** Return a string describing event.*/
   public String toString()
   {
     String s = "SystemEvent(@" + getTime() + " " + type;
-    
+
     return  s;
   }
 

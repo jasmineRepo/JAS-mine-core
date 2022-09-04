@@ -17,7 +17,7 @@ import microsim.statistics.reflectors.LongInvoker;
 /**
  * A MixFunction object is to collect data over time, computing some statistics
  * on the fly, without storing the data in memory. It is particularly useful when the user
- * need to compute basic statistics on data sources, without affecting the memory occupancy. 
+ * need to compute basic statistics on data sources, without affecting the memory occupancy.
  * The memoryless series computes automatically the statistics using accumulation variables
  * and counters.<br> This statistic computer should be used when possible, particularly when
  * the simulation model has to run for a long time, condition which implies the growth of the
@@ -26,7 +26,7 @@ import microsim.statistics.reflectors.LongInvoker;
  * of a Series object, force the Mean function to sum all the values, every time series is updated.
  */
 public abstract class MultiTraceFunction implements DoubleSource, UpdatableSource, EventListener  {
-				
+
 	public enum Variables {
 		/** Return the last collected value. */
 		LastValue,
@@ -43,20 +43,20 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		/** Return the sum of collected values. */
 		Sum;
 	}
-	
+
 	protected int count = 0;
-	
+
 	/** Collect a value from the source. */
 	public void updateSource() {
 		count++;
 	}
-	
+
 	public abstract double getMean();
 	public abstract double getVariance();
 	public int getCount() {
 		return count;
 	}
-	
+
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
 	 * @param type The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
@@ -68,7 +68,7 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		else
 			throw new SimulationRuntimeException("SimpleStatistics object does not support " + type + " operation.");
 	}
-	
+
 
 	/** Compute one of the available statistical functions on the collected data. */
 	public double getDoubleValue(Enum<?> valueID)
@@ -88,7 +88,7 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		@Getter protected long max = java.lang.Long.MIN_VALUE;
 		@Getter protected long min = java.lang.Long.MAX_VALUE;
 		@Getter protected long sum = 0, sumSquare = 0;
-	
+
 		protected LongSource target;
 		private final Enum<?> valueID;
 
@@ -183,7 +183,7 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		@Getter protected double max = java.lang.Double.MIN_VALUE;
 		@Getter protected double min = java.lang.Double.MAX_VALUE;
 		@Getter protected double sum = 0, sumSquare = 0;
-		
+
 		protected DoubleSource target;
 		private final Enum<?> valueID;
 
@@ -259,7 +259,7 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		@Getter protected int min = java.lang.Integer.MAX_VALUE;
 		@Getter protected int sum = 0;
 		protected long sumSquare = 0;
-	
+
 		protected IntSource target;
 		private final Enum<?> valueID;
 
@@ -356,7 +356,7 @@ public abstract class MultiTraceFunction implements DoubleSource, UpdatableSourc
 		@Getter protected float min = java.lang.Float.MAX_VALUE;
 		@Getter protected float sum = 0.0f;
 		protected double sumSquare = 0.0;
-		
+
 		protected FloatSource target;
 		private final Enum<?> valueID;
 

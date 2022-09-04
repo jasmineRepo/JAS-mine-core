@@ -13,17 +13,17 @@ public class MultiKeyHashMap extends HashMap<Integer, MultiKeyHashMap.EntryValue
 	private static final long serialVersionUID = 4939180438185813582L;
 
 	public static class EntryValue {
-		
+
 		@Setter @Getter private Object[] keyArray;
 		@Setter @Getter private Object[] valueArray;
-		
+
 		public EntryValue(Object[] keyArray, Object[] valueArray) {
 			super();
 			this.keyArray = keyArray;
 			this.valueArray = valueArray;
 		}
 	}
-	
+
 	public int getHashKey(Object[] keyArray) {
 		int hashValue = 0;
 
@@ -32,8 +32,8 @@ public class MultiKeyHashMap extends HashMap<Integer, MultiKeyHashMap.EntryValue
 
 		return hashValue;
 	}
-	
-	public boolean containsKey(Object ... keyArray) {		
+
+	public boolean containsKey(Object ... keyArray) {
 		return super.containsKey(getHashKey(keyArray));
 	}
 

@@ -11,7 +11,7 @@ public class SimulationTimeManager {
 	@Setter	@Getter private int dayTickUnit;
 	private final Calendar calendar;
 	private final Date initOfTime;
-	
+
 	public SimulationTimeManager(Date initOfTime, int dayTickUnit) {
 		this.dayTickUnit = dayTickUnit;
 		this.initOfTime = initOfTime;
@@ -22,14 +22,14 @@ public class SimulationTimeManager {
 		this.dayTickUnit = dayTickUnit;
 		this.calendar = Calendar.getInstance();
 		calendar.set(year, month - 1, day);
-		this.initOfTime = calendar.getTime();		
+		this.initOfTime = calendar.getTime();
 	}
-	
+
 	public Date getRealDate(long simulatedTime) {
 		calendar.setTime(initOfTime);
 		final int days = (int) ((double) simulatedTime / (double) dayTickUnit);
 		calendar.add(Calendar.DATE, days);
-		
+
 		return calendar.getTime();
 	}
 }

@@ -9,8 +9,8 @@ import microsim.statistics.DoubleSource;
 
 /**
  * This class computes the sum of an array of source values, with each element of the array
- * multiplied by the weight of the source (the source must implement the <i>Weight</i> 
- * interface).  According to the source data type there are four data-type oriented implementations. 
+ * multiplied by the weight of the source (the source must implement the <i>Weight</i>
+ * interface).  According to the source data type there are four data-type oriented implementations.
  * Each of them implements always the <i>DoubleSource</i> interface.
  */
 public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFunction implements DoubleSource {
@@ -42,7 +42,7 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 	public Weighted_SumArrayFunction(WeightedDoubleArraySource source) {
 		super(source);
 	}
-	
+
 	/**
 	 * SumFunction operating on weighted double source values.
 	 */
@@ -62,10 +62,10 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 		 */
 		public void apply(double[] data, double[] weights) {
 			dsum = 0.;
-			
+
 			for (int i = 0; i < data.length; i++)
 				dsum += data[i] * weights[i];
-					
+
 		}
 
 		/* (non-Javadoc)
@@ -73,7 +73,7 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 		 */
 		public double getDoubleValue(Enum<?> id) {	return dsum; }
 	}
-	
+
 	/**
 	 * SumFunction operating on weighted long source values.
 	 */
@@ -93,10 +93,10 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 		 */
 		public void apply(long[] data, double[] weights) {
 			lsum = 0;
-			
+
 			for (int i = 0; i < data.length; i++)
 				lsum += data[i] * weights[i];
-					
+
 		}
 
 //		/* (non-Javadoc)
@@ -111,7 +111,7 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 			return lsum;
 		}
 	}
-	
+
 	/**
 	 * SumFunction operating on weighted integer source values.
 	 */
@@ -130,9 +130,9 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(int[] data, double[] weights) {
-			
+
 			isum = 0;
-			
+
 			for (int i = 0; i < data.length; i++)
 				isum += data[i] * weights[i];
 		}
@@ -151,7 +151,7 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 			return isum;
 		}
 	}
-	
+
 	/**
 	 * SumFunction operating on weighted float source values.
 	 */
@@ -169,9 +169,9 @@ public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFun
 		/* (non-Javadoc)
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
-		public void apply(float[] data, double[] weights) {			
+		public void apply(float[] data, double[] weights) {
 			fsum = 0;
-			
+
 			for (int i = 0; i < data.length; i++)
 				fsum += data[i] * weights[i];
 		}

@@ -12,7 +12,7 @@ import microsim.exception.SimulationException;
  * a container for other events. When fired this object automatically fires the
  * events contained. Each contained event is fired at the group time, any other
  * time pointer is ignored.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -22,21 +22,21 @@ import microsim.exception.SimulationException;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -62,7 +62,7 @@ public class EventGroup extends Event {
 	/**
 	 * Create a new SimSimpleEvent and add an event to the list, using late
 	 * binding method.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public EventGroup addEvent(Object object, String method)
@@ -90,11 +90,11 @@ public class EventGroup extends Event {
 			Class<?> objectType, String method) throws SimulationException {
 		return addCollectionEvent(elements, objectType, method, true);
 	}
-	
+
 	/**
 	 * Create a new SimCollectionEvent and add an event to the list, using late
 	 * binding method.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public EventGroup addCollectionEvent(Collection<?> elements,
@@ -107,7 +107,7 @@ public class EventGroup extends Event {
 			Enum<?> actionType) {
 		return addCollectionEvent(elements, actionType, true);
 	}
-	
+
 	/**
 	 * Create a new SimCollectionEvent and add an event to the list, using early
 	 * binding method.
@@ -125,7 +125,7 @@ public class EventGroup extends Event {
 
 	/**
 	 * Fire each event into the list.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public void fireEvent() throws SimulationException {
@@ -135,7 +135,7 @@ public class EventGroup extends Event {
 
 	/**
 	 * Return an sorted array of the added events.
-	 * 
+	 *
 	 * @return An array of SimEvent objects.
 	 */
 	public Event[] eventsToArray() {

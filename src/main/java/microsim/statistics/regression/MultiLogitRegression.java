@@ -9,10 +9,10 @@ import java.util.*;
 public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRegression<T> {
 
 	private final Random random;
-	
+
 	private Map<T, MultiKeyCoefficientMap> maps;
-		
-	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps) {		
+
+	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps) {
 		random = SimulationEngine.getRnd();
 		this.maps = maps;
 		int count = 0;
@@ -35,7 +35,7 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 
 	}
 
-	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {			
+	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {
 		this.random = random;
 		this.maps = maps;
 		int count = 0;
@@ -57,36 +57,36 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 		}
 
 	}
-	
+
 	/**
 	 *
-	 * Warning - only use when MultiLogitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 * Warning - only use when MultiLogitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
-	public double getLogitTransformOfScore(T event, Map<String, Double> values) {		
-		final double score = LinearRegression.computeScore(maps.get(event), values);		
+	public double getLogitTransformOfScore(T event, Map<String, Double> values) {
+		final double score = LinearRegression.computeScore(maps.get(event), values);
 		return (double) 1 / (1 + Math.exp(- score));
 	}
-	
+
 	public double getLogitTransformOfScore(T event, Object individual) {
 		final double score = LinearRegression.computeScore(maps.get(event), individual);
-		return (double) 1 / (1 + Math.exp(- score));		
+		return (double) 1 / (1 + Math.exp(- score));
 	}
-	
+
 	//Original version was incorrect - did not normalise probabilities.  Corrected by Ross Richardson.
 //	@Override
-	public T eventType(Object individual) {		
+	public T eventType(Object individual) {
 		Map<T, Double> probs = new HashMap<>();
 
-		double denominator = 0.; 
-		
+		double denominator = 0.;
+
 		for (T event : maps.keySet()) {
 			double LogitTransformOfScore = getLogitTransformOfScore(event, individual);
 			probs.put(event, LogitTransformOfScore);
-			denominator += LogitTransformOfScore;			
+			denominator += LogitTransformOfScore;
 		}
-		
+
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
 		T k = null;
 		T[] eventProbs = (T[]) k.getClass().getEnumConstants();
@@ -103,25 +103,25 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 				}
 			}
 		}
-		
+
 		//Normalise the probabilities of the events specified in the regression maps
 		for (T event : maps.keySet()) {		//Only iterate through the cases specified in the regression maps - the base case has already been normalised.
 			double LogitTransformOfScoreForEvent = probs.get(event);
 			probs.put(event, LogitTransformOfScoreForEvent/denominator);		//Normalise the Logit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
-		
-		double[] probArray = new double[probs.size()]; 
+
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
-		
-		return RegressionUtils.event(eventProbs, probArray, random);				
+
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
 
 //	@Override
 	/**
 	 *
-	 * Warning - only use when MultiLogitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 * Warning - only use when MultiLogitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
@@ -133,7 +133,7 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 		for (T event : maps.keySet()) {
 			double LogitTransformOfScore = getLogitTransformOfScore(event, values);
 			probs.put(event, LogitTransformOfScore);
-			denominator += LogitTransformOfScore;			
+			denominator += LogitTransformOfScore;
 		}
 
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
@@ -159,19 +159,19 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 			probs.put(event, LogitTransformOfScoreForEvent/denominator);		//Normalise the Logit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
 
-		double[] probArray = new double[probs.size()]; 
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
 
-		return RegressionUtils.event(eventProbs, probArray, random);		
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	// New methods 
+	// New methods
 	// @author Ross Richardson
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	public <E extends Enum<E>> double getLogitTransformOfScore(T event, DoubleSource iDblSrc, Class<E> Regressors) {
       MultiKeyCoefficientMap map = maps.get(event);
       double score;
@@ -183,19 +183,19 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
       }
 
       return (double) 1 / (1 + Math.exp(- score));
-  } 
-	
+  }
+
 	public <E extends Enum<E>> T eventType(DoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
 		Map<T, Double> probs = new HashMap<>();
 
-		double denominator = 0.; 
-		
+		double denominator = 0.;
+
 		for (T event : maps.keySet()) {
 			double LogitTransformOfScore = getLogitTransformOfScore(event, iDblSrc, Regressors);
 			probs.put(event, LogitTransformOfScore);
-			denominator += LogitTransformOfScore;			
+			denominator += LogitTransformOfScore;
 		}
-		
+
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
 		T[] eventProbs = enumType.getEnumConstants();
 //		T[] eventProbs = (T[]) maps.keySet().getClass().getEnumConstants();		//Results in Null Pointer Exception
@@ -213,20 +213,20 @@ public class MultiLogitRegression<T extends Enum<T>> implements MultipleChoiceRe
 				}
 			}
 		}
-		
+
 		//Normalise the probabilities of the events specified in the regression maps
 		for (T event : maps.keySet()) {		//Only iterate through the cases specified in the regression maps - the base case has already been normalised.
 			double LogitTransformOfScoreForEvent = probs.get(event);
 			probs.put(event, LogitTransformOfScoreForEvent/denominator);		//Normalise the Logit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
-		
-		double[] probArray = new double[probs.size()]; 
+
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
-		
-		return RegressionUtils.event(eventProbs, probArray, random);				
+
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
 
-	
+
 }

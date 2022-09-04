@@ -33,7 +33,7 @@ import java.util.Map;
  * @author Michele Sonnessa
  * <p>
  */
-public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSpace 
+public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSpace
 {
   protected HashMap<HashKey, Object> m;
 
@@ -100,14 +100,14 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
    * @param y The y coordinate.
    * @return the number of object in the cell(x,y). If could be only 0 or 1.
    */
-  public int countObjectsAt(int x, int y) 
+  public int countObjectsAt(int x, int y)
   {
 	  if (get(x, y) == null)
 		  return 0;
 	  else
 		  return 1;
   }
-  
+
    /** Move a IGridPosition object from its current position to the
 	*  specified destination, only if the destination cell is empty.
 	*  @param destinationX The x destination coordinate.
@@ -118,18 +118,18 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
    {
 	 if (position == null)
 		 return false;
-  		
+
 	 int x = position.getX();
 	 int y = position.getY();
 	 m.remove(getKey(x, y));
-	 
+
 	m.put(getKey(destinationX, destinationY), position);
-	
+
 	 modCount++;
-	
+
 	 return true;
    }
-   
+
   private HashKey getKey(int x, int y)
   {
     return new HashKey(x, y);
@@ -242,12 +242,12 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
       }
 
       public void remove() { m.remove(currentKey); }
-      
+
 		public SpacePosition nextGridPosition() {
 			next();
 			return getGridPosition();
 		}
-      
+
     }
 
 	/** Add an object implementing IGridPosition interface to the grid.
@@ -256,18 +256,18 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
 	  *  @param object The IGridPosition object to be added.
 	  *  @return True if object has been added. False if destination cell is already occupied or
 	  * 		 if argument object is null.*/
-	public boolean addGridPosition(SpacePosition object) 
+	public boolean addGridPosition(SpacePosition object)
 	{
 		if (object == null)
 			return false;
-			
+
 		int x = object.getX();
 		int y = object.getY();
-		
+
 		if (get(x, y) != null)
 			return false;
-			
-		set(x, y, object);		
+
+		set(x, y, object);
 
 		return true;
 	}
@@ -276,19 +276,19 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
   *  @param object The IGridPosition object to be removed.
   *  @return true if object has been removed. False if object is null or is not present on
   * 	the grid.*/
-	public boolean removeGridPosition(SpacePosition object) 
+	public boolean removeGridPosition(SpacePosition object)
 	{
 		if (object == null)
 			return false;
-		
+
 		int x = object.getX();
 		int y = object.getY();
-		
+
 		if (get(x, y) != null)
 			return false;
-			
+
 		m.remove(getKey(x, y));
-		return true;   
+		return true;
 	}
 
 

@@ -3,9 +3,9 @@ package microsim.exception;
 public class SimulationException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public SimulationException() {
-		super();	
+		super();
 	}
 
 	public SimulationException(String message, Throwable cause) {
@@ -20,6 +20,6 @@ public class SimulationException extends Exception {
 		super(cause);
 	}
 
-	
+
 
 }

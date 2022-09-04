@@ -7,8 +7,8 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
 /**
- * This class computes the average value of an array of values taken from a data source. 
- * The mean function return always double values, so it implements only the 
+ * This class computes the average value of an array of values taken from a data source.
+ * The mean function return always double values, so it implements only the
  * <i>DoubleSource</i> interface.
  */
 public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSource {
@@ -42,15 +42,15 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 	}
 
 	protected double mean;
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
 	public void apply(double[] data) {
-		
+
 		mean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			for (double datum : data) {
 				sum += datum;
@@ -63,10 +63,10 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
 	 */
 	public void apply(float[] data) {
-		
+
 		mean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			for (float datum : data) {
 				sum += datum;
@@ -79,10 +79,10 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 	 * @see jas.statistics.functions.IArrayFunction#apply(int[])
 	 */
 	public void apply(int[] data) {// replace this garbage
-		
+
 		mean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			for (int datum : data) {
 				sum += datum;
@@ -98,7 +98,7 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 
 		mean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			for (long datum : data) {
 				sum += datum;
@@ -113,6 +113,6 @@ public class MeanArrayFunction extends AbstractArrayFunction implements DoubleSo
 	public double getDoubleValue(Enum<?> variableID) {
 		return mean;
 	}
-	
-	
+
+
 }

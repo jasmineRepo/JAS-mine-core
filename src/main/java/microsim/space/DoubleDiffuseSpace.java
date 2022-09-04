@@ -15,12 +15,12 @@ import microsim.exception.SimulationRuntimeException;
  * diffuse() method then diffuses the write matrix and copies the new values
  * into the read matrix.
  * <p>
- * 
+ *
  * For an example of a DblDiffuseTorusGrid space see the heatBugs example. See
  * {@link #diffuse() diffuse} for a brief explanation of the diffusion
  * algorithm. <b>Note that this space doesn't seem to work correctly when run
  * with hotspot 1.01</b>
- * 
+ *
  * @author Nick Collier
  * @version $Revision: 1.2 $ $Date: 2004/08/11 09:05:30 $
  */
@@ -48,7 +48,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 
 	/**
 	 * Constructs a DblDiffuseTorusGrid space with the specificed dimensions
-	 * 
+	 *
 	 * @param xSize
 	 *            size of the x dimension
 	 * @param ySize
@@ -61,7 +61,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	/**
 	 * Constructs a DblDiffuseTorusGrid space with the specified diffusion
 	 * constant, evaporation rate, and dimensions
-	 * 
+	 *
 	 * @param diffusionConstant
 	 *            the diffusion constant
 	 * @param evaporationRate
@@ -141,7 +141,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	 * (nghAvg - ownValue)) where nghAvg is the weighted average of a cells
 	 * eight neighbors, and ownValue is the current value for the current cell.
 	 * <p>
-	 * 
+	 *
 	 * Values from the readMatrix are used to calculate diffusion. This value is
 	 * then written to the writeMatrix. When this has been done for every cell
 	 * in the grid, the writeMatrix is copied to the readMatrix.
@@ -189,7 +189,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	 * Gets the von Neumann neighbors of the specified coordinate. doubles are
 	 * returned in west, east, north, south order. The double at x, y is not
 	 * returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -205,7 +205,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	 * extension in the x and y direction are specified by xExtent and yExtent.
 	 * doubles are returned in west, east, north, south order with the most
 	 * distant object first. The double at x,y is not returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -245,7 +245,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	 * Gets the Moore neighbors of the specified coordinate. doubles are
 	 * returned by row starting with the "NW corner" and ending with the
 	 * "SE corner." The double at x, y is not returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -263,7 +263,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	 * extension in the x and y direction are specified by xExtent and yExtent.
 	 * doubles are returned by row starting with the "NW corner" and ending with
 	 * the "SE corner." The double at x,y is not returned.
-	 * 
+	 *
 	 * @param x
 	 *            the x coordinate of the object
 	 * @param y
@@ -292,7 +292,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	/**
 	 * Finds the maximum grid cell value within a specified range from the
 	 * specified origin coordinate.
-	 * 
+	 *
 	 * @param x
 	 *            the x origin coordinate
 	 * @param y
@@ -352,7 +352,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	/**
 	 * Finds the minimum grid cell value within a specified range from the
 	 * specified origin coordinate.
-	 * 
+	 *
 	 * @param x
 	 *            the x origin coordinate
 	 * @param y
@@ -413,7 +413,7 @@ public class DoubleDiffuseSpace extends DoubleSpace implements EventListener {
 	public double[] getMatrix() {
 		return readMatrix.getMatrix();
 	}
-	
+
 	public void onEvent(Enum<?> type) {
 		switch ((Verbs) type) {
 		case Diffuse:

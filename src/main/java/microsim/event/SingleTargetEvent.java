@@ -9,7 +9,7 @@ import microsim.exception.SimulationException;
  * The simpler implementation of SimEvent class. It represents an event to be
  * notified only to one specific object. It is often used in discrete event
  * simulations, when an object schedule itself for a future event.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -19,21 +19,21 @@ import microsim.exception.SimulationException;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -44,7 +44,7 @@ public class SingleTargetEvent extends Event {
 
 	protected Object object;
 
-	/** Create new event using late binding. 
+	/** Create new event using late binding.
 	 * @throws SimulationException */
 	public SingleTargetEvent(Object object, String method) throws SimulationException {
 		this.object = object;
@@ -59,7 +59,7 @@ public class SingleTargetEvent extends Event {
 
 	/**
 	 * Recycling method. See SimEvent for more details.
-	 * 
+	 *
 	 * @throws SimulationException
 	 */
 	public void setForObject(Object o, String method) throws SimulationException {
@@ -85,7 +85,7 @@ public class SingleTargetEvent extends Event {
 	}
 
 	/** Recycling method. See SimEvent for more details. */
-	public void setForObject(Object o, Enum<?> actionType) {		
+	public void setForObject(Object o, Enum<?> actionType) {
 		methodInvoker = null;
 		eventType = actionType;
 	}
@@ -121,7 +121,7 @@ public class SingleTargetEvent extends Event {
 			}
 		} else {
 			EventListener evL = (EventListener) object;
-			evL.onEvent(eventType);			
+			evL.onEvent(eventType);
 		}
 	}
 

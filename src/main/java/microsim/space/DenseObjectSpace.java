@@ -22,7 +22,7 @@ package microsim.space;
  * @author Michele Sonnessa
  * <p>
  */
-public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpace 
+public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpace
 {
   protected Object[][] m;
   protected int objects = 0;
@@ -125,10 +125,10 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
 			  array[index++] = get(torusX(i), torusY(j));
 
 	return array;
-	
+
 //	return getMooreNeighbors( x, y, 1, 1);
   }
-  
+
   /**
    * Gets the extended Moore neighbors of the specified coordinate. The
    * extension in the x and y direction are specified by xExtent and yExtent.
@@ -147,15 +147,15 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
   {
 		Object[] array = new Object[xExtent * yExtent * 4 + (xExtent * 2) + (yExtent * 2)];
 		int index = 0;
-	
+
 		for (int j = y - yExtent; j <= y + yExtent; j++)
 		  for (int i = x - xExtent; i <= x + xExtent; i++)
 			if (!(j == y && i == x))
 			  array[index++] = get(boundX(i), boundY(j));
-	
+
 		return array;
   }
-  
+
   /**
    * Gets the von Neumann neighbors of the specified coordinate.
    * doubles are returned in west, east, north, south order.
@@ -185,8 +185,8 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
 	for (int i = y + 1; i > y; i--)
 	 array[index++] = get(normX, torusY(i));
 
-	return array;  	
-	
+	return array;
+
 //	return getVonNeumannNeighbors(x, y, 1, 1);
   }
 
@@ -208,25 +208,25 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
   {
 		Object[] array =  new Object[(xExtent * 2) + (yExtent * 2)];
 		int index = 0;
-	
+
 		int normX = boundX(x);
 		int normY = boundY(y);
-	
+
 		for (int i = x - xExtent; i < x ; i++)
 		  array[index++] = get(i, normY);
-	
+
 		for (int i = x + xExtent; i > x; i--)
 		  array[index++] = get(i, normY);
-	
+
 		for (int i = y - yExtent; i < y; i++)
 		  array[index++] = get(normX, i);
-	
+
 		for (int i = y + yExtent; i > y; i--)
 		 array[index++] = get(normX, i);
 
 	return array;
   }
-   
+
   /** Move a IGridPosition object from its current position to the
    *  specified destination, only if the destination cell is empty.
    *  @param destinationX The x destination coordinate.
@@ -237,17 +237,17 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
   {
   	if (m[destinationX][destinationY] != null || position == null)
   		return false;
-  		
+
   	int x = position.getX();
   	int y = position.getY();
   	m[x][y] = null;
-	m[destinationX][destinationY] = new SpacePosition(destinationX, destinationY);	
-	
+	m[destinationX][destinationY] = new SpacePosition(destinationX, destinationY);
+
 	modCount++;
-	
+
 	return true;
   }
-  
+
   /** Return the matrix of objects representing the grid.
    *  @return A matrix of Object with the same dimensions of the grid.*/
   public Object[][] getMatrix() { return m; }
@@ -273,17 +273,17 @@ public class DenseObjectSpace extends AbstractSpace<Object> implements ObjectSpa
    *  @param object The IGridPosition object to be added.
    *  @return True if object has been added. False if destination cell is already occupied or
    * 		 if argument object is null.*/
-public boolean addGridPosition(SpacePosition position) 
+public boolean addGridPosition(SpacePosition position)
 {
 	if (position == null)
 		return false;
-		
+
 	int x = position.getX();
 	int y = position.getY();
-	
+
 	if (m[x][y] != null)
-		return false; 
-	
+		return false;
+
 	set(x, y, position);
 	modCount++;
 	return true;
@@ -293,11 +293,11 @@ public boolean addGridPosition(SpacePosition position)
   *  @param object The IGridPosition object to be removed.
   *  @return true if object has been removed. False if object is null or is not present on
   * 	the grid.*/
-public boolean removeGridPosition(SpacePosition position) 
+public boolean removeGridPosition(SpacePosition position)
 {
 	if (position == null)
 		return false;
-		
+
 	int x = position.getX();
 	int y = position.getY();
 
@@ -309,9 +309,9 @@ public boolean removeGridPosition(SpacePosition position)
 
 	m[x][y] = null;
 	objects--;
-	   
+
    	modCount++;
-	
+
 	return true;
 }
 
@@ -320,7 +320,7 @@ public boolean removeGridPosition(SpacePosition position)
  * @param y The y coordinate.
  * @return the number of object in the cell(x,y). If could be only 0 or 1.
  */
-public int countObjectsAt(int x, int y) 
+public int countObjectsAt(int x, int y)
 {
 	if (get(x, y) == null)
 		return 0;

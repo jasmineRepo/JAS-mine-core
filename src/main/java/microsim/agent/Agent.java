@@ -7,6 +7,7 @@ import microsim.event.EventListener;
 
 /**
  * An abstract class for objects representing agents.
+ *
  * @param <T>
  */
 public abstract class Agent<T> implements EventListener {

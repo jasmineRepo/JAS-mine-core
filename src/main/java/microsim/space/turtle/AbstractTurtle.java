@@ -16,7 +16,7 @@ import java.io.Serial;
  * can make steps, turn right or left, measure the distance from another
  * position on the grid. Each turtle has a color and it is able to draw itself
  * on a grid drawing layer.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -26,21 +26,21 @@ import java.io.Serial;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -95,14 +95,14 @@ import java.io.Serial;
 
 	@Transient
 	protected ObjectSpace grid;
-	
+
 	@Enumerated(EnumType.STRING)
 	protected MoveMode moving;
 
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
+	 *
 	 * @param id
 	 *            The identifier for turtle.
 	 * @param grid
@@ -111,11 +111,11 @@ import java.io.Serial;
 	public AbstractTurtle() {
 		this(null, 0, 0);
 	}
-	
+
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
+	 *
 	 * @param id
 	 *            The identifier for turtle.
 	 * @param grid
@@ -128,13 +128,13 @@ import java.io.Serial;
 	/**
 	 * Create a turtle with a given identifier on the given grid at the given
 	 * position. Set its color to the given color.
-	 * 
+	 *
 	 * @param id
 	 *            The identifier for turtle.
 	 * @param x
 	 *            The initial x coordinate of the turtle.
 	 * @param y
-	 *            The initial y coordinate of the turtle.	 
+	 *            The initial y coordinate of the turtle.
 	 * @param grid
 	 *            The grid upon the turtle moves.
 	 */
@@ -145,7 +145,7 @@ import java.io.Serial;
 		if (grid != null)
 			grid.addGridPosition(getPosition());
 	}
-	
+
 	public SpacePosition getPosition() {
 		return this;
 	}
@@ -154,7 +154,7 @@ import java.io.Serial;
 	/**
 	 * Return the behaviour of the turtle when it goes out of bounds of the
 	 * grid.
-	 * 
+	 *
 	 * @return The moving type identifier.
 	 */
 	public MoveMode getMovingType() {
@@ -163,7 +163,7 @@ import java.io.Serial;
 
 	/**
 	 * Set the behaviour of the turtle when it goes out of bounds of the grid.
-	 * 
+	 *
 	 * @param movingType
 	 *            A moving type identifier.
 	 */
@@ -173,7 +173,7 @@ import java.io.Serial;
 
 	/**
 	 * Return the y size of the grid.
-	 * 
+	 *
 	 * @return The height of the grid.
 	 */
 	public int getWorldHeight() {
@@ -184,7 +184,7 @@ import java.io.Serial;
 
 	/**
 	 * Return the x size of the grid.
-	 * 
+	 *
 	 * @return The width of the grid.
 	 */
 	public int getWorldWidth() {
@@ -195,7 +195,7 @@ import java.io.Serial;
 
 	/**
 	 * Return the current heading of the turtle.
-	 * 
+	 *
 	 * @return The current heading.
 	 */
 	public abstract int getHeading();
@@ -208,7 +208,7 @@ import java.io.Serial;
 
 	/**
 	 * Set the turtle's heading using a constant for cardinal points.
-	 * 
+	 *
 	 * @param directionType
 	 *            One of DIR_NORTH, DIR_NORTH_EAST, ... constant.
 	 */
@@ -216,7 +216,7 @@ import java.io.Serial;
 
 	/**
 	 * Set the current heading.
-	 * 
+	 *
 	 * @param heading
 	 *            The new heading.
 	 */
@@ -224,7 +224,7 @@ import java.io.Serial;
 
 	/**
 	 * Change the current heading rotating it to the right.
-	 * 
+	 *
 	 * @param degrees
 	 *            The number of degrees to rotate the heading.
 	 */
@@ -234,7 +234,7 @@ import java.io.Serial;
 
 	/**
 	 * Change the current heading rotating it to the left.
-	 * 
+	 *
 	 * @param degrees
 	 *            The number of degrees to rotate the heading.
 	 */
@@ -249,7 +249,7 @@ import java.io.Serial;
 
 	/**
 	 * Make some steps forward, according the current heading.
-	 * 
+	 *
 	 * @param steps
 	 *            The number of steps the turtle has to make.
 	 */
@@ -257,7 +257,7 @@ import java.io.Serial;
 
 	/**
 	 * Make a steps forward, but moves only if the target position is empty.
-	 * 
+	 *
 	 * @return True only if the turtle has moved.
 	 */
 	public boolean leap() {
@@ -266,7 +266,7 @@ import java.io.Serial;
 
 	/**
 	 * Make some steps forward, but moves only if the target position is empty.
-	 * 
+	 *
 	 * @param steps
 	 *            The number of steps the turtle has to make.
 	 * @return True only if the turtle has moved.
@@ -277,7 +277,7 @@ import java.io.Serial;
 	 * Compute the cartesian distance from its position to the given position.
 	 * WARNING The (xCor, yCor) must be within the grid. The bounds are not
 	 * checked.
-	 * 
+	 *
 	 * @param xCor
 	 *            The target x coordinate.
 	 * @param yCor
@@ -292,7 +292,7 @@ import java.io.Serial;
 
 	/**
 	 * Return the current x position.
-	 * 
+	 *
 	 * @return The x coordinate.
 	 */
 	public int getX() {
@@ -301,7 +301,7 @@ import java.io.Serial;
 
 	/**
 	 * Return the current y position.
-	 * 
+	 *
 	 * @return The y coordinate.
 	 */
 	public int getY() {
@@ -310,7 +310,7 @@ import java.io.Serial;
 
 	/**
 	 * Set a new x position.
-	 * 
+	 *
 	 * @param x
 	 *            The new x coordinate.
 	 */
@@ -320,7 +320,7 @@ import java.io.Serial;
 
 	/**
 	 * Set a new y position.
-	 * 
+	 *
 	 * @param y
 	 *            The new y coordinate.
 	 */
@@ -330,7 +330,7 @@ import java.io.Serial;
 
 	/**
 	 * Set a new position.
-	 * 
+	 *
 	 * @param x
 	 *            The new x coordinate.
 	 * @param y
@@ -348,7 +348,7 @@ import java.io.Serial;
 
 	/**
 	 * Set a new position, only if new position is empty.
-	 * 
+	 *
 	 * @param x
 	 *            The new x coordinate.
 	 * @param y
@@ -369,7 +369,7 @@ import java.io.Serial;
 	 * Return the new x coordinate walking the current heading direction for
 	 * given steps. It uses the grid bound checking methods according to the
 	 * turtle's current moving type.
-	 * 
+	 *
 	 * @param steps
 	 *            The number of steps to move forward.
 	 * @return The candidate x coordinate.
@@ -380,7 +380,7 @@ import java.io.Serial;
 	 * Return the new x coordinate walking the current heading direction for 1
 	 * step. It uses the grid bound checking methods according to the turtle's
 	 * current moving type.
-	 * 
+	 *
 	 * @return The candidate x coordinate.
 	 */
 	public int getNextX() {
@@ -391,7 +391,7 @@ import java.io.Serial;
 	 * Return the new y coordinate walking the current heading direction for
 	 * given steps. It uses the grid bound checking methods according to the
 	 * turtle's current moving type.
-	 * 
+	 *
 	 * @param steps
 	 *            The number of steps to move forward.
 	 * @return The candidate y coordinate.
@@ -402,7 +402,7 @@ import java.io.Serial;
 	 * Return the new y coordinate walking the current heading direction for 1
 	 * step. It uses the grid bound checking methods according to the turtle's
 	 * current moving type.
-	 * 
+	 *
 	 * @return The candidate y coordinate.
 	 */
 	public int getNextY() {
@@ -414,9 +414,9 @@ import java.io.Serial;
 		if (grid != null)
 			grid.addGridPosition(getPosition());
 	}
-	
+
 	public ObjectSpace getGrid() {
 		return grid;
 	}
-	
+
 }

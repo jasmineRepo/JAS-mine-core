@@ -23,7 +23,7 @@ public class StringInvoker implements StringSource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the target object.
 	 * @param fieldName
@@ -42,7 +42,7 @@ public class StringInvoker implements StringSource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the class of the target object.
 	 * @param fieldName
@@ -87,7 +87,7 @@ public class StringInvoker implements StringSource {
 
 	/**
 	 * Invoke the method of the target object and return its string result.
-	 * 
+	 *
 	 * @param target
 	 *            Object to be invoked.
 	 * @return The requested string value.
@@ -123,7 +123,7 @@ public class StringInvoker implements StringSource {
 	/**
 	 * Invoke the method of the object passed to constructor and return its
 	 * double result.
-	 * 
+	 *
 	 * @return The requested double value.
 	 */
 	public String getString() {
@@ -133,7 +133,7 @@ public class StringInvoker implements StringSource {
 	/**
 	 * This is an implementation of the IDblSource interface. It calls the
 	 * getDouble() method.
-	 * 
+	 *
 	 * @param valueID
 	 *            This parameter is ignored. It is put for compatibility with
 	 *            the IDblSource interface.

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParameterRangeDomain extends ParameterDomain {
-	
+
 	@Setter	@Getter private Double min;
 
 	@Setter	@Getter private Double max;
 
 	@Setter	@Getter private Double step;
-	
+
 	public ParameterRangeDomain() {
 	}
 
@@ -27,13 +27,13 @@ public class ParameterRangeDomain extends ParameterDomain {
 	@Override
 	public Object[] getValues() {
 		List<Object> array = new ArrayList<>();
-		
+
 		Double currentValue = min;
 		while (currentValue < max) { // improve this// fixme current jamjam deals with the number of interlvals only, we need a separate version for step size
 			array.add(currentValue);
 			currentValue += step;
 		}
-		
+
 		return array.toArray();
 	}
 

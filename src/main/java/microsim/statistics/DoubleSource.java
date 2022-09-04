@@ -8,7 +8,7 @@ public interface DoubleSource {
 	enum Variables {
 		Default;
 	}
-	
+
 	/**
 	 * Return the double value corresponding to the given variableID
 	 * @param variableID A unique identifier for a variable.

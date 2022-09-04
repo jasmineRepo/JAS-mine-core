@@ -11,12 +11,12 @@ import java.util.*;
 public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceRegression<T> {
 
 	private final Random random;
-	
+
 	private final Normal normalRV;
-	
+
 	private final Map<T, MultiKeyCoefficientMap> maps;
-		
-	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps) {		
+
+	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps) {
 		random = SimulationEngine.getRnd();
 		this.maps = maps;
 		int count = 0;
@@ -39,7 +39,7 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 		normalRV = new Normal(0.0, 1.0, new MersenneTwister(random.nextInt()));
 	}
 
-	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {			
+	public MultiProbitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {
 		this.random = random;
 		this.maps = maps;
 		int count = 0;
@@ -65,36 +65,36 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 		}
 		normalRV = new Normal(0.0, 1.0, new MersenneTwister(random.nextInt()));
 	}
-	
+
 	/**
 	 *
-	 * Warning - only use when MultiProbitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 * Warning - only use when MultiProbitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
-	public double getProbitTransformOfScore(T event, Map<String, Double> values) {		
-		final double score = LinearRegression.computeScore(maps.get(event), values);		
+	public double getProbitTransformOfScore(T event, Map<String, Double> values) {
+		final double score = LinearRegression.computeScore(maps.get(event), values);
 		return (double) normalRV.cdf(score);
 	}
-	
+
 	public double getProbitTransformOfScore(T event, Object individual) {
 		final double score = LinearRegression.computeScore(maps.get(event), individual);
-		return (double) normalRV.cdf(score);		
+		return (double) normalRV.cdf(score);
 	}
-	
+
 	//Original version was incorrect - did not normalise probabilities.  Corrected by Ross Richardson.
 //	@Override
-	public T eventType(Object individual) {		
+	public T eventType(Object individual) {
 		Map<T, Double> probs = new HashMap<>();
 
-		double denominator = 0.; 
-		
+		double denominator = 0.;
+
 		for (T event : maps.keySet()) {
 			double probitTransformOfScore = getProbitTransformOfScore(event, individual);
 			probs.put(event, probitTransformOfScore);
-			denominator += probitTransformOfScore;			
+			denominator += probitTransformOfScore;
 		}
-		
+
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
 		T k = null;
 		T[] eventProbs = (T[]) k.getClass().getEnumConstants();
@@ -111,25 +111,25 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 				}
 			}
 		}
-		
+
 		//Normalise the probabilities of the events specified in the regression maps
 		for (T event : maps.keySet()) {		//Only iterate through the cases specified in the regression maps - the base case has already been normalised.
 			double probitTransformOfScoreForEvent = probs.get(event);
 			probs.put(event, probitTransformOfScoreForEvent/denominator);		//Normalise the probit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
-		
-		double[] probArray = new double[probs.size()]; 
+
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
-		
-		return RegressionUtils.event(eventProbs, probArray, random);				
+
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
 
 //	@Override
 	/**
 	 *
-	 * Warning - only use when MultiProbitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 * Warning - only use when MultiProbitRegression's maps field has values that are MultiKeyCoefficientMaps with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
@@ -141,7 +141,7 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 		for (T event : maps.keySet()) {
 			double probitTransformOfScore = getProbitTransformOfScore(event, values);
 			probs.put(event, probitTransformOfScore);
-			denominator += probitTransformOfScore;			
+			denominator += probitTransformOfScore;
 		}
 
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
@@ -167,19 +167,19 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 			probs.put(event, probitTransformOfScoreForEvent/denominator);		//Normalise the probit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
 
-		double[] probArray = new double[probs.size()]; 
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
 
-		return RegressionUtils.event(eventProbs, probArray, random);		
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	// New methods 
+	// New methods
 	// @author Ross Richardson
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	public <E extends Enum<E>> double getProbitTransformOfScore(T event, DoubleSource iDblSrc, Class<E> Regressors) {
       MultiKeyCoefficientMap map = maps.get(event);
       double score;
@@ -193,18 +193,18 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
       return (double) normalRV.cdf(score);
   }
 
-	
+
 	public <E extends Enum<E>> T eventType(DoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
 		Map<T, Double> probs = new HashMap<>();
 
-		double denominator = 0.; 
-		
+		double denominator = 0.;
+
 		for (T event : maps.keySet()) {
 			double probitTransformOfScore = getProbitTransformOfScore(event, iDblSrc, Regressors);
 			probs.put(event, probitTransformOfScore);
-			denominator += probitTransformOfScore;			
+			denominator += probitTransformOfScore;
 		}
-		
+
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
 		T[] eventProbs = enumType.getEnumConstants();
 //		T[] eventProbs = (T[]) maps.keySet().getClass().getEnumConstants();		//Results in Null Pointer Exception
@@ -222,20 +222,20 @@ public class MultiProbitRegression<T extends Enum<T>> implements MultipleChoiceR
 				}
 			}
 		}
-		
+
 		//Normalise the probabilities of the events specified in the regression maps
 		for (T event : maps.keySet()) {		//Only iterate through the cases specified in the regression maps - the base case has already been normalised.
 			double probitTransformOfScoreForEvent = probs.get(event);
 			probs.put(event, probitTransformOfScoreForEvent/denominator);		//Normalise the probit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
-		
-		double[] probArray = new double[probs.size()]; 
+
+		double[] probArray = new double[probs.size()];
 		for (int i = 0; i < eventProbs.length; i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
-		
-		return RegressionUtils.event(eventProbs, probArray, random);				
+
+		return RegressionUtils.event(eventProbs, probArray, random);
 	}
 
-	
+
 }

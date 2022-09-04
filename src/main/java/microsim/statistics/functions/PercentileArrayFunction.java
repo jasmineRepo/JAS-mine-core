@@ -14,7 +14,7 @@ import microsim.statistics.LongArraySource;
  */
 
 public class PercentileArrayFunction extends AbstractArrayFunction implements DoubleSource {
-	
+
 	public enum Variables {
 		/**	Represent the function arguments for the getDoubleValue method. */
 		P1,
@@ -31,7 +31,7 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 		P95,
 		P99;
 	}
-	
+
 	/** Create a percentile function on a float array source.
 	 * @param source The data source.
 	 */
@@ -61,14 +61,14 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 	}
 
 	protected double p1, p5, p10, p20, p30, p40, p50, p60, p70, p80, p90, p95, p99;
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
 	public void apply(double[] data) {
 		DescriptiveStatistics stats = new DescriptiveStatistics(data);
-		
+
 		p1 = stats.getPercentile(1);
 		p5 = stats.getPercentile(5);
 		p10 = stats.getPercentile(10);
@@ -84,28 +84,28 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 		p99 = stats.getPercentile(99);
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(float[])
 	 */
 	public void apply(float[] data) {
-		
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(int[])
 	 */
 	public void apply(int[] data) {
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 	 */
 	public void apply(long[] data) {
-		
+
 	}
-	
+
 	public double getDoubleValue(Enum<?> variableID) {
 		return switch ((Variables) variableID) {
 			case P1 -> p1;
@@ -121,8 +121,6 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements Do
 			case P90 -> p90;
 			case P95 -> p95;
 			case P99 -> p99;
-			default ->
-					throw new UnsupportedOperationException("The function result with id " + variableID + " is not supported.");
 		};
 	}
 }

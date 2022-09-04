@@ -15,5 +15,5 @@ public class Aggregate {
 		CollectionUtils.select(collection, predicate, filtered);
 		IterableUtils.forEach(filtered, closure);
 	}
-	
+
 }

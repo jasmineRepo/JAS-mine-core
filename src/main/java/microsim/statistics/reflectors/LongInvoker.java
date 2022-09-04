@@ -15,14 +15,14 @@ import java.util.logging.Logger;
  */
 public class LongInvoker implements LongSource {
 	private static final Logger log = Logger.getLogger(LongInvoker.class.toString());
-	
+
 	protected Method method;
 	protected Field field;
 	protected Object target;
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the target object.
 	 * @param fieldName
@@ -41,7 +41,7 @@ public class LongInvoker implements LongSource {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the class of the target object.
 	 * @param fieldName
@@ -86,7 +86,7 @@ public class LongInvoker implements LongSource {
 
 	/**
 	 * Invoke the method of the target object and return its double result.
-	 * 
+	 *
 	 * @param target
 	 *            Object to be invoked.
 	 * @return The requested double value.
@@ -125,7 +125,7 @@ public class LongInvoker implements LongSource {
 	/**
 	 * Invoke the method of the object passed to constructor and return its
 	 * double result.
-	 * 
+	 *
 	 * @return The requested double value.
 	 */
 	public long getLong() {
@@ -135,7 +135,7 @@ public class LongInvoker implements LongSource {
 	/**
 	 * This is an implementation of the IDblSource interface. It calls the
 	 * getDouble() method.
-	 * 
+	 *
 	 * @param valueID
 	 *            This parameter is ignored. It is put for compatibility with
 	 *            the IDblSource interface.

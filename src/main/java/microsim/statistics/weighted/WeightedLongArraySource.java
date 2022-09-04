@@ -6,9 +6,9 @@ package microsim.statistics.weighted;
 public interface WeightedLongArraySource {
 	/**
 	 * Return the currently cached array of long values.
-	 * @return An array of double or a null pointer if the source is empty. 
+	 * @return An array of double or a null pointer if the source is empty.
 	 */
 	long[] getLongArray();
-	
+
 	double[] getWeights();
 }

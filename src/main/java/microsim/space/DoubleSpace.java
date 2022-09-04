@@ -244,7 +244,7 @@ public class DoubleSpace extends AbstractSpace<Double>
  * @param y The y coordinate.
  * @return The int value contained by the (x,y) cell.
  */
-public int countObjectsAt(int x, int y) 
+public int countObjectsAt(int x, int y)
 {
 	return (int) m[at(x, y)];
 }

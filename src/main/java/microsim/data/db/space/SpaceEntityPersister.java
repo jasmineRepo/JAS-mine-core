@@ -14,7 +14,7 @@ public class SpaceEntityPersister {
 		EntityTransaction tx;
 		tx = entityManager.getTransaction();
 		tx.begin();
-		
+
 		try {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
@@ -32,7 +32,7 @@ public class SpaceEntityPersister {
 				tx.rollback();
 			throw e;
 		}
-		
+
 		tx.commit();
 	}
 
@@ -40,10 +40,10 @@ public class SpaceEntityPersister {
 		EntityTransaction tx;
 		tx = entityManager.getTransaction();
 		tx.begin();
-		
+
 		Field field = entityClass.getField(idField);
 		field.setAccessible(true);
-		
+
 		try {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
@@ -62,7 +62,7 @@ public class SpaceEntityPersister {
 				tx.rollback();
 			throw e;
 		}
-		
+
 		tx.commit();
 	}
 }

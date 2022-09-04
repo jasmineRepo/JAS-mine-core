@@ -3,20 +3,23 @@ package microsim.statistics.regression;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.ObjectSource;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils2.PropertyUtils;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class LinearRegression implements LinReg {
-	
+
 	private final MultiKeyCoefficientMap map;
-	
+
 	/**
 	 * Linear Regression object.
-	 * 
+	 *
 	 * @param map - needs to fulfil two criteria: 1) Map must have a key in the MultiKey that matches the name specified
 	 *              in the RegressionColumnNames enum called Regressor. 2) Map must have a value key that matches the
 	 *              name specified in the RegressionColumnNames enum called Coefficient.
@@ -33,7 +36,7 @@ public class LinearRegression implements LinReg {
 		boolean coefficientValueKeyInMultiKeyByMistake = false;
 		String[] keys = map.getKeysNames();
 		String[] valuesNames = map.getValuesNames();
-		
+
 		int i = 0;
 		while(i < keys.length) {
 			if(keys[i].equals(RegressionColumnNames.REGRESSOR.toString())) {
@@ -44,7 +47,7 @@ public class LinearRegression implements LinReg {
 			}
 			i++;
 		}
-		
+
 		int j = 0;
 		while(j < valuesNames.length) {
 			if(valuesNames[j].startsWith(RegressionColumnNames.COEFFICIENT.toString())) {
@@ -77,25 +80,25 @@ public class LinearRegression implements LinReg {
 		}
 	}
 
-	
-	
+
+
 	//------------------------------------------------------------------------------------
 	// Use when only one key (the regressors) exists in map
 	//------------------------------------------------------------------------------------
 
 	/**
-	 * 
-	 * Warning - only use when LinearRegression object contains a MultiKeyCoefficientMap with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 *
+	 * Warning - only use when LinearRegression object contains a MultiKeyCoefficientMap with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
 	public double getScore(Map<String, Double> values) {
 		return computeScore(map, values);
 	}
-	
+
 	/**
-	 * 
-	 * Warning - only use when LinearRegression object contains a MultiKeyCoefficientMap with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.   
+	 *
+	 * Warning - only use when LinearRegression object contains a MultiKeyCoefficientMap with only one key.  This method only looks at the first key of the MultiKeyCoefficientMap field of LinearRegression, so any other keys that are used to distinguish a unique multiKey (i.e. if the first key occurs more than once) will be ignored! If the first key of the multiKey appears more than once, the method would return an incorrect value, so will throw an exception.
 	 * @param values
 	 * @return
 	 */
@@ -112,7 +115,7 @@ public class LinearRegression implements LinReg {
 					throw new IllegalArgumentException("Regressor key " + key + " is not unique!  It is possible that the LinearRegression MultiKeyCoefficientMap containins a MultiKey with more than one key.  The LinearRegression will not return the correct value when LinearRegression.computeScore(MultiKeyCoefficientMap amap, Map<String,Double>) is used with a LinearRegression instance containing a MultiKeyCoefficientMap with more than one key!  Consider using one of the other LinearRegression.getScore() methods instead.");
 				}
 			}
-			
+
 			for (String key : regressors) {
 				if (key.contains("@"))
 					sum += (Double) (amap.getValue(key) == null ? 0.0 : amap.getValue(key));
@@ -125,8 +128,8 @@ public class LinearRegression implements LinReg {
 	//------------------------------------------------------------------
 	// IDoubleSource methods
 	//------------------------------------------------------------------
-	
-	
+
+
 	public <T extends Enum<T>> double getScore(DoubleSource iDblSrc, Class<T> enumType) {//simplify
 		if(map.getKeysNames().length == 1) {
 			return computeScore(map, iDblSrc, enumType, true);			//No additional conditioning regression keys used, so no need to check for them
@@ -134,17 +137,17 @@ public class LinearRegression implements LinReg {
 		else {
 			return computeScore(map, iDblSrc, enumType);		//Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the ObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
 		}
-	}	
+	}
 
-	
+
 	/**
-	 * Use this method when the underlying agent does not have any additional conditioning regression keys (such as the gender or civil status) to determine the appropriate regression co-efficients, i.e. the regression co-efficients do not depend on any properties of the underlying model. 
-	 * Requires that the MultiKeyCoefficientMap only has one entry in the multiKey - that of the name of the regressor variables.  
-	 *  
+	 * Use this method when the underlying agent does not have any additional conditioning regression keys (such as the gender or civil status) to determine the appropriate regression co-efficients, i.e. the regression co-efficients do not depend on any properties of the underlying model.
+	 * Requires that the MultiKeyCoefficientMap only has one entry in the multiKey - that of the name of the regressor variables.
+	 *
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey whose first Key is the name of the regressor variable.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface, and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the keys of coeffMultiMap's MultiKey
 	 * @param enumType specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
-	 * @author Ross Richardson  
+	 * @author Ross Richardson
 	 */
 	public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, DoubleSource iDblSrc, Class<T> enumType, boolean singleKeyCoefficients)
 	// fixme removal of the dead bool parameter breaks the code - matching signatures
@@ -153,19 +156,19 @@ public class LinearRegression implements LinReg {
 			double sum = 0.;
 			for (var iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
 				iterator.next();
-				
+
 				var coeffMK = (MultiKey) iterator.getKey();
 				String regressor = coeffMK.getKey(0).toString();							//coeffMK is assumed to only have a single key here
 				double covariate = iDblSrc.getDoubleValue(Enum.valueOf(enumType, regressor));		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface
 				double regCoefficient;
 				if(coeffMultiMap.getValuesNames().length == 1) {
-					regCoefficient = ((Number)(coeffMultiMap.getValue(regressor))).doubleValue();	
+					regCoefficient = ((Number)(coeffMultiMap.getValue(regressor))).doubleValue();
 				}
 				else {
 					String columnName = RegressionColumnNames.COEFFICIENT.toString();
 					regCoefficient = ((Number)(coeffMultiMap.getValue(regressor, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
 				}
-				sum += covariate * regCoefficient;				
+				sum += covariate * regCoefficient;
 			}
 			return sum;
 		} else {
@@ -174,24 +177,24 @@ public class LinearRegression implements LinReg {
 		}
 	}
 
-		
+
 	/**
-	 * Uses reflection to obtain information from the iDblSrc object, so it is possibly slow.  For time critical cases, use the other computeScore method that requires 
+	 * Uses reflection to obtain information from the iDblSrc object, so it is possibly slow.  For time critical cases, use the other computeScore method that requires
 	 * passing in an object that implements the ObjectSource interface; this has signature:- public static <T extends Enum<T>, U extends Enum<>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, ObjectSource iObjSrc, Class<> enumTypeObject)
-	 * Requires the first column entry of the MultiKeyCoefficientMap (i.e. the first entry of coeffMultiMap's multiKey) to be the name of the regressor variables.  
-	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
+	 * Requires the first column entry of the MultiKeyCoefficientMap (i.e. the first entry of coeffMultiMap's multiKey) to be the name of the regressor variables.
+	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey whose first Key is the name of the regressor variable.  The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface, and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the keys of coeffMultiMap's MultiKey
 	 * @param enumType specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
-	 * @author Ross Richardson  
+	 * @author Ross Richardson
 	 */
 	public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, DoubleSource iDblSrc, Class<T> enumType)
 	{
 		String[] coeffMultiMapKeysNames = coeffMultiMap.getKeysNames();
-		try {			
+		try {
 			Map<?, ?> describedData = PropertyUtils.describe(iDblSrc);
 			Map<String, String> propertyMap = new HashMap<>();
-			
+
 			for(String key : coeffMultiMapKeysNames) {
 
 				if(!key.equals(RegressionColumnNames.REGRESSOR.toString())) {
@@ -207,43 +210,43 @@ public class LinearRegression implements LinReg {
 								propertyMap.put(key, r.toString());
 							} else if (value.getClass().equals(Boolean.class)) {
 								boolean b = (Boolean) value;
-								propertyMap.put(key, (b ? "true" : "false"));				
+								propertyMap.put(key, (b ? "true" : "false"));
 							} else if (value.getClass().equals(String.class)) {
 								final String s = (String) value;
-								propertyMap.put(key, s);	
+								propertyMap.put(key, s);
 							} else if (value.getClass().equals(Long.class)) {
 								final Long r = (Long) value;
 								propertyMap.put(key, r.toString());
 							} else if (value.getClass().isEnum()) {
 								final String e = value.toString();
-								propertyMap.put(key, e);								
+								propertyMap.put(key, e);
 							} else if (value.getClass().equals(Float.class)) {
 								final Float r = (Float) value;
 								propertyMap.put(key, r.toString());
-							} 
+							}
 						}
 					}
 					else throw new NoSuchFieldException("Error in Regression: Could not find LinearRegression.map key named \'" + key + "\' among the fields of the iDoubleSource argument to computeScore(MultiKeyCoefficientMap, IDoubleSource, Class<T>).  Check the character cases of \'" + key + "\' match, if the field exists in object implementing iDoubleSource, to ensure they match.  If they do match, check that a getter method for the field exists following the Java Beans convention.");
 				}
-				
-				
-			}			
-				
+
+
+			}
+
 			double sum = 0.;
 			int regressorColumnIndex = -1;
 			for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
 				iterator.next();
-				
+
 				MultiKey coeffMK = (MultiKey) iterator.getKey();
 				boolean coeffMKapplicableForIDblSrc = true;
-				int i = 0;	
-				while(i < coeffMultiMapKeysNames.length) {					
+				int i = 0;
+				while(i < coeffMultiMapKeysNames.length) {
 					if(!coeffMK.getKey(i).toString().equals(propertyMap.get(coeffMultiMapKeysNames[i]))) {
 						if(coeffMultiMapKeysNames[i].equals(RegressionColumnNames.REGRESSOR.toString())) {
 							regressorColumnIndex = i;
 						}
 						else {
-							coeffMKapplicableForIDblSrc = false;		
+							coeffMKapplicableForIDblSrc = false;
 							break;
 						}
 					}
@@ -259,11 +262,11 @@ public class LinearRegression implements LinReg {
 						sum += covariate * regCoefficient;
 					}
 					else {							//Case when coeffMultiMap only has one value column
-						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();		
+						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();
 						sum += covariate * regCoefficient;
 					}
 				}
-					
+
 			}
 			return sum;
 		} catch (IllegalArgumentException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException |
@@ -272,36 +275,36 @@ public class LinearRegression implements LinReg {
 			return 0;
 		}
 	}
-	
-	/** 
-	 * To be used when the agent Object has member fields that correspond by name to 
-	 * all the regressors of the Regression's MultiKeyCoefficientMap map.  The agent 
+
+	/**
+	 * To be used when the agent Object has member fields that correspond by name to
+	 * all the regressors of the Regression's MultiKeyCoefficientMap map.  The agent
 	 * must also have fields that specify any additional conditioning keys e.g. gender
 	 * or civil status, of the regression map's MultiKeys.
-	 * 
-	 * @param agent is the object whose fields must match by name, the regressors and 
-	 *  additional conditioning keys of the Regression map's MultiKeys.  
-	 * @author Ross Richardson  
+	 *
+	 * @param agent is the object whose fields must match by name, the regressors and
+	 *  additional conditioning keys of the Regression map's MultiKeys.
+	 * @author Ross Richardson
 	 */
 	public double getScore(Object agent) {
 		return computeScore(map, agent);
 	}
 
-	/** 
-	 * To be used when the agent Object has member fields that correspond by name to 
-	 * all the regressors of the Regression's MultiKeyCoefficientMap map.  The agent 
+	/**
+	 * To be used when the agent Object has member fields that correspond by name to
+	 * all the regressors of the Regression's MultiKeyCoefficientMap map.  The agent
 	 * must also have fields that specify any additional conditioning keys e.g. gender
 	 * or civil status, of the regression map's MultiKeys.
-	 * 
-	 * @param agent is the object whose fields must match by name, the regressors and 
-	 *  additional conditioning keys of the Regression map's MultiKeys.  
-	 * @author Ross Richardson  
+	 *
+	 * @param agent is the object whose fields must match by name, the regressors and
+	 *  additional conditioning keys of the Regression map's MultiKeys.
+	 * @author Ross Richardson
 	 */
-	public static double computeScore(MultiKeyCoefficientMap coeffMultiMap, Object agent) {		
-		try {			
+	public static double computeScore(MultiKeyCoefficientMap coeffMultiMap, Object agent) {
+		try {
 			final Map<String, String> propertyMap = extractMapNumbersBooleansEnumsAndStrings(agent);	//Extract fields of agent as strings
 			final Map<String, Double> valueMap = extractMapNumbersAndBooleans(agent);		//Extract numerical fields of agent
-			
+
 			String[] coeffMultiMapKeysNames = coeffMultiMap.getKeysNames();
 			int iMax = coeffMultiMapKeysNames.length;
 			String[] attributes = new String[iMax];
@@ -317,23 +320,23 @@ public class LinearRegression implements LinReg {
 						attributes[i] = propertyMap.get(key);
 					}
 					else {
-						throw new IllegalArgumentException("The " + agent.getClass().getCanonicalName() + " object does not contain a member field called '" + key + "' to match the conditioning key of the Regression object.  If you believe this should not be the case, consider checking the spelling and case (lower / upper) of the member field in the " + agent.getClass().getSimpleName() + " object." 
+						throw new IllegalArgumentException("The " + agent.getClass().getCanonicalName() + " object does not contain a member field called '" + key + "' to match the conditioning key of the Regression object.  If you believe this should not be the case, consider checking the spelling and case (lower / upper) of the member field in the " + agent.getClass().getSimpleName() + " object."
 								+  "\nThe stack trace is "
 								+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
 					};
 				}
 			}
-			
+
 			double score = 0.;
 			for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
 				iterator.next();
 				MultiKey coeffMK = (MultiKey) iterator.getKey();
 				boolean coeffMKapplicable = true;
-				int i = 0;	
+				int i = 0;
 				while(i < iMax) {
-					if(!coeffMK.getKey(i).toString().equals(attributes[i])) {						
+					if(!coeffMK.getKey(i).toString().equals(attributes[i])) {
 						if(i != regressorColumnIndex) {
-							coeffMKapplicable = false;		
+							coeffMKapplicable = false;
 							break;
 						}
 					}
@@ -343,14 +346,14 @@ public class LinearRegression implements LinReg {
 					String regressor = coeffMK.getKey(regressorColumnIndex).toString();
 					double covariate;
 					if(valueMap.containsKey(regressor)) {
-						covariate = valueMap.get(regressor);		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface	
+						covariate = valueMap.get(regressor);		//Gets value of variable with key that matches the regressor string from object implementing IDoubleSource interface
 					}
 					else {
 						throw new IllegalArgumentException(agent.getClass().getCanonicalName() + " object does not contain a field called " + regressor + ".  If there is supposed to be such a field, check the upper/lower case of the regressor specified in the MultiKeyCoefficientMap of the Regression object to ensure that it matches the name of the " + agent.getClass().getSimpleName() + "object's field."
 								+  "\nThe stack trace is "
 								+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
 					}
-												
+
 					if(coeffMultiMap.getValuesNames().length > 1) {			//Case when coeffMultiMap has more than one value column
 						Object[] fullKeys = new Object[iMax+1];
 						for(int i1 = 0; i1 < iMax; i1++) {
@@ -363,22 +366,22 @@ public class LinearRegression implements LinReg {
 						score += covariate * regCoefficient;
 					}
 					else {							//Case when coeffMultiMap only has one value column
-						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();		
+						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();
 						score += covariate * regCoefficient;
 					}
 				}
-				
+
 			}
-				
+
 			return score;
 		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			System.err.println(e.getMessage());
 			return 0;
 		}
 	}
-	
+
 	public static double multiplyCoeffsWithValues(Map<String, Double> regCoeffMap, Map<String, Double> valueMap) {
-		
+
 		double sum = 0.0;
 		try {
 			for (String key : regCoeffMap.keySet()) {
@@ -392,60 +395,60 @@ public class LinearRegression implements LinReg {
 		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 			return 0;
-		} 
+		}
 	}
 
 	/**
 	 * Requires the implementation of the ObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
 	 * If the underlying agent does not implement ObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)
-	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-      
-	 * 
+	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-
+	 *
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
 	 * @param enumTypeDouble specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
 	 * @param iObjSrc is an object that implements the ObjectSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getObjectValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the conditioning regression key entries of coeffMultiMap's MultiKey (not the first key entry, which is reserved for the regressor name)
 	 * @param enumTypeObject specifies the enum type that is used in the getObjectValue(Enum.valueOf(enumType, String)) method of the iObjSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate object value to return
 
-	 * @author Ross Richardson  
+	 * @author Ross Richardson
 	 */
 	public <T extends Enum<T>, U extends Enum<U>> double getScore(DoubleSource iDblSrc, Class<T> enumTypeDouble, ObjectSource iObjSrc, Class<U> enumTypeObject) {
 		return computeScore(map, iDblSrc, enumTypeDouble, iObjSrc, enumTypeObject);
-	}	
-	
+	}
+
 	/**
 	 * Requires the implementation of the ObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
 	 * If the underlying agent does not implement ObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)
-	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-     
-	 * 
-	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.  
-	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
+	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-
+	 *
+	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.
+	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey containing the name of the regressor variable.  The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
 	 * @param enumTypeDouble specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
 	 * @param iObjSrc is an object that implements the ObjectSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getObjectValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the conditioning regression key entries of coeffMultiMap's MultiKey (not the first key entry, which is reserved for the regressor name)
 	 * @param enumTypeObject specifies the enum type that is used in the getObjectValue(Enum.valueOf(enumType, String)) method of the iObjSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate object value to return
 
-	 * @author Ross Richardson  
+	 * @author Ross Richardson
 	 */
 	public static <T extends Enum<T>, U extends Enum<U>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, DoubleSource iDblSrc, Class<T> enumTypeDouble, ObjectSource iObjSrc, Class<U> enumTypeObject)
-	{				
+	{
 			double sum = 0.;
 			int regressorColumnIndex = -1;
 			String[] coeffMultiMapKeysNames = coeffMultiMap.getKeysNames();
 			for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
 				iterator.next();
-				
+
 				MultiKey coeffMK = (MultiKey) iterator.getKey();
 				boolean coeffMKapplicableForIDblSrc = true;
-				int i = 0;	
+				int i = 0;
 				while(i < coeffMultiMapKeysNames.length) {
 					if(coeffMultiMapKeysNames[i].equals(RegressionColumnNames.REGRESSOR.toString())) {
 						regressorColumnIndex = i;
 					}
 					else {
 						if(!coeffMK.getKey(i).toString().equals(iObjSrc.getObjectValue(Enum.valueOf(enumTypeObject, coeffMultiMapKeysNames[i])).toString())) {
-							coeffMKapplicableForIDblSrc = false;		
+							coeffMKapplicableForIDblSrc = false;
 							break;
-						}						
+						}
 					}
 
 					i++;
@@ -465,19 +468,19 @@ public class LinearRegression implements LinReg {
 						sum += covariate * regCoefficient;
 					}
 					else {							//Case when coeffMultiMap only has one value column
-						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();		
+						double regCoefficient = ((Number)coeffMultiMap.get(coeffMK)).doubleValue();
 						sum += covariate * regCoefficient;
 					}
 				}
-					
+
 			}
 			return sum;
 	}
-	
+
 	private static Map<String, Double> extractMapNumbersAndBooleans(Object object) throws IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Double> resultMap = new HashMap<>();
-		
+
 		Map<?, ?> describedData = PropertyUtils.describe(object);
 
 		for (Object o : describedData.keySet()) {
@@ -502,15 +505,15 @@ public class LinearRegression implements LinReg {
 				}
 			}
 		}
-		
+
 		return resultMap;
 	}
-	
+
 	private static Map<String, String> extractMapNumbersBooleansEnumsAndStrings(Object object)
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		
+
 		Map<String, String> resultMap = new HashMap<>();
-		
+
 		Map<?, ?> describedData = PropertyUtils.describe(object);
 
 		for (Object o : describedData.keySet()) {
@@ -541,8 +544,8 @@ public class LinearRegression implements LinReg {
 				}
 			}
 		}
-		
+
 		return resultMap;
 	}
-	
+
 }

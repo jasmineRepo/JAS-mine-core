@@ -25,8 +25,8 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 	protected WeightedIntArraySource intSource;
 	protected WeightedLongArraySource lngSource;
 	protected int type;
-	
-	
+
+
 	/** Create a function on a double array source.
 	 * @param source The data source.
 	 */
@@ -36,7 +36,7 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		type = TYPE_DBL;
 		dblSource = source;
 	}
-	
+
 	/** Create a function on a float array source.
 	 * @param source The data source.
 	 */
@@ -46,7 +46,7 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		type = TYPE_FLT;
 		fltSource = source;
 	}
-	
+
 	/** Create a function on an integer array source.
 	 * @param source The data source.
 	 */
@@ -56,7 +56,7 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		type = TYPE_INT;
 		intSource = source;
 	}
-	
+
 	/** Create a function on a long array source.
 	 * @param source The data source.
 	 */
@@ -65,8 +65,8 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		super();
 		type = TYPE_LNG;
 		lngSource = source;
-	}		
-	
+	}
+
 	/**
 	 * Force the function to update itself. If the data source implements the <i>UpdatableSource</i>
 	 * interface it is updated before reading data.
@@ -96,7 +96,7 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Apply the function on a the given array of double values.
@@ -153,7 +153,7 @@ public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 		}
 		throw new UnsupportedOperationException("This function class cannot be applied to arrays of long values.");
 	}
-	
+
 
 
 }

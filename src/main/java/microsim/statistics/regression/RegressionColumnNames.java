@@ -1,7 +1,7 @@
 package microsim.statistics.regression;
 
-/** 
- * Enum types for use with Regressions.  
+/**
+ * Enum types for use with Regressions.
  * This class defines the names of value columns of MultiKeyCoefficientMaps of Regression objects that carry a particular meaning for the calculation of regression scores and probabilities.
  */
 public enum RegressionColumnNames {

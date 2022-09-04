@@ -5,7 +5,7 @@ package microsim.statistics;
  */
 public interface StringSource {
 	/** The default variable id.*/
-	int DEFAULT = 0; 
+	int DEFAULT = 0;
 	/**
 	 * Return the double value corresponding to the given variableID
 	 * @param variableID A unique identifier for a variable.

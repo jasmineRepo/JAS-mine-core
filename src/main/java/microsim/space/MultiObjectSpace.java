@@ -2,7 +2,7 @@ package microsim.space;
 
 /**
  * A bidimensional grid capable of containing many objects into each cell.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -12,21 +12,21 @@ package microsim.space;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -36,7 +36,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Create a copy of the given grid with a given intial capacity.
-	 * 
+	 *
 	 * @param grid
 	 *            The source grid.
 	 * @param cellCapacity
@@ -53,7 +53,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Create a grid with given size and a given intial capacity.
-	 * 
+	 *
 	 * @param xSize
 	 *            The width of the grid.
 	 * @param ySize
@@ -72,7 +72,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Create a copy of the given grid with a default intial capacity.
-	 * 
+	 *
 	 * @param grid
 	 *            The source grid.
 	 */
@@ -82,7 +82,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Create a grid with given size and a default intial capacity.
-	 * 
+	 *
 	 * @param xSize
 	 *            The width of the grid.
 	 * @param ySize
@@ -94,7 +94,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Return the number of objects stored at the given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -124,7 +124,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Return the object stored at the given tridimensional position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -144,7 +144,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Enqueue the given object at the given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -181,7 +181,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	/**
 	 * Move a IGridPosition object from its current position to the specified
 	 * destination.
-	 * 
+	 *
 	 * @param destinationX
 	 *            The x destination coordinate.
 	 * @param destinationY
@@ -209,7 +209,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Put the given object at the given tridimensional position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -255,7 +255,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	/**
 	 * Add an object implementing IGridPosition interface to the grid. If object
 	 * implements IGridPosition it stored in the right position of the grid.
-	 * 
+	 *
 	 * @param o
 	 *            The IGridPosition object to be added.
 	 * @return True if object was added. If o does not implement IGridPosition
@@ -274,7 +274,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	 * Add an object implementing IGridPosition interface to the grid. If the
 	 * destination cell is already occupied the method return false and the
 	 * object is not added.
-	 * 
+	 *
 	 * @param object
 	 *            The IGridPosition object to be added.
 	 * @return True if object has been added. False if destination cell is
@@ -294,7 +294,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Remove the given object from the grid.
-	 * 
+	 *
 	 * @param o
 	 *            The object to be removed.
 	 * @return True if object was found and removed, false otherwise.
@@ -316,7 +316,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Remove the IGridPosition object from the grid.
-	 * 
+	 *
 	 * @param object
 	 *            The IGridPosition object to be removed.
 	 * @return true if object has been removed. False if object is null or is
@@ -336,7 +336,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	 * Remove the given object from the grid at given position. If the object
 	 * position is known this method is better than than remove() because it
 	 * works much faster.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y

@@ -11,7 +11,7 @@ import microsim.exception.SimulationRuntimeException;
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
  * which return string values. It is used by database objects.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -21,21 +21,21 @@ import microsim.exception.SimulationRuntimeException;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -46,7 +46,7 @@ public class StringValueExtractor {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the target object.
 	 * @param fieldName
@@ -66,7 +66,7 @@ public class StringValueExtractor {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param target
 	 *            It is the class of the target object.
 	 * @param fieldName
@@ -83,7 +83,7 @@ public class StringValueExtractor {
 		else
 			buildField(target, fieldName);
 	}
-	
+
 	private void buildField(Class<?> trgClass, String fieldName) {
 		method = null;
 		field = ReflectionUtils.searchField(trgClass, fieldName);
@@ -114,7 +114,7 @@ public class StringValueExtractor {
 
 	/**
 	 * Invoke the method of the target object and return its string result.
-	 * 
+	 *
 	 * @param target
 	 *            Object to be invoked.
 	 * @return The requested string value.
@@ -152,7 +152,7 @@ public class StringValueExtractor {
 	/**
 	 * Invoke the method of the object passed to constructor and return its
 	 * double result.
-	 * 
+	 *
 	 * @return The requested double value.
 	 */
 	public String getString() {
@@ -162,7 +162,7 @@ public class StringValueExtractor {
 	/**
 	 * This is an implementation of the IDblSource interface. It calls the
 	 * getDouble() method.
-	 * 
+	 *
 	 * @param valueID
 	 *            This parameter is ignored. It is put for compatibility with
 	 *            the IDblSource interface.
@@ -182,5 +182,5 @@ public class StringValueExtractor {
 		return target;
 	}
 
-	
+
 }

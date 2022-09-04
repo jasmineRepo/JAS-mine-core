@@ -17,35 +17,35 @@ import java.util.logging.Level;
  * Singleton. Utility used to create ana manage experiment setup.
  * It makes copies of input folder into output and create experiment run
  * record into output database.
- * 
+ *
  * @author Michele Sonnessa, edited by Ross Richardson
  *
  */
 @Log public class ExperimentManager {
-	
+
 	/** The flag determines if the tool must copy input resources into output folder. */
 	public boolean copyInputFolderStructure = true;
-	
+
 	/**	The flag determines if output database must automatically be created. */
 	public boolean saveExperimentOnDatabase = true;
 
 	private static ExperimentManager manager = null;
-	
+
 	private ExperimentManager() {
-		
+
 	}
-	
+
 	public static ExperimentManager getInstance() {
 		if (manager == null)
 			manager = new ExperimentManager();
 		return manager;
 	}
-	
+
 	public Experiment createExperiment(String multiRunId) {
 		Experiment experiment = new Experiment();
 		experiment.multiRunId = multiRunId;
 		experiment.timestamp = new Date(System.currentTimeMillis());
-		
+
 		return experiment;
 	}
 
@@ -60,8 +60,8 @@ import java.util.logging.Level;
 		else {
 			if (! outDir.exists())
 				outDir.mkdirs();
-			
-			
+
+
 			if (!destFile.exists())
 		        destFile.createNewFile();
 
@@ -74,17 +74,17 @@ import java.util.logging.Level;
 				long size = source.size();
 				while ((count += destination.transferFrom(source, count, size - count)) < size) ;
 			}
-		}		
+		}
 	}
-	
+
 	public Experiment setupExperiment(Experiment experiment, Object... models) throws Exception {
 		final String outFolder = experiment.getOutputFolder() + File.separator + "input";
 
 		log.log(Level.INFO, "Setting up experiment " + experiment.runId);
-		
+
 		if (copyInputFolderStructure) {
 			log.log(Level.INFO, "Copying folder structure");
-			
+
 			File inputDir = new File(experiment.inputFolder);
 			if (inputDir.exists()) {
 				String[] files = inputDir.list();
@@ -99,18 +99,18 @@ import java.util.logging.Level;
 		else{
 			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
 		}
-		
+
 		if (saveExperimentOnDatabase) {
 			log.log(Level.INFO, "Creating experiment on output database");
 			File dbFile = new File(experiment.getOutputFolder() + File.separator + "database");
 			if (! dbFile.exists())
 				dbFile.mkdir();
-			
+
 			if(copyInputFolderStructure) {
 				DatabaseUtils.databaseInputUrl = outFolder + File.separator + "input";
 			}
 			DatabaseUtils.databaseOutputUrl = experiment.getOutputFolder() + File.separator + "database" + File.separator + "out";
-				
+
 			experiment = DatabaseUtils.createExperiment(DatabaseUtils.getOutEntityManger(), experiment, models);
 			log.log(Level.INFO, "Created experiment with id " + experiment.id);
 		}

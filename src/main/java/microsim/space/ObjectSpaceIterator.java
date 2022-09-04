@@ -32,9 +32,9 @@ public interface ObjectSpaceIterator<E> extends Iterator<E>
   /** Return the current position.
    *  @return A IGridPosition object containing the coordinates.*/
   public SpacePosition getGridPosition();
-  
+
   public SpacePosition nextGridPosition();
-  
+
   /** Return the current x position.
    *  @return The x coordinate of the last read.*/
   public int currentX();

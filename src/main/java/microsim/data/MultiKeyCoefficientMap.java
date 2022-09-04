@@ -1,26 +1,27 @@
 package microsim.data;
 
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.AbstractHashedMap;
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
-import org.apache.commons.collections4.map.AbstractHashedMap;
-import org.apache.commons.collections4.map.HashedMap;
-import org.apache.commons.collections4.map.MultiKeyMap;
-
-public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable {
+public class MultiKeyCoefficientMap extends MultiKeyMap {
 
 	@Serial private static final long serialVersionUID = 5049597007431364596L;
 
 	protected String[] keys;
 	protected Map<String, Integer> valuesMap;
-	
+
 	/**
-	 * Creates an empty new MultiKeyCoefficientMap with the names of the keys and 
+	 * Creates an empty new MultiKeyCoefficientMap with the names of the keys and
 	 * values categories specified by String[] keys and String[] values arguments.
-	 * 
+	 *
 	 * @param keys - a String array listing the names of the categories of keys
 	 * @param values - a String array listing the names of the categories of values
 	 */
@@ -31,16 +32,16 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 			valuesMap = new HashMap<>();
 			IntStream.range(0, values.length).forEach(i -> valuesMap.put(values[i], i));
 		}
-		
+
 		if (keys == null)
-			throw new IllegalArgumentException("Keys array cannot be null");		
+			throw new IllegalArgumentException("Keys array cannot be null");
 	}
 
 	/**
-	 * Creates a new MultiKeyCoefficientMap with values stored in map, and with 
-	 * the names of the keys and values categories specified by String[] keys 
+	 * Creates a new MultiKeyCoefficientMap with values stored in map, and with
+	 * the names of the keys and values categories specified by String[] keys
 	 * and String[] values arguments.
-	 * 
+	 *
 	 * @param map - contains the values of the MultiKeyCoefficientMap.
 	 * @param keys - a String array listing the names of the categories of keys
 	 * @param values - a String array listing the names of the categories of values
@@ -52,41 +53,32 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 			valuesMap = new HashMap<>();
 			IntStream.range(0, values.length).forEach(i -> valuesMap.put(values[i], i));
 		}
-		
+
 		if (keys == null)
 			throw new IllegalArgumentException("Keys array cannot be null");
 	}
 
-	public static String toStringKey(Object value) {
-		if (value instanceof String) {
-			return (String) value;
-		} else if (value instanceof Double) {
-			return value.toString();
-		} else if (value instanceof Boolean) {
-			return ((Boolean) value).toString();
-		} else
-			return value.toString();
-		
+	public static String toStringKey(@NotNull Object value) {
+		return switch (value) {
+			case String s -> s;
+			case Double aDouble -> aDouble.toString();
+			case Boolean aBoolean -> aBoolean.toString();
+			default -> value.toString();
+		};
 	}
-	
+
 	private Object extractValueFromVector(String key, Object[] vector) {
-		if (vector == null)
-			return null;
-		else {
-			final Integer k = valuesMap.get(key);
-			return k == null ? null : vector[k];
-		}
+		return vector == null ? null : valuesMap.get(key) == null ? null : vector[valuesMap.get(key)];
 	}
-	
+
 	private void putValueToVector(String key, Object[] vector, Object value) {
-		if (vector != null && valuesMap.get(key) != null)
-			vector[valuesMap.get(key)] = value;
+		if (vector != null && valuesMap.get(key) != null) vector[valuesMap.get(key)] = value;
 	}
-	
-	public Object getValue(Object ... key) {
+
+	public Object getValue(Object @NotNull ... key) {
 		if (key.length == keys.length) {
 			return switch (key.length) {
-				case 1 -> super.get(key[0] instanceof MultiKey ? key[0] : new MultiKey(new Object[]{key[0]}));
+				case 1 -> super.get(key[0] instanceof MultiKey ? key[0] : new MultiKey<>(new Object[]{key[0]}));
 				case 2 -> super.get(key[0], key[1]);
 				case 3 -> super.get(key[0], key[1], key[2]);
 				case 4 -> super.get(key[0], key[1], key[2], key[3]);
@@ -102,7 +94,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 						// which then leads to a null pointer exception
 						// as the MultKeyCoefficientMap does not have a key entry of the type MultiKey(MultiKey()).
 						value = (Object[]) super.get(key[0]);
-					else value = (Object[]) super.get(new MultiKey(new Object[]{key[0]}));
+					else value = (Object[]) super.get(new MultiKey<>(new Object[]{key[0]}));
 					return extractValueFromVector(toStringKey(key[1]), value);
 				}
 				case 3 -> {
@@ -124,10 +116,10 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 				default -> throw new IllegalArgumentException("Wrong number of key parameters");
 			}
 		} else
-			throw new IllegalArgumentException("Wrong number of key parameters");		
+			throw new IllegalArgumentException("Wrong number of key parameters");
 	}
 
-	public void putValue(Object ... keyValues) {		
+	public void putValue(Object @NotNull ... keyValues) {
 		if (keyValues.length == keys.length + 1) {
 			switch (keyValues.length) {
 				case 2:
@@ -135,9 +127,9 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 					// which then leads to a null pointer exception
 					// as the MultKeyCoefficientMap does not have a key entry of the type MultiKey(MultiKey()).
 					if (keyValues[0] instanceof MultiKey)
-						super.put((MultiKey) keyValues[0], keyValues[1]);
+						super.put((MultiKey<?>) keyValues[0], keyValues[1]);
 					else {
-						super.put(new MultiKey(new Object[] { keyValues[0] }), keyValues[1]);
+						super.put(new MultiKey<>(new Object[] { keyValues[0] }), keyValues[1]);
 					}
 					break;
 				case 3:
@@ -163,7 +155,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 					if (value == null)
 						value = new Object[valuesMap.size()];
 					putValueToVector((String) keyValues[1], value, keyValues[2]);
-					super.put(new MultiKey(new Object[]{keyValues[0]}), value);
+					super.put(new MultiKey<>(new Object[]{keyValues[0]}), value);
 				}
 				case 4 -> {
 					value = (Object[]) super.get(keyValues[0], keyValues[1]);
@@ -203,7 +195,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 	 * This method allows the instance of the MultiKeyCoefficientMap to provide a clone of the names of the keys.
 	 * This is especially useful for getting the name of the variables used as keys in the Regression classes
 	 *  (in package microsim.statistics.regression)
-	 * 
+	 *
 	 * @return a String array clone of the names of the MultiKeyCoefficientMap's keys
 	 * @author richardsonr
 	 */
@@ -211,35 +203,34 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 		String[] keysClone = new String[keys.length];
 		System.arraycopy(keys, 0, keysClone, 0, keys.length);
 		return keysClone;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * This method allows the instance of the MultiKeyCoefficientMap to provide a clone of the names of the values.
 	 * This is especially useful for cases where the size of valueColumns > 1, for instance to extract the names
 	 * of the Type array (T[] events) for RegressionUtils.event(T[] events, double[] prob) method (in package
 	 * microsim.statistics.regression)
-	 * 
+	 *
 	 * @return a String array clone of the names of the MultiKeyCoefficientMap's values
 	 * @author richardsonr
 	 */
 	public String[] getValuesNames() {
 		String[] valuesClone = new String[valuesMap.size()];
-		for(String name: valuesMap.keySet())
-			valuesClone[valuesMap.get(name)] = name;
+		for(String name: valuesMap.keySet()) valuesClone[valuesMap.get(name)] = name;
 		return valuesClone;
 	}
-	
+
 	/**
 	 * Returns a deep clone copy of the MultiKeyCoefficientMap object
-	 * 
+	 *
 	 * @author Ross Richardson
 	 */
 	@Override
 	public MultiKeyCoefficientMap clone() {
-		HashedMap mapClone = new HashedMap(this.decorated());
+		var mapClone = new HashedMap(this.decorated());
 		return new MultiKeyCoefficientMap(mapClone, this.getKeysNames(), this.getValuesNames());
 	}
-	
+
 }

@@ -8,7 +8,7 @@ import microsim.statistics.LongSource;
 
 /**
  * This class computes the maximum value in an array of source values. According to the source data type
- * there are four data-type oriented implementations. Each of them implements always the 
+ * there are four data-type oriented implementations. Each of them implements always the
  * <i>DoubleSource</i> interface.
  */
 public abstract class MaxArrayFunction extends AbstractArrayFunction implements DoubleSource {
@@ -40,7 +40,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 	public MaxArrayFunction(DoubleArraySource source) {
 		super(source);
 	}
-	
+
 	/**
 	 * MaxFunction operating on double source values.
 	 */
@@ -64,7 +64,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 			for (double datum : data)
 				if (dmax < datum)
 					dmax = datum;
-					
+
 		}
 
 		/* (non-Javadoc)
@@ -72,7 +72,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 */
 		public double getDoubleValue(Enum<?> id) {	return dmax; }
 	}
-	
+
 	/**
 	 * MaxFunction operating on long source values.
 	 */
@@ -96,7 +96,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 			for (long datum : data)
 				if (lmax < datum)
 					lmax = datum;
-					
+
 		}
 
 		/* (non-Javadoc)
@@ -111,7 +111,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 			return lmax;
 		}
 	}
-	
+
 	/**
 	 * MaxFunction operating on integer source values.
 	 */
@@ -130,7 +130,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
 		public void apply(int[] data) {
-			
+
 			imax = java.lang.Integer.MIN_VALUE;
 
 			for (int datum : data)
@@ -152,7 +152,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 			return imax;
 		}
 	}
-	
+
 	/**
 	 * MaxFunction operating on float source values.
 	 */
@@ -170,7 +170,7 @@ public abstract class MaxArrayFunction extends AbstractArrayFunction implements 
 		/* (non-Javadoc)
 		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
 		 */
-		public void apply(float[] data) {			
+		public void apply(float[] data) {
 			fmax = java.lang.Float.MIN_VALUE;
 
 			for (float datum : data)

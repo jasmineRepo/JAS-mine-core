@@ -14,17 +14,17 @@ import microsim.engine.SimulationEngine;
 public class TimeChecker {
 	private double lastUpdateTime = -1.;
 	@Setter @Getter private boolean enabled = true;
-	
+
 	/**
 	 * The method checks if a call has been already done at current simulation time. In case it has not
 	 * yet invoked it updates to current time.
-	 * @return True if the method has not yet been invoked at the current time, false otherwise  
+	 * @return True if the method has not yet been invoked at the current time, false otherwise
 	 */
 	public boolean isUpToDate()
 	{
 		if (!enabled)
 			return false;
-			
+
 		double t = SimulationEngine.getInstance().getEventQueue().getTime();
 		if (t == lastUpdateTime)
 			return true;

@@ -6,13 +6,13 @@ import jakarta.persistence.MappedSuperclass;
 public class IntSpaceEntity implements IIntSpaceEntity {
 
 	private Double simulationTime;
-	
+
 	private Long simulationRun;
-	
+
 	private Integer x;
-	
+
 	private Integer y;
-	
+
 	private Integer value;
 
 	public Double getSimulationTime() {

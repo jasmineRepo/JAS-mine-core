@@ -8,7 +8,7 @@ public interface ObjectSource {
 	enum Variables {
 		Default;
 	}
-	
+
 	/**
 	 * Return the value corresponding to the given variableID
 	 * @param variableID A unique identifier for a variable.

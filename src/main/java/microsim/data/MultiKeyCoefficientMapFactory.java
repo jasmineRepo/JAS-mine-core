@@ -10,24 +10,24 @@ public class MultiKeyCoefficientMapFactory {
 
 	public static MultiKeyCoefficientMap createMapFromAnnotatedList(List<?> list) throws IllegalArgumentException,
 			SecurityException, IllegalAccessException, NoSuchFieldException {
-		
+
 		if (list == null || list.size() == 0)
 			throw new IllegalArgumentException("List must be not null and must contain at least one element");
 
 		Class<?> clazz = list.get(0).getClass();
 		if (! clazz.isAnnotationPresent(CoefficientMapping.class))
 			throw new IllegalArgumentException("List must contain CoefficientMap annotated objects");
-		
+
 		CoefficientMapping anno = clazz.getAnnotation(CoefficientMapping.class);
-		
+
 		String[] keys = anno.keys();
 		String[] values = anno.values();
-		
+
 		MultiKeyCoefficientMap map = new MultiKeyCoefficientMap(keys, values);
 
 		Arrays.stream(clazz.getDeclaredFields()).forEach(field -> field.setAccessible(true));
-				
-		for (Object object : list) {			
+
+		for (Object object : list) {
 			for (String value : values) {
 				switch (keys.length) {
 					case 1 -> map.putValue(getValue(clazz, keys[0], object), value, getValue(clazz, value, object));
@@ -49,9 +49,9 @@ public class MultiKeyCoefficientMapFactory {
 				}
 			}
 		}
-		return map;		
+		return map;
 	}
-	
+
 	private static Object getValue(Class<?> clazz, String fieldName, Object object) throws SecurityException,
 			NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		final Field field = clazz.getDeclaredField(fieldName);

@@ -47,7 +47,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Add a new series.
-	 * 
+	 *
 	 * @param aSeries
 	 *            An instance of the SeriesStats class.
 	 * @throws IllegalArgumentException
@@ -133,7 +133,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return the list of contained time series.
-	 * 
+	 *
 	 * @return An array list containing SeriesStats objects.
 	 */
 	public ArrayList<Series> getSeriesList() {
@@ -142,7 +142,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return a series at the given index.
-	 * 
+	 *
 	 * @param seriesIndex
 	 *            The name of the series.
 	 * @return The asked series. Null if series does not exists.
@@ -158,7 +158,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return the number of series.
-	 * 
+	 *
 	 * @return The number of series.
 	 */
 	public int getSeriesCount() {
@@ -177,7 +177,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	 * Store the entire data content on the given output file. It is used the
 	 * default separator and the time description is stored with the absolute
 	 * one.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -191,7 +191,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	/**
 	 * Store the entire data content on the given output file. It is used the
 	 * default separator.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -207,7 +207,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Store the entire data content on the given output file.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -279,7 +279,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Perform one of the defined actions.
-	 * 
+	 *
 	 * @param type
 	 *            One of the following actions:<br>
 	 *            <i>Sim.EVENT_UPDATE</i> calls the <i>update()</i> method.<br>

@@ -7,15 +7,15 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
 /**
- * This class computes the average of the last given number of values in an array taken from a data source. 
- * The mean function return always a double value, so it implements the 
+ * This class computes the average of the last given number of values in an array taken from a data source.
+ * The mean function return always a double value, so it implements the
  * <i>DoubleSource</i> interface and the standard  <i>DoubleSource</i> one.
  */
 public class MovingAverageArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
 	protected double mean;
 	protected int window;
-	
+
 	/** Create a count function on a float array source.
 	 * @param source The data source.
 	 */
@@ -47,7 +47,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 		super(source);
 		this.window = window;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
@@ -58,7 +58,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 		double vals = window;
 		if (data.length < window)
 			vals = data.length;
-		
+
 		double sum = 0.0;
 		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
@@ -76,7 +76,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 		double vals = window;
 		if (data.length < window)
 			vals = data.length;
-		
+
 		double sum = 0.0;
 		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
@@ -94,7 +94,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 		double vals = window;
 		if (data.length < window)
 			vals = data.length;
-		
+
 		double sum = 0.0;
 		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
@@ -112,7 +112,7 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 		double vals = window;
 		if (data.length < window)
 			vals = data.length;
-		
+
 		double sum = 0.0;
 		for (int i = firstElement; i < data.length ; i++) {
 			sum += data[i];
@@ -126,5 +126,5 @@ public class MovingAverageArrayFunction extends AbstractArrayFunction implements
 	public double getDoubleValue(Enum<?> variableID) {
 		return mean;
 	}
-	
+
 }

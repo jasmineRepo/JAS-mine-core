@@ -4,7 +4,7 @@ import microsim.engine.SimulationEngine;
 
 /**
  * A bidimensional grid containing integer values.
- * 
+ *
  * <p>
  * Title: JAS
  * </p>
@@ -14,21 +14,21 @@ import microsim.engine.SimulationEngine;
  * <p>
  * Copyright (C) 2002 Michele Sonnessa
  * </p>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * @author Michele Sonnessa
  *         <p>
  */
@@ -38,7 +38,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Create a grid of given size.
-	 * 
+	 *
 	 * @param xSize
 	 *            The width of the grid.
 	 * @param ySize
@@ -52,7 +52,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Create a copy of the given grid.
-	 * 
+	 *
 	 * @param grid
 	 *            The source grid.
 	 */
@@ -82,7 +82,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Return an Integer object containing the value at given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -90,12 +90,12 @@ public class IntSpace extends AbstractSpace<Integer> {
 	 * @return The Integer wrapper for value stored at x,y position of the grid.
 	 */
 	public Integer get(int x, int y) {
-		return new Integer(m[at(x, y)]);
+		return m[at(x, y)];
 	}
 
 	/**
 	 * Return the value at given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -108,7 +108,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Set the given value at given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -131,7 +131,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Swap the content of the (x1, y1) and (x2, y2) cells of the grid.
-	 * 
+	 *
 	 * @param x1
 	 *            The x coordinate for the first cell.
 	 * @param y1
@@ -149,7 +149,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Set the given value at given position.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate. WARNING: No bounds checking for fast access.
 	 * @param y
@@ -163,7 +163,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Return the size of the grid. It is width * height.
-	 * 
+	 *
 	 * @return The number of cells in the grid.
 	 */
 	public int size() {
@@ -179,7 +179,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Set all cells to the given value.
-	 * 
+	 *
 	 * @param initValue
 	 *            The value to put into each cell.
 	 */
@@ -191,7 +191,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Sum the given value to the value of each cell.
-	 * 
+	 *
 	 * @param arg
 	 *            The value to be added.
 	 */
@@ -203,7 +203,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Multiply the given value to the value of each cell.
-	 * 
+	 *
 	 * @param arg
 	 *            The value to be multiplyed.
 	 */
@@ -215,7 +215,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Get the minimum value stored into the grid.
-	 * 
+	 *
 	 * @return The minimum value of the grid.
 	 */
 	public int min() {
@@ -230,7 +230,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Get the maximum value stored into the grid.
-	 * 
+	 *
 	 * @return The maximum value of the grid.
 	 */
 	public int max() {
@@ -245,7 +245,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Sum the value of each cell.
-	 * 
+	 *
 	 * @return The sum the value of each cell.
 	 */
 	public int sum() {
@@ -259,7 +259,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Compute the sample mean value of the values stored in the grid.
-	 * 
+	 *
 	 * @return The mean value.
 	 */
 	public double mean() {
@@ -273,7 +273,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Compute the sample variance value of the values stored in the grid.
-	 * 
+	 *
 	 * @return The variance value.
 	 */
 	public double variance() {
@@ -290,7 +290,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Return the matrix of values representing the grid.
-	 * 
+	 *
 	 * @return A matrix of integer with the same dimensions of the grid.
 	 */
 	public int[] getMatrix() {
@@ -299,7 +299,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Copies the given IntGrid content in this grid.
-	 * 
+	 *
 	 * @param dm
 	 *            The source IntGrid to be copied.
 	 */
@@ -311,7 +311,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/**
 	 * Copies the int[] matrix content in this grid.
-	 * 
+	 *
 	 * @param dm
 	 *            The source matrix to be copied.
 	 */
@@ -321,11 +321,11 @@ public class IntSpace extends AbstractSpace<Integer> {
 
 	/*
 	 * Return the value contained by the given cell.
-	 * 
+	 *
 	 * @param x The x coordinate.
-	 * 
+	 *
 	 * @param y The y coordinate.
-	 * 
+	 *
 	 * @return The int value contained by the (x,y) cell.
 	 */
 	public int countObjectsAt(int x, int y) {

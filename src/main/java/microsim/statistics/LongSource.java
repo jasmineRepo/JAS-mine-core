@@ -9,11 +9,11 @@ public interface LongSource
 	enum Variables {
 		Default;
 	}
-	
+
 	/**
 	 * Return the long value corresponding to the given variableID
 	 * @param variableID A unique identifier for a variable.
 	 * @return The current long value of the required variable.
-	 */		
+	 */
 	long getLongValue(Enum<?> variableID);
 }

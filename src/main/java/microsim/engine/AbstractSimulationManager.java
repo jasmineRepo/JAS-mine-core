@@ -8,7 +8,7 @@ public abstract class AbstractSimulationManager implements SimulationManager {
 	@Setter @Getter private SimulationEngine engine;
 
 	public abstract void buildObjects();
-	
+
 	public abstract void buildSchedule();
 
 	public void dispose() {

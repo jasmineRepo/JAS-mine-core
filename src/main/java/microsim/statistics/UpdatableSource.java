@@ -5,7 +5,7 @@ package microsim.statistics;
  * to be updated to refresh its data. Typically, a data source which retrieves data from
  * other source keeps them into a cache and refreshes the cache when the consumer needs
  * a new refresh.<br>
- * A CrossSection, for instance, is an updatable source, since it collects data from a 
+ * A CrossSection, for instance, is an updatable source, since it collects data from a
  * collection. Accessing its source interface, the consumer can obtain the latest cached
  * data, but if it wants updated ones it has to invoke the <i>updateSource()</i> method of
  * the CrossSection.<br>

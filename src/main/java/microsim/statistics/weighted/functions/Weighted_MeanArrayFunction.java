@@ -7,12 +7,12 @@ import microsim.statistics.weighted.WeightedIntArraySource;
 import microsim.statistics.weighted.WeightedLongArraySource;
 
 /**
- * This class computes the (weighted) average (mean) value of an array of values taken from a data source, 
+ * This class computes the (weighted) average (mean) value of an array of values taken from a data source,
  * weighted by corresponding weights:
  * 		weighted mean = sum (values * weights) / sum (weights)
- * Note that the array of weights must have the same length as the array of values, otherwise an exception 
+ * Note that the array of weights must have the same length as the array of values, otherwise an exception
  * will be thrown.
- * The mean function return always double values, so it implements only the 
+ * The mean function return always double values, so it implements only the
  * <i>DoubleSource</i> interface.
  */
 public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction implements DoubleSource {
@@ -46,15 +46,15 @@ public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction im
 	}
 
 	protected double weightedMean;
-	
+
 	/* (non-Javadoc)
 	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
 	 */
 	public void apply(double[] data, double[] weights) {
-		
+
 		weightedMean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			double denominator = 0.;
 			for (int i = 0; i < data.length; i++) {
@@ -71,7 +71,7 @@ public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction im
 	public void apply(int[] data, double[] weights) {
 		weightedMean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			double denominator = 0.;
 			for (int i = 0; i < data.length; i++) {
@@ -88,7 +88,7 @@ public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction im
 	public void apply(long[] data, double[] weights) {
 		weightedMean = 0.0;
 		if (data.length != 0) {
-		
+
 			double sum = 0.0;
 			double denominator = 0.;
 			for (int i = 0; i < data.length; i++) {
@@ -105,6 +105,6 @@ public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction im
 	public double getDoubleValue(Enum<?> variableID) {
 		return weightedMean;
 	}
-	
-	
+
+
 }
