@@ -30,7 +30,6 @@ public interface IIntSource
 	
 	/**
 	 * Return the integer value corresponding to the given variableID
-	 * @param variableID A unique identifier for a variable.
 	 * @return The current integer value of the required variable.
 	 */			
 	public int getIntValue(Enum<?> variable);

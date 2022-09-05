@@ -186,8 +186,6 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	 *            The x destination coordinate.
 	 * @param destinationY
 	 *            The y destination coordinate.
-	 * @param object
-	 *            An object implementing IGridPosition interface.
 	 * @return true. Only if the argument object is null the return value will
 	 *         be false.
 	 */
@@ -274,9 +272,6 @@ public class MultiObjectSpace extends DenseObjectSpace {
 	 * Add an object implementing IGridPosition interface to the grid. If the
 	 * destination cell is already occupied the method return false and the
 	 * object is not added.
-	 * 
-	 * @param object
-	 *            The IGridPosition object to be added.
 	 * @return True if object has been added. False if destination cell is
 	 *         already occupied or if argument object is null.
 	 */
@@ -316,9 +311,6 @@ public class MultiObjectSpace extends DenseObjectSpace {
 
 	/**
 	 * Remove the IGridPosition object from the grid.
-	 * 
-	 * @param object
-	 *            The IGridPosition object to be removed.
 	 * @return true if object has been removed. False if object is null or is
 	 *         not present on the grid.
 	 */

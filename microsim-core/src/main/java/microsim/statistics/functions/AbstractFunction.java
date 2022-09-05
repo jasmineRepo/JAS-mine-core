@@ -38,7 +38,6 @@ public abstract class AbstractFunction implements EventListener, IUpdatableSourc
 	
 	/**
 	 * Update the source, invoking the <i>updateSource()</i> method.
-	 * @param actionId Accepts only the jas.engine.Sim.EVENT_UPDATE value.
 	 * @throws UnsupportedOperationException if actionId is not equal to the jas.engine.Sim.EVENT_UPDATE value.
 	 */	
 	public void onEvent(Enum<?> type) {

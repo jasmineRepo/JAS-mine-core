@@ -1,0 +1,4 @@
+<entity-mappings>
+	<entity class="microsim.data.db.Experiment"></entity>
+	<entity class="microsim.data.db.ExperimentParameter"></entity>
+</entity-mappings>
