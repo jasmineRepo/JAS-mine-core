@@ -1,6 +1,6 @@
 package microsim.agent;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;

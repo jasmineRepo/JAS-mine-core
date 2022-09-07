@@ -376,7 +376,7 @@ public class TimeSeries implements EventListener, IUpdatableSource {
 	/**
 	 * Perform one of the defined actions.
 	 * 
-	 * @param actionType
+	 * @param type
 	 *            One of the following actions:<br>
 	 *            <i>Sim.EVENT_UPDATE</i> calls the <i>update()</i> method.<br>
 	 *            <i>TimeSeries.EVENT_SAVE</i> calls the <i>saveToFile()</i>

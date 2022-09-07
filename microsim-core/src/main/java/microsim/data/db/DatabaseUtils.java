@@ -7,11 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import jakarta.persistence.*;
 
 import microsim.annotation.GUIparameter;
 import microsim.data.MultiKeyCoefficientMap;
@@ -19,9 +15,11 @@ import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 
 import org.apache.log4j.Logger;
-import org.hibernate.ejb.Ejb3Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.service.ServiceRegistry;
 
 @SuppressWarnings("deprecation")
 public class DatabaseUtils {
@@ -253,30 +251,10 @@ public class DatabaseUtils {
 		if (entityManagerFactory == null) {
 			try {
 				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
-				if (autoUpdate) 
-					configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
 
-				Ejb3Configuration cfg = new Ejb3Configuration();
-				Ejb3Configuration configured = cfg.configure("sim-model",
-						configOverrides);
-
-				if (databaseInputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[input-path\\]", databaseInputUrl);
-					connectionUrl = connectionUrl.replace("[input-path]", databaseInputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-				
-				// configured.buildMappings();
-				// configured.setListener("flush-entity", new
-				// OutputFlushEntityEventListener());
-
-				// Mappings mappings =
-				// configured.getHibernateConfiguration().createMappings();
-
-				entityManagerFactory = configured.buildEntityManagerFactory();
+				Map propertyMap = new HashMap();
+				propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + databaseInputUrl);
+				entityManagerFactory = Persistence.createEntityManagerFactory("sim-model", propertyMap);
 
 			} catch (Throwable ex) {
 				log.fatal("Initial EntityManagerFactory creation failed." + ex);
@@ -292,26 +270,11 @@ public class DatabaseUtils {
 	public static void inputSchemaUpdateEntityManger() {
 		if (entityManagerFactory == null) {
 			try {
+
 				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
-				configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
-
-				Ejb3Configuration cfg = new Ejb3Configuration();
-				Ejb3Configuration configured = cfg.configure("sim-model",
-						configOverrides);
-				
-				if (databaseInputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[input-path\\]", databaseInputUrl);
-					connectionUrl = connectionUrl.replace("[input-path]", databaseInputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-						
-				
-				new SchemaExport(configured.getHibernateConfiguration()).create(false, true);							
-
-				EntityManager em = configured.buildEntityManagerFactory().createEntityManager();
+				Map propertyMap = new HashMap();
+				propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseInputUrl);
+				EntityManager em = Persistence.createEntityManagerFactory("sim-model", propertyMap).createEntityManager();
 				EntityTransaction tx = em.getTransaction();
 				tx.begin();
 				em.flush();
@@ -342,32 +305,11 @@ public class DatabaseUtils {
 		
 		if (outEntityManagerFactory == null) {
 			try {
+
 				// Create the EntityManagerFactory
-				Map<String, String> configOverrides = new HashMap<String, String>();
-				configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
-				// configOverrides.put("hibernate.ejb.interceptor.session_scoped",
-				// "it.zero11.microsim.db.PanelTargetInterceptor");
-				
-				Ejb3Configuration configured = new Ejb3Configuration()
-						.configure(persistenceUnitName, configOverrides);
-
-				if (databaseOutputUrl != null) {
-					String connectionUrl = configured.getProperties().getProperty("hibernate.connection.url");
-					//connectionUrl = connectionUrl.replaceFirst("\\[output-path\\]", databaseOutputUrl);
-					connectionUrl = connectionUrl.replace("[output-path]", databaseOutputUrl);
-					configured.getProperties().put("hibernate.connection.url", connectionUrl);
-				};
-				
-				configured.addAnnotatedClass(Experiment.class);
-				configured.addAnnotatedClass(ExperimentParameter.class);
-
-				// run the schema update.
-				new SchemaUpdate(configured.getHibernateConfiguration())
-						.execute(true, true);
-
-				outEntityManagerFactory = configured
-						.buildEntityManagerFactory();
+				Map propertyMap = new HashMap();
+				propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseOutputUrl);
+				outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, propertyMap);
 
 			} catch (Throwable ex) {
 				log.fatal("Initial EntityManagerFactory creation failed." + ex);

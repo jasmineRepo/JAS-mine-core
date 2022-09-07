@@ -1,6 +1,6 @@
 package microsim.data.db.space;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public interface IIntSpaceEntity {

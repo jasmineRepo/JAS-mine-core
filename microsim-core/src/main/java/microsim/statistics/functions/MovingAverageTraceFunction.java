@@ -54,7 +54,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	protected int valueCount = 0;
 	
 	/** Create a basic statistic probe on a IDoubleSource object.
-	 *  @param name Name of the statistic object.
 	 *  @param source The IDoubleSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IDoubleSource source, Enum<?> valueID, int windowSize) {
@@ -66,7 +65,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	}
 
 	/** Create a basic statistic probe on a IFloatSource object.
-	 *  @param name Name of the statistic object.
 	 *  @param source The IFloatSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IFloatSource source, Enum<?> valueID, int windowSize) {
@@ -78,7 +76,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	}
 	
 	/** Create a basic statistic probe on a ILongSource object.
-	 *  @param name Name of the statistic object.
 	 *  @param source The ILongSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(ILongSource source, Enum<?> valueID, int windowSize) {
@@ -90,7 +87,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	}
 	
 	/** Create a basic statistic probe on a IIntSource object.
-	 *  @param name Name of the statistic object.
 	 *  @param source The IIntSource object.
 	 *  @param valueID The value identifier defined by source object. */
 	public MovingAverageTraceFunction(IIntSource source, Enum<?> valueID, int windowSize) {
@@ -174,7 +170,6 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 		
 	/**
 	 * ISimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
-	 * @param actionType The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
 	 * @throws UnsupportedOperationException If actionType is not supported.
 	 */	
 	@Override

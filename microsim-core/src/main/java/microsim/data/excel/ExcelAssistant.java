@@ -8,25 +8,21 @@ import microsim.data.MultiKeyCoefficientMap;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 
 
 public class ExcelAssistant {
 
 	private static Object getCellValue(Cell cell) {
 		Object val = null;
-		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+		if (cell.getCellType() == CellType.STRING) {
 			val = cell.getStringCellValue();
-		} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+		} else if (cell.getCellType() == CellType.NUMERIC) {
 			val = cell.getNumericCellValue();
 			final Double d = (Double) val;
 			if (d - d.intValue() == 0.0)
 				val = d.intValue();
-		} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+		} else if (cell.getCellType() == CellType.BOOLEAN) {
 			val = cell.getBooleanCellValue();
 		} else
 			val = null;
@@ -36,11 +32,11 @@ public class ExcelAssistant {
 	
 	private static String getStringCellValue(Cell cell) {
 		Object val = null;
-		if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+		if (cell.getCellType() == CellType.STRING) {
 			val = cell.getStringCellValue();
-		} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+		} else if (cell.getCellType() == CellType.NUMERIC) {
 			val = getCellValue(cell) + "";
-		} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+		} else if (cell.getCellType() == CellType.BOOLEAN) {
 			val = cell.getBooleanCellValue() + "";
 		} else
 			val = null;
@@ -83,12 +79,12 @@ public class ExcelAssistant {
 			Row headerRow = worksheet.getRow(startLine - 1);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
 			String[] keyVector = new String[keyColumns];
 			for (int j = 0; j < keyColumns; j++) {
-				Cell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+				Cell cell = headerRow.getCell((short) j, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 				keyVector[j] = getStringCellValue(cell);
 			}	
 			String[] valueVector = new String[valueColumns];
 			for (int j = keyColumns; j < valueColumns + keyColumns; j++) {
-				Cell cell = headerRow.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
+				Cell cell = headerRow.getCell((short) j, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 				valueVector[j - keyColumns] = getStringCellValue(cell);
 			}
 			
@@ -103,27 +99,27 @@ public class ExcelAssistant {
 					keyValueVector = new Object[keyColumns + valueColumns];
 					for (int j = 0; j < keyColumns; j++) {
 //						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+						Cell cell = row.getCell((short) j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);
 					}				
 										
 					for (int j = keyColumns; j < keyColumns + valueColumns; j++) {
 //						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+						Cell cell = row.getCell((short) j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);						
 					}	
 				} else {
 					keyValueVector = new Object[keyColumns + 1];
 					for (int j = 0; j < keyColumns; j++) {
 //						Cell cell = row.getCell((short) j, Row.RETURN_BLANK_AS_NULL);
-						Cell cell = row.getCell((short) j, Row.CREATE_NULL_AS_BLANK);
+						Cell cell = row.getCell((short) j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 						keyValueVector[j] = getCellValue(cell);
 					}				
 					
 					Object[] values = new Object[valueColumns];
 					for (int j = 0; j < valueColumns; j++) {
 //						Cell cell = row.getCell((short) (j + keyColumns), Row.RETURN_BLANK_AS_NULL);
-						Cell cell = row.getCell((short) (j + keyColumns), Row.CREATE_NULL_AS_BLANK);
+						Cell cell = row.getCell((short) (j + keyColumns), Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 						values[j] = getCellValue(cell);
 					}	
 					keyValueVector[keyValueVector.length - 1] = values;
@@ -137,7 +133,7 @@ public class ExcelAssistant {
 		} catch (EncryptedDocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvalidFormatException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

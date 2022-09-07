@@ -1,9 +1,9 @@
 package microsim.space.turtle;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 
 import microsim.space.ObjectSpace;
 import microsim.space.SpacePosition;
@@ -99,11 +99,6 @@ public abstract class AbstractTurtle extends SpacePosition {
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
-	 * @param grid
-	 *            The grid upon the turtle moves.
 	 */
 	public AbstractTurtle() {
 		this(null, 0, 0);
@@ -112,11 +107,6 @@ public abstract class AbstractTurtle extends SpacePosition {
 	/**
 	 * Create a turtle with a given identifier on the given grid at position
 	 * (0,0).
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
-	 * @param grid
-	 *            The grid upon the turtle moves.
 	 */
 	public AbstractTurtle(ObjectSpace grid) {
 		this(grid, 0, 0);
@@ -125,9 +115,6 @@ public abstract class AbstractTurtle extends SpacePosition {
 	/**
 	 * Create a turtle with a given identifier on the given grid at the given
 	 * position. Set its color to the given color.
-	 * 
-	 * @param id
-	 *            The identifier for turtle.
 	 * @param x
 	 *            The initial x coordinate of the turtle.
 	 * @param y
