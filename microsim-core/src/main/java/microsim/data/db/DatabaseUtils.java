@@ -15,11 +15,6 @@ import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 
 import org.apache.log4j.Logger;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.service.ServiceRegistry;
 
 @SuppressWarnings("deprecation")
 public class DatabaseUtils {
