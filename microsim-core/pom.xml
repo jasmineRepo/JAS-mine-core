@@ -12,10 +12,10 @@
 			<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>3.6.1</version>
-		        <configuration> <!-- Compile java 8 compatible bytecode -->
-		          <source>1.8</source>
-		          <target>1.8</target>
+		        <version>3.10.1</version>
+		        <configuration> <!-- Compile java 17 compatible bytecode -->
+		          <source>17</source>
+		          <target>17</target>
 		        </configuration>
 		      </plugin>
 			<plugin>
