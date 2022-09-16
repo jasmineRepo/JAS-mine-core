@@ -20,4 +20,4 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java-version }}
 
-      - run: mvn --no-transfer-progress verify source:jar javadoc:jar
+      - run: mvn --no-transfer-progress verify source:jar
