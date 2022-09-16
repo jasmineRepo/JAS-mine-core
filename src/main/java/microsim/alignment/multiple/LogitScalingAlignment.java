@@ -5,7 +5,6 @@ import lombok.val;
 import microsim.agent.Weight;
 import microsim.alignment.AlignmentUtils;
 import org.apache.commons.collections4.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -212,7 +211,7 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      * are not possible. In the case of an empty list returns false for the sake of consistency. The actual value is
      * irrelevant in this case since any empty agent list causes early exit.
      */
-    boolean isWeighted(final @NotNull Collection<T> agentCollection) {
+    boolean isWeighted(final @NonNull Collection<T> agentCollection) {
         if (agentCollection.isEmpty())
             throw new IllegalArgumentException("Empty input is ambiguous.");
         val scratch = agentCollection.iterator().next();
@@ -289,7 +288,7 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
         }
         if (sum(tempAgents) == 0.)
             throw new IllegalArgumentException("Poorly picked data with static events: contains 0 and 1 only," +
-                    " does not converge.");
+                " does not converge.");
     }
 
     /**
@@ -304,11 +303,11 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
         if (errorValue >= ERROR_THRESHOLD) {
             String className = this.getClass().getCanonicalName();
             throw new ArithmeticException(format("""
-                    WARNING: The %s align() method terminated with an error of %f, which has a greater magnitude than
-                     the precision bounds of +/-%f. The size of the filtered agent collection is %d and the number of
-                     iterations was %d. Check the results of the %s alignment to ensure that alignment is good enough
-                     for the purpose in question, or consider changing the criteria for agent selection.
-                    """, className, errorValue, ERROR_THRESHOLD, totalAgentNumber, iterations, className));
+                WARNING: The %s align() method terminated with an error of %f, which has a greater magnitude than
+                 the precision bounds of +/-%f. The size of the filtered agent collection is %d and the number of
+                 iterations was %d. Check the results of the %s alignment to ensure that alignment is good enough
+                 for the purpose in question, or consider changing the criteria for agent selection.
+                """, className, errorValue, ERROR_THRESHOLD, totalAgentNumber, iterations, className));
         }
     }
 
@@ -320,7 +319,7 @@ public class LogitScalingAlignment<T> implements AlignmentUtils<T> {
      *                {@link microsim.alignment.multiple.AlignmentMultiProbabilityClosure}.
      * @implNote No need to check for division by zero as all such values are filtered out earlier.
      */
-    final void correctProbabilities(final @NotNull AlignmentMultiProbabilityClosure<T> closure) {
+    final void correctProbabilities(final @NonNull AlignmentMultiProbabilityClosure<T> closure) {
         if (weights != null) for (var i = 0; i < totalAgentNumber; i++)
             for (var choice = 0; choice < totalChoiceNumber; choice++) probabilities[i][choice] /= weights[i];
 

@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 class MultiTraceFunctionTest {
     @Test
     void testDoubleConstructor() {
-        MultiTraceFunction.Double actualResultDouble = new MultiTraceFunction.Double(mock(DoubleSource.class), null);
+        MultiTraceFunction.Double actualResultDouble = new MultiTraceFunction.Double(mock(DoubleSource.class), mock(Enum.class));
 
         assertEquals(0, actualResultDouble.getCount());
         assertEquals(0.0d, actualResultDouble.getVariance());
@@ -28,7 +28,7 @@ class MultiTraceFunctionTest {
     void testDoubleUpdateSource() {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(Double.MAX_VALUE);
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         verify(doubleSource).getDoubleValue(any());
         assertEquals(1, resultDouble.getCount());
@@ -42,7 +42,7 @@ class MultiTraceFunctionTest {
     void testDoubleUpdateSource2() {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(Double.MIN_VALUE);
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         verify(doubleSource).getDoubleValue(any());
         assertEquals(1, resultDouble.getCount());
@@ -56,7 +56,7 @@ class MultiTraceFunctionTest {
     void testIntegerUpdateSource() {
         IntSource intSource = mock(IntSource.class);
         when(intSource.getIntValue(any())).thenReturn(42);
-        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, null);
+        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, mock(Enum.class));
         integer.updateSource();
         verify(intSource).getIntValue(any());
         assertEquals(1, integer.getCount());
@@ -71,11 +71,11 @@ class MultiTraceFunctionTest {
     void testIntegerUpdateSource2() {
         IntSource intSource = mock(IntSource.class);
         when(intSource.getIntValue(any())).thenReturn(Integer.MAX_VALUE);
-        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, null);
+        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, mock(Enum.class));
         integer.updateSource();
         verify(intSource).getIntValue(any());
         assertEquals(1, integer.getCount());
-        assertEquals(1L, integer.sumSquare);
+        assertEquals(4611686014132420609L, integer.sumSquare);
         assertEquals(Integer.MAX_VALUE, integer.getSum());
         assertEquals(Integer.MAX_VALUE, integer.getMax());
         assertEquals(Integer.MAX_VALUE, integer.getLastRead());
@@ -85,11 +85,11 @@ class MultiTraceFunctionTest {
     void testIntegerUpdateSource3() {
         IntSource intSource = mock(IntSource.class);
         when(intSource.getIntValue(any())).thenReturn(Integer.MIN_VALUE);
-        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, null);
+        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, mock(Enum.class));
         integer.updateSource();
         verify(intSource).getIntValue(any());
         assertEquals(1, integer.getCount());
-        assertEquals(0L, integer.sumSquare);
+        assertEquals(4611686018427387904L, integer.sumSquare);
         assertEquals(Integer.MIN_VALUE, integer.getSum());
         assertEquals(Integer.MIN_VALUE, integer.getMin());
         assertEquals(Integer.MIN_VALUE, integer.getLastRead());
@@ -98,10 +98,8 @@ class MultiTraceFunctionTest {
     @Test
     void testIntegerUpdateSource4() {
         IntSource intSource = mock(IntSource.class);
-        when(intSource.getIntValue(any()))
-            .thenThrow(new UnsupportedOperationException("An error occurred"));
-        assertThrows(UnsupportedOperationException.class,
-            () -> (new MultiTraceFunction.Integer(intSource, null)).updateSource());
+        when(intSource.getIntValue(any())).thenThrow(new UnsupportedOperationException("An error occurred"));
+        assertThrows(UnsupportedOperationException.class, () -> (new MultiTraceFunction.Integer(intSource, mock(Enum.class))).updateSource());
         verify(intSource).getIntValue(any());
     }
 
@@ -109,7 +107,7 @@ class MultiTraceFunctionTest {
     void testLongUpdateSource() {
         LongSource longSource = mock(LongSource.class);
         when(longSource.getLongValue(any())).thenReturn(42L);
-        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, null);
+        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, mock(Enum.class));
         resultLong.updateSource();
         verify(longSource).getLongValue(any());
         assertEquals(1, resultLong.getCount());
@@ -124,7 +122,7 @@ class MultiTraceFunctionTest {
     void testLongUpdateSource2() {
         LongSource longSource = mock(LongSource.class);
         when(longSource.getLongValue(any())).thenReturn(Long.MAX_VALUE);
-        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, null);
+        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, mock(Enum.class));
         resultLong.updateSource();
         verify(longSource).getLongValue(any());
         assertEquals(1, resultLong.getCount());
@@ -138,7 +136,7 @@ class MultiTraceFunctionTest {
     void testLongUpdateSource3() {
         LongSource longSource = mock(LongSource.class);
         when(longSource.getLongValue(any())).thenReturn(Long.MIN_VALUE);
-        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, null);
+        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, mock(Enum.class));
         resultLong.updateSource();
         verify(longSource).getLongValue(any());
         assertEquals(1, resultLong.getCount());
@@ -154,13 +152,13 @@ class MultiTraceFunctionTest {
         when(longSource.getLongValue(any()))
             .thenThrow(new UnsupportedOperationException("An error occurred"));
         assertThrows(UnsupportedOperationException.class,
-            () -> (new MultiTraceFunction.Long(longSource, null)).updateSource());
+            () -> (new MultiTraceFunction.Long(longSource, mock(Enum.class))).updateSource());
         verify(longSource).getLongValue(any());
     }
 
     @Test
     void testIntegerConstructor() {
-        MultiTraceFunction.Integer actualInteger = new MultiTraceFunction.Integer(mock(IntSource.class), null);
+        MultiTraceFunction.Integer actualInteger = new MultiTraceFunction.Integer(mock(IntSource.class), mock(Enum.class));
 
         assertEquals(0, actualInteger.getCount());
         assertEquals(0L, actualInteger.sumSquare);
@@ -174,7 +172,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testLongConstructor() {
-        MultiTraceFunction.Long actualResultLong = new MultiTraceFunction.Long(mock(LongSource.class), null);
+        MultiTraceFunction.Long actualResultLong = new MultiTraceFunction.Long(mock(LongSource.class), mock(Enum.class));
 
         assertEquals(0, actualResultLong.getCount());
         assertEquals(0.0d, actualResultLong.getVariance());
@@ -190,7 +188,7 @@ class MultiTraceFunctionTest {
     void testUpdateSource() {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(10.0d);
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         verify(doubleSource).getDoubleValue(any());
         assertEquals(1, resultDouble.getCount());
@@ -203,7 +201,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testDoubleGetMean() {
-        assertEquals(0.0d, (new MultiTraceFunction.Double(mock(DoubleSource.class), null)).getMean());
+        assertEquals(0.0d, (new MultiTraceFunction.Double(mock(DoubleSource.class), mock(Enum.class))).getMean());
     }
 
     @Test
@@ -211,7 +209,7 @@ class MultiTraceFunctionTest {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(10.0d);
 
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         assertEquals(10.0d, resultDouble.getMean());
         verify(doubleSource).getDoubleValue(any());
@@ -219,7 +217,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testIntegerGetMean() {
-        assertEquals(0.0d, (new MultiTraceFunction.Integer(mock(IntSource.class), null)).getMean());
+        assertEquals(0.0d, (new MultiTraceFunction.Integer(mock(IntSource.class), mock(Enum.class))).getMean());
     }
 
     @Test
@@ -227,7 +225,7 @@ class MultiTraceFunctionTest {
         IntSource intSource = mock(IntSource.class);
         when(intSource.getIntValue(any())).thenReturn(42);
 
-        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, null);
+        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, mock(Enum.class));
         integer.updateSource();
         assertEquals(42.0d, integer.getMean());
         verify(intSource).getIntValue(any());
@@ -235,7 +233,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testLongGetMean() {
-        assertEquals(0.0d, (new MultiTraceFunction.Long(mock(LongSource.class), null)).getMean());
+        assertEquals(0.0d, (new MultiTraceFunction.Long(mock(LongSource.class), mock(Enum.class))).getMean());
     }
 
     @Test
@@ -243,7 +241,7 @@ class MultiTraceFunctionTest {
         LongSource longSource = mock(LongSource.class);
         when(longSource.getLongValue(any())).thenReturn(42L);
 
-        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, null);
+        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, mock(Enum.class));
         resultLong.updateSource();
         assertEquals(42.0d, resultLong.getMean());
         verify(longSource).getLongValue(any());
@@ -251,7 +249,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testDoubleGetVariance() {
-        assertEquals(0.0d, (new MultiTraceFunction.Double(mock(DoubleSource.class), null)).getVariance());
+        assertEquals(0.0d, (new MultiTraceFunction.Double(mock(DoubleSource.class), mock(Enum.class))).getVariance());
     }
 
     @Test
@@ -259,7 +257,7 @@ class MultiTraceFunctionTest {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(10.0d);
 
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         assertEquals(0.0d, resultDouble.getVariance());
         verify(doubleSource).getDoubleValue(any());
@@ -267,7 +265,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testIntegerGetVariance() {
-        assertEquals(0.0d, (new MultiTraceFunction.Integer(mock(IntSource.class), null)).getVariance());
+        assertEquals(0.0d, (new MultiTraceFunction.Integer(mock(IntSource.class), mock(Enum.class))).getVariance());
     }
 
     @Test
@@ -275,7 +273,7 @@ class MultiTraceFunctionTest {
         IntSource intSource = mock(IntSource.class);
         when(intSource.getIntValue(any())).thenReturn(42);
 
-        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, null);
+        MultiTraceFunction.Integer integer = new MultiTraceFunction.Integer(intSource, mock(Enum.class));
         integer.updateSource();
         assertEquals(0.0d, integer.getVariance());
         verify(intSource).getIntValue(any());
@@ -283,7 +281,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testLongGetVariance() {
-        assertEquals(0.0d, (new MultiTraceFunction.Long(mock(LongSource.class), null)).getVariance());
+        assertEquals(0.0d, (new MultiTraceFunction.Long(mock(LongSource.class), mock(Enum.class))).getVariance());
     }
 
     @Test
@@ -291,7 +289,7 @@ class MultiTraceFunctionTest {
         LongSource longSource = mock(LongSource.class);
         when(longSource.getLongValue(any())).thenReturn(42L);
 
-        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, null);
+        MultiTraceFunction.Long resultLong = new MultiTraceFunction.Long(longSource, mock(Enum.class));
         resultLong.updateSource();
         assertEquals(0.0d, resultLong.getVariance());
         verify(longSource).getLongValue(any());
@@ -299,7 +297,7 @@ class MultiTraceFunctionTest {
 
     @Test
     void testGetCount() {
-        assertEquals(0, (new MultiTraceFunction.Double(mock(DoubleSource.class), null)).getCount());
+        assertEquals(0, (new MultiTraceFunction.Double(mock(DoubleSource.class), mock(Enum.class))).getCount());
     }
 
     @Test
@@ -307,7 +305,7 @@ class MultiTraceFunctionTest {
         DoubleSource doubleSource = mock(DoubleSource.class);
         when(doubleSource.getDoubleValue(any())).thenReturn(10.0d);
 
-        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, null);
+        MultiTraceFunction.Double resultDouble = new MultiTraceFunction.Double(doubleSource, mock(Enum.class));
         resultDouble.updateSource();
         assertEquals(1, resultDouble.getCount());
         verify(doubleSource).getDoubleValue(any());

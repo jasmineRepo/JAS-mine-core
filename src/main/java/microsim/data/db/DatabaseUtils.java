@@ -1,6 +1,10 @@
 package microsim.data.db;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
 import microsim.annotation.GUIparameter;
@@ -12,7 +16,6 @@ import org.hibernate.tool.schema.TargetType;
 import org.hibernate.tool.schema.internal.HibernateSchemaManagementTool;
 import org.hibernate.tool.schema.spi.ScriptTargetOutput;
 import org.hibernate.tool.schema.spi.TargetDescriptor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -28,9 +31,9 @@ public class DatabaseUtils {
     public static Long autoincrementSeed = 1000000L;
     private static EntityManagerFactory outEntityManagerFactory;
 
-    public static Experiment createExperiment(final @NotNull EntityManager entityManager,
-                                              @NotNull Experiment experiment,
-                                              final @NotNull Object... models) {
+    public static Experiment createExperiment(final @NonNull EntityManager entityManager,
+                                              @NonNull Experiment experiment,
+                                              final @NonNull Object... models) {
 
         if (SimulationEngine.getInstance().isTurnOffDatabaseConnection()) return experiment;
 
@@ -65,7 +68,7 @@ public class DatabaseUtils {
         return experiment;
     }
 
-    public static void snap(final @NotNull EntityManager em, final @Nullable Object target) {
+    public static void snap(final @NonNull EntityManager em, final @Nullable Object target) {
         if (SimulationEngine.getInstance().isTurnOffDatabaseConnection()) return;
         var isCollection = false;
 
@@ -85,7 +88,7 @@ public class DatabaseUtils {
         if (idField != null) idField.setAccessible(true);
         else {
             String m = "Object of type %s cannot be exported to database as it does not have a field " +
-                    "of type PanelEntityKey.class or it is null!";
+                "of type PanelEntityKey.class or it is null!";
             throw new IllegalArgumentException(String.format(m, target.getClass()));
         }
 
@@ -132,12 +135,12 @@ public class DatabaseUtils {
                 configOverrides.put("hibernate.archive.autodetection", "class");
                 if (databaseOutputUrl != null) configOverrides.put("hibernate.connection.url", databaseOutputUrl);
                 val serviceRegistry = new StandardServiceRegistryBuilder()
-                        .applySettings(configOverrides)
-                        .build();
+                    .applySettings(configOverrides)
+                    .build();
 
                 val metadata = new MetadataSources(serviceRegistry)
-                        .addAnnotatedClass(Experiment.class)
-                        .addAnnotatedClass(ExperimentParameter.class);
+                    .addAnnotatedClass(Experiment.class)
+                    .addAnnotatedClass(ExperimentParameter.class);
 
                 val smt = new HibernateSchemaManagementTool();
                 smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
@@ -145,17 +148,17 @@ public class DatabaseUtils {
                 val sc = smt.getSchemaCreator(null);
                 val md = metadata.buildMetadata();
                 sc.doCreation(md, null, null, null,
-                        new TargetDescriptor() {
-                            @Override
-                            public EnumSet<TargetType> getTargetTypes() {
-                                return EnumSet.of(TargetType.DATABASE);
-                            }
+                    new TargetDescriptor() {
+                        @Override
+                        public EnumSet<TargetType> getTargetTypes() {
+                            return EnumSet.of(TargetType.DATABASE);
+                        }
 
-                            @Override
-                            public ScriptTargetOutput getScriptTargetOutput() {
-                                return null;
-                            }
-                        });
+                        @Override
+                        public ScriptTargetOutput getScriptTargetOutput() {
+                            return null;
+                        }
+                    });
 
                 outEntityManagerFactory = Persistence.createEntityManagerFactory("sim-model-out", configOverrides);
 

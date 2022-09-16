@@ -51,7 +51,7 @@ class MeanVarianceArrayFunctionTest {
     void testApply2() {
         MeanVarianceArrayFunction meanVarianceArrayFunction = new MeanVarianceArrayFunction(
             mock(DoubleArraySource.class));
-        meanVarianceArrayFunction.apply(new double[]{});
+        meanVarianceArrayFunction.apply(new double[]{0});
         assertEquals(0.0d, meanVarianceArrayFunction.variance);
         assertEquals(0.0d, meanVarianceArrayFunction.mean);
     }
@@ -69,7 +69,7 @@ class MeanVarianceArrayFunctionTest {
     void testApply4() {
         MeanVarianceArrayFunction meanVarianceArrayFunction = new MeanVarianceArrayFunction(
             mock(DoubleArraySource.class));
-        meanVarianceArrayFunction.apply(new int[]{});
+        meanVarianceArrayFunction.apply(new int[]{0});
         assertEquals(0.0d, meanVarianceArrayFunction.variance);
         assertEquals(0.0d, meanVarianceArrayFunction.mean);
     }
@@ -87,7 +87,7 @@ class MeanVarianceArrayFunctionTest {
     void testApply6() {
         MeanVarianceArrayFunction meanVarianceArrayFunction = new MeanVarianceArrayFunction(
             mock(DoubleArraySource.class));
-        meanVarianceArrayFunction.apply(new long[]{});
+        meanVarianceArrayFunction.apply(new long[]{0});
         assertEquals(0.0d, meanVarianceArrayFunction.variance);
         assertEquals(0.0d, meanVarianceArrayFunction.mean);
     }

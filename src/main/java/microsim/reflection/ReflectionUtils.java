@@ -1,126 +1,94 @@
 package microsim.reflection;
 
+import lombok.NonNull;
+import lombok.val;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ReflectionUtils {
 
-	public static boolean isStringSource(Class<?> trgClass, String varName,
-			boolean isMethod) {
-		if (!isMethod) {
-			Field fld = searchField(trgClass, varName);
-			if (fld == null)
-				return false;
-			else
-				return (fld.getType() == String.class);
-		} else {
-			Method mtd = searchMethod(trgClass, varName);
+    public static boolean isStringSource(final @Nullable Class<?> targetClass, final @NonNull String varName,
+                                         final boolean isMethod) {
+        if (!isMethod) {
+            val fld = searchField(targetClass, varName);
+            return fld != null && fld.getType() == String.class;
+        } else {
+            val mtd = searchMethod(targetClass, varName);
+            return mtd != null && mtd.getReturnType() == String.class;
+        }
+    }
 
-			if (mtd == null)
-				return false;
-			else
-				return (mtd.getReturnType() == String.class);
-		}
-	}
+    public static boolean isDoubleSource(final @Nullable Class<?> targetClass, final @NonNull String varName,
+                                         final boolean isMethod) {
+        if (!isMethod) {
+            val fld = searchField(targetClass, varName);
+            return fld != null && fld.getType() == double.class; // todo what if this is Double or Integer or anything like this?
+        } else {
+            val mtd = searchMethod(targetClass, varName);
+            return mtd != null && mtd.getReturnType() == double.class;
+        }
+    }
 
-	public static boolean isDoubleSource(Class<?> trgClass, String varName,
-			boolean isMethod) {
-		if (!isMethod) {
-			Field fld = searchField(trgClass, varName);
-			if (fld == null)
-				return false;
-			else
-				return (fld.getType() == double.class);
-		} else {
-			Method mtd = searchMethod(trgClass, varName);
+    public static boolean isLongSource(final @Nullable Class<?> targetClass, final @NonNull String varName,
+                                       final boolean isMethod) {
+        if (!isMethod) {
+            val fld = searchField(targetClass, varName);
+            return fld != null && fld.getType() == long.class;
+        } else {
+            val mtd = searchMethod(targetClass, varName);
+            return mtd != null && mtd.getReturnType() == long.class;
+        }
+    }
 
-			if (mtd == null)
-				return false;
-			else
-				return (mtd.getReturnType() == double.class);
-		}
-	}
+    public static boolean isIntSource(final @Nullable Class<?> targetClass, final @NonNull String varName,
+                                      final boolean isMethod) {
+        if (!isMethod) {
+            val fld = searchField(targetClass, varName);
+            return fld != null && fld.getType() == int.class;
+        } else {
+            val mtd = searchMethod(targetClass, varName);
+            return mtd != null && mtd.getReturnType() == int.class;
+        }
+    }
 
-	public static boolean isLongSource(Class<?> trgClass, String varName,
-			boolean isMethod) {
-		if (!isMethod) {
-			Field fld = searchField(trgClass, varName);
+    public static @Nullable Field searchField(final @Nullable Class<?> targetClass, final @NonNull String fieldName) {
+        var cl = targetClass;
+        while (cl != null)
+            try {
+                val flds = cl.getDeclaredFields();
+                AccessibleObject.setAccessible(flds, true);
+                for (Field fld : flds) if (fld.getName().equals(fieldName)) return fld;
 
-			if (fld == null)
-				return false;
-			else
-				return (fld.getType() == long.class);
-		} else {
-			Method mtd = searchMethod(trgClass, varName);
+                cl = cl.getSuperclass();
+            } catch (SecurityException e) {
+                System.out.println("Field: " + fieldName);
+                System.out.println("Invoker -> SecurityException: " + e.getMessage());
+                e.printStackTrace();
+            }
 
-			if (mtd == null)
-				return false;
-			else
-				return (mtd.getReturnType() == long.class);
-		}
-	}
+        return null;
+    }
 
-	public static boolean isIntSource(Class<?> trgClass, String varName,
-			boolean isMethod) {
-		if (!isMethod) {
-			Field fld = searchField(trgClass, varName);
+    public static @Nullable Method searchMethod(final @Nullable Class<?> targetClass, final @NonNull String methodName) {
+        var cl = targetClass;
 
-			if (fld == null)
-				return false;
-			else
-				return (fld.getType() == int.class);
-		} else {
-			Method mtd = searchMethod(trgClass, varName);
+        while (cl != null)
+            try {
+                val mtds = cl.getDeclaredMethods();
+                AccessibleObject.setAccessible(mtds, true);
+                for (Method mtd : mtds) if (mtd.getName().equals(methodName)) return mtd;
 
-			if (mtd == null)
-				return false;
-			else
-				return (mtd.getReturnType() == int.class);
-		}
-	}
+                cl = cl.getSuperclass();
+            } catch (SecurityException e) {
+                System.out.println("Method: " + methodName);
+                System.out.println("Invoker -> SecurityException: " + e.getMessage());
+                e.printStackTrace();
+            }
 
-	public static Field searchField(Class<?> trgClass, String fieldName) {
-		Class<?> cl = trgClass;
-		while (cl != null)
-			try {
-				Field[] flds = cl.getDeclaredFields();
-				AccessibleObject.setAccessible(flds, true);
-                for (Field fld : flds)
-                    if (fld.getName().equals(fieldName))
-                        return fld;
-
-				cl = cl.getSuperclass();
-			} catch (SecurityException e) {
-				System.out.println("Field: " + fieldName);
-				System.out.println("DoubleInvoker -> SecurityException: "
-						+ e.getMessage());
-				e.printStackTrace();
-			}
-
-		return null;
-	}
-
-	public static Method searchMethod(Class<?> trgClass, String methodName) {
-		Class<?> cl = trgClass;
-
-		while (cl != null)
-			try {
-				Method[] mtds = cl.getDeclaredMethods();
-				AccessibleObject.setAccessible(mtds, true);
-                for (Method mtd : mtds)
-                    if (mtd.getName().equals(methodName))
-                        return mtd;
-
-				cl = cl.getSuperclass();
-			} catch (SecurityException e) {
-				System.out.println("Method: " + methodName);
-				System.out.println("DoubleInvoker -> SecurityException: "
-						+ e.getMessage());
-				e.printStackTrace();
-			}
-
-		return null;
-	}
+        return null;
+    }
 
 }

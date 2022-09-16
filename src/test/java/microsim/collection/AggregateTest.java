@@ -1,5 +1,6 @@
 package microsim.collection;
 
+import lombok.val;
 import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.iterators.AbstractListIteratorDecorator;
@@ -8,6 +9,8 @@ import org.apache.commons.collections4.iterators.FilterListIterator;
 import org.apache.commons.collections4.iterators.ObjectArrayListIterator;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class AggregateTest {
@@ -62,5 +65,11 @@ class AggregateTest {
         verify(iterable).iterator();
         verify(predicate).evaluate(any());
     }
-}
 
+    @Test
+    void testApplyToFilter6() {
+        val scratch = new Aggregate();
+        assertNotNull(scratch);
+        assertThrows(NullPointerException.class, () -> Aggregate.applyToFilter(null, null, null));
+    }
+}

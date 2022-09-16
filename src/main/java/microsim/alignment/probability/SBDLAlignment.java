@@ -1,7 +1,7 @@
 package microsim.alignment.probability;
 
+import lombok.NonNull;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 import static java.lang.StrictMath.log;
 
@@ -12,7 +12,7 @@ import static java.lang.StrictMath.log;
  */
 public class SBDLAlignment<T> extends AbstractSortByDifferenceAlignment<T> {
     @Override
-    double @NotNull [] generateSortingVariable(final double @NotNull [] pArray, final double @NotNull [] rArray) {
+    double @NonNull [] generateSortingVariable(final double @NonNull [] pArray, final double @NonNull [] rArray) {
         val returnValues = new double[pArray.length];
         for (var i = 0; i < pArray.length; i++)
             returnValues[i] = log(1 / rArray[i] - 1) + log(pArray[i] / (1 - pArray[i]));

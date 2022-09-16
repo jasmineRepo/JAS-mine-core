@@ -4,6 +4,7 @@ import cern.mateba.list.tdouble.DoubleArrayList;
 import cern.mateba.list.tint.IntArrayList;
 import cern.mateba.list.tlong.LongArrayList;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import microsim.engine.SimulationEngine;
 import microsim.event.CommonEventType;
@@ -60,7 +61,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	/**
 	 * Add a new series.
 	 * @param source
-	 *            The IDoubleSource object.
+	 *            The {@link DoubleSource} object.
 	 * @param valueID
 	 *            The value identifier defined by source object.
 	 */
@@ -286,7 +287,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	 *            <i>TimeSeries.EVENT_SAVE</i> calls the <i>saveToFile()</i>
 	 *            method.<br>
 	 * */
-	public void onEvent(Enum<?> type) {
+	public void onEvent(@NonNull Enum<?> type) {
 		if (type instanceof CommonEventType) {
 			switch ((CommonEventType) type) {
 				case Update -> updateSource();

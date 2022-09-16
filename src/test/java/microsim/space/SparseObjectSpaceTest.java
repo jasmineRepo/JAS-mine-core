@@ -18,7 +18,9 @@ class SparseObjectSpaceTest {
 
     @Test
     void testConstructor4() {
-        SparseObjectSpace actualSparseObjectSpace = new SparseObjectSpace(new DenseObjectSpace(3, 3));
+        var dos =new DenseObjectSpace(3, 3);
+
+        var actualSparseObjectSpace = new SparseObjectSpace(new DenseObjectSpace(3, 3));
         assertEquals(3, actualSparseObjectSpace.getXSize());
         assertEquals(0, actualSparseObjectSpace.modCount);
         assertEquals(9, actualSparseObjectSpace.m.size());
@@ -162,7 +164,7 @@ class SparseObjectSpaceTest {
 
     @Test
     void testEquals() {
-        assertNotEquals(new SparseObjectSpace(3, 3), null);
+        assertThrows(NullPointerException.class, () -> (new SparseObjectSpace(3, 3)).equals(null));
         assertNotEquals(new SparseObjectSpace(3, 3), "Different type to SparseObjectSpace");
     }
 
@@ -177,7 +179,7 @@ class SparseObjectSpaceTest {
     @Test
     void testEquals3() {
         SparseObjectSpace sparseObjectSpace = new SparseObjectSpace(3, 3);
-        assertNotEquals(sparseObjectSpace, new SparseObjectSpace(3, 3));
+        assertEquals(sparseObjectSpace, new SparseObjectSpace(3, 3));
     }
 }
 

@@ -1,12 +1,12 @@
 package microsim.alignment.probability;
 
 import cern.jet.random.engine.RandomEngine;
+import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
 import microsim.alignment.AlignmentUtils;
 import microsim.engine.SimulationEngine;
 import org.apache.commons.collections4.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -30,8 +30,8 @@ import static jamjam.Mean.mean;
 @Log
 public class MultiplicativeScalingAlignment<T> implements AlignmentUtils<T> {
 
-    public double @NotNull [] align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                                    final @NotNull AlignmentProbabilityClosure<T> closure,
+    public double @NonNull [] align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                                    final @NonNull AlignmentProbabilityClosure<T> closure,
                                     final double targetProbability) {
         validateProbabilityValue(targetProbability);
         val agentList = extractAgentList(agents, filter);

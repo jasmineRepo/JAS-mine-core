@@ -5,8 +5,7 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class MaxArrayFunctionTest {
@@ -20,7 +19,7 @@ class MaxArrayFunctionTest {
     @Test
     void testDoubleConstructor() {
         MaxArrayFunction.Double actualResultDouble = new MaxArrayFunction.Double(mock(DoubleArraySource.class));
-        assertEquals(0.0d, actualResultDouble.getDoubleValue(null));
+        assertEquals(0.0d, actualResultDouble.getDoubleValue(mock(Enum.class)));
         assertTrue(actualResultDouble.timeChecker.isEnabled());
     }
 
@@ -42,7 +41,7 @@ class MaxArrayFunctionTest {
     @Test
     void testIntegerConstructor() {
         MaxArrayFunction.Integer actualInteger = new MaxArrayFunction.Integer(mock(IntArraySource.class));
-        assertEquals(0, actualInteger.getIntValue(null));
+        assertEquals(0, actualInteger.getIntValue(mock(Enum.class)));
         assertTrue(actualInteger.timeChecker.isEnabled());
     }
 
@@ -56,7 +55,7 @@ class MaxArrayFunctionTest {
 
     @Test
     void testIntegerGetDoubleValue() {
-        assertEquals(0.0d, (new MaxArrayFunction.Integer(mock(IntArraySource.class))).getDoubleValue(null));
+        assertEquals(0.0d, (new MaxArrayFunction.Integer(mock(IntArraySource.class))).getDoubleValue(mock(Enum.class)));
     }
 
     @Test
@@ -69,7 +68,7 @@ class MaxArrayFunctionTest {
     @Test
     void testLongConstructor() {
         MaxArrayFunction.Long actualResultLong = new MaxArrayFunction.Long(mock(LongArraySource.class));
-        assertEquals(0L, actualResultLong.getLongValue(null));
+        assertEquals(0L, actualResultLong.getLongValue(mock(Enum.class)));
         assertTrue(actualResultLong.timeChecker.isEnabled());
     }
 
@@ -83,7 +82,7 @@ class MaxArrayFunctionTest {
 
     @Test
     void testLongGetDoubleValue() {
-        assertEquals(0.0d, (new MaxArrayFunction.Long(mock(LongArraySource.class))).getDoubleValue(null));
+        assertEquals(0.0d, (new MaxArrayFunction.Long(mock(LongArraySource.class))).getDoubleValue(mock(Enum.class)));
     }
 }
 

@@ -1,6 +1,7 @@
 package microsim.alignment.probability;
 
-import org.jetbrains.annotations.NotNull;
+
+import lombok.NonNull;
 
 import java.util.stream.IntStream;
 
@@ -13,10 +14,11 @@ public class SBDAlignment<T> extends AbstractSortByDifferenceAlignment<T> {
 
     /**
      * {@inheritDoc}
+     *
      * @implSpec {@code Q_i = P_i - R_i}.
      */
     @Override
-    double @NotNull [] generateSortingVariable(final double @NotNull [] pArray, final double @NotNull [] rArray) {
+    double @NonNull [] generateSortingVariable(final double @NonNull [] pArray, final double @NonNull [] rArray) {
         return IntStream.range(0, pArray.length).mapToDouble(i -> pArray[i] - rArray[i]).toArray();
     }
 }

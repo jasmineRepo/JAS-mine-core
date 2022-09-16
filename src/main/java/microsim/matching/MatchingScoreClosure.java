@@ -1,7 +1,9 @@
 package microsim.matching;
 
+import lombok.NonNull;
+
 public interface MatchingScoreClosure<T> {
 
-	public Double getValue(T item1, T item2);
+    double getValue(final @NonNull T item1, final @NonNull T item2);
 
 }

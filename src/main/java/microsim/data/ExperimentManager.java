@@ -1,119 +1,121 @@
 package microsim.data;
 
+import lombok.NonNull;
 import lombok.extern.java.Log;
+import lombok.val;
 import microsim.data.db.DatabaseUtils;
 import microsim.data.db.Experiment;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Date;
 import java.util.Objects;
 import java.util.logging.Level;
 
 /**
- * Singleton. Utility used to create ana manage experiment setup.
- * It makes copies of input folder into output and create experiment run
- * record into output database.
- *
- * @author Michele Sonnessa, edited by Ross Richardson
- *
+ * Singleton. Utility used to create ana manage experiment setup. It makes copies of input folder into output and create
+ * experiment run record into output database.
  */
-@Log public class ExperimentManager {
+@Log
+public class ExperimentManager {
 
-	/** The flag determines if the tool must copy input resources into output folder. */
-	public boolean copyInputFolderStructure = true;
+    private static ExperimentManager manager;
 
-	/**	The flag determines if output database must automatically be created. */
-	public boolean saveExperimentOnDatabase = true;
+    /**
+     * The flag determines if the tool must copy input resources into output folder.
+     */
+    public boolean copyInputFolderStructure = true;
 
-	private static ExperimentManager manager = null;
+    /**
+     * The flag determines if output database must automatically be created.
+     */
+    public boolean saveExperimentToDatabase = true;
 
-	private ExperimentManager() {
+    /**
+     * Checks {@code manager}, if {@code null}, generates a new instance of {@link ExperimentManager}.
+     *
+     * @return an instance of {@link ExperimentManager}.
+     */
+    public static @NonNull ExperimentManager getInstance() {
+        manager = manager == null ? new ExperimentManager() : manager;
+        return manager;
+    }
 
-	}
+    /**
+     * Creates a new instance of {@link Experiment} with the provided id; uses current time as the timestamp.
+     *
+     * @param multiRunId The experiment id.
+     * @return an instance of {@link Experiment}.
+     */
+    public @NonNull Experiment createExperiment(final @NonNull String multiRunId) {
+        val experiment = new Experiment();
+        experiment.multiRunId = multiRunId;
+        experiment.timestamp = new Date(System.currentTimeMillis());
 
-	public static ExperimentManager getInstance() {
-		if (manager == null)
-			manager = new ExperimentManager();
-		return manager;
-	}
+        return experiment;
+    }
 
-	public Experiment createExperiment(String multiRunId) {
-		Experiment experiment = new Experiment();
-		experiment.multiRunId = multiRunId;
-		experiment.timestamp = new Date(System.currentTimeMillis());
+    /**
+     * Walks recursively over all files in the directory and copies them to a new destination. It the output exists
+     * overrides it. Ignores files and folders starting with dots.
+     *
+     * @param fileName  The source file/directory
+     * @param outFolder The destination folder.
+     * @throws IOException when something goes wrong (permissions / lack of space).
+     */
+    public void copy(final @NonNull String fileName, final @NonNull String outFolder) throws IOException {
+        val source = new File(fileName).toPath();
+        val output = new File(outFolder).toPath();
 
-		return experiment;
-	}
+        Files.walkFileTree(source, new SimpleFileVisitor<>() {
 
-	@SuppressWarnings("resource")
-	public void copy(String fileName, String outFolder) throws Exception {
-		File sourceFile = new File(fileName);
-		File outDir = new File(outFolder);
-		File destFile = new File(outFolder + File.separator + sourceFile.getName());
-		if(sourceFile.isDirectory()) {
-			FileUtils.copyDirectory(sourceFile, destFile);		//Now use Apache Commons IO
-		}
-		else {
-			if (! outDir.exists())
-				outDir.mkdirs();
+            /**
+             * When a directory is encountered creates the corresponding one in the target directory.
+             */
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (!dir.startsWith("."))
+                    Files.createDirectories(output.resolve(source.relativize(dir)));
+                return FileVisitResult.CONTINUE;
+            }
 
+            /**
+             * When a regular file is encountered copies it.
+             */
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!file.startsWith("."))
+                    Files.copy(file, output.resolve(source.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
 
-			if (!destFile.exists())
-		        destFile.createNewFile();
+    public @NonNull Experiment setupExperiment(@NonNull Experiment experiment,
+                                               final @NonNull Object... models) throws Exception {
+        val outFolder = experiment.getOutputFolder() + File.separator + "input";
 
-			try (FileChannel source = new FileInputStream(sourceFile).getChannel();
-				 FileChannel destination = new FileOutputStream(destFile).getChannel()) {
+        log.log(Level.INFO, "Setting up experiment " + experiment.runId);
 
-				// previous code: destination.transferFrom(source, 0, source.size());
-				// to avoid infinite loops, should be:
-				long count = 0;
-				long size = source.size();
-				while ((count += destination.transferFrom(source, count, size - count)) < size) ;
-			}
-		}
-	}
+        if (copyInputFolderStructure) {
+            log.log(Level.INFO, "Copying folder structure");
+            copy(experiment.inputFolder, outFolder);
+        } else DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
 
-	public Experiment setupExperiment(Experiment experiment, Object... models) throws Exception {
-		final String outFolder = experiment.getOutputFolder() + File.separator + "input";
+        if (saveExperimentToDatabase) {
+            log.log(Level.INFO, "Creating experiment on output database");
+            val dbFile = new File(experiment.getOutputFolder() + File.separator + "database");
+            if (!dbFile.exists()) dbFile.mkdir();
 
-		log.log(Level.INFO, "Setting up experiment " + experiment.runId);
+            if (copyInputFolderStructure) DatabaseUtils.databaseInputUrl = outFolder + File.separator + "input";
+            DatabaseUtils.databaseOutputUrl = experiment.getOutputFolder() + File.separator + "database" + File.separator + "out";
 
-		if (copyInputFolderStructure) {
-			log.log(Level.INFO, "Copying folder structure");
-
-			File inputDir = new File(experiment.inputFolder);
-			if (inputDir.exists()) {
-				String[] files = inputDir.list();
-				for (String file : Objects.requireNonNull(files)) {
-					if (! file.startsWith(".")) {
-						log.log(Level.INFO, "Copying " + file + " to output folder");
-						copy(inputDir + File.separator + file, outFolder);
-					}
-				}
-			}
-		}
-		else{
-			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
-		}
-
-		if (saveExperimentOnDatabase) {
-			log.log(Level.INFO, "Creating experiment on output database");
-			File dbFile = new File(experiment.getOutputFolder() + File.separator + "database");
-			if (! dbFile.exists())
-				dbFile.mkdir();
-
-			if(copyInputFolderStructure) {
-				DatabaseUtils.databaseInputUrl = outFolder + File.separator + "input";
-			}
-			DatabaseUtils.databaseOutputUrl = experiment.getOutputFolder() + File.separator + "database" + File.separator + "out";
-
-			experiment = DatabaseUtils.createExperiment(DatabaseUtils.getOutEntityManger(), experiment, models);
-			log.log(Level.INFO, "Created experiment with id " + experiment.id);
-		}
-		return experiment;
-	}
+            experiment = DatabaseUtils.createExperiment(Objects.requireNonNull(DatabaseUtils.getOutEntityManger()),
+                experiment, models);
+            log.log(Level.INFO, "Created experiment with id " + experiment.id);
+        }
+        return experiment;
+    }
 }

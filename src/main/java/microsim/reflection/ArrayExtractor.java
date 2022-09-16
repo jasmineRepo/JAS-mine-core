@@ -1,59 +1,38 @@
 package microsim.reflection;
 
+import lombok.NonNull;
+import lombok.val;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 
 public class ArrayExtractor {
 
-	public static double[] extractDoubleArray(Collection<?> collection, Class<?> clazz, String fieldName, boolean isMethod) {
-		final DoubleValueExtractor extractor = new DoubleValueExtractor(clazz, fieldName, isMethod);
+    public static double @NonNull [] extractDoubleArray(final @NonNull Collection<?> collection,
+                                                        final @Nullable Class<?> clazz, final @NonNull String fieldName,
+                                                        final boolean isMethod) {
+        val extractor = new DoubleValueExtractor(clazz, fieldName, isMethod);
+        return extractor.getCollectionValue(collection);
+    }
 
-		final double[] vector = new double[collection.size()];
+    public static int @NonNull [] extractIntegerArray(final @NonNull Collection<?> collection,
+                                                      final @Nullable Class<?> clazz, final @NonNull String fieldName,
+                                                      final boolean isMethod) {
+        val extractor = new IntegerValueExtractor(clazz, fieldName, isMethod);
+        return extractor.getCollectionValue(collection);
+    }
 
-		int i = 0;
-		for (Object element : collection) {
-			vector[i++] = extractor.getDouble(element);
-		}
+    public static long @NonNull [] extractLongArray(final @NonNull Collection<?> collection,
+                                                    final @Nullable Class<?> clazz, final @NonNull String fieldName,
+                                                    final boolean isMethod) {
+        val extractor = new LongValueExtractor(clazz, fieldName, isMethod);
+        return extractor.getCollectionValue(collection);
+    }
 
-		return vector;
-	}
-
-	public static int[] extractIntegerArray(Collection<?> collection, Class<?> clazz, String fieldName, boolean isMethod) {
-		final IntegerValueExtractor extractor = new IntegerValueExtractor(clazz, fieldName, isMethod);
-
-		final int[] vector = new int[collection.size()];
-
-		int i = 0;
-		for (Object element : collection) {
-			vector[i++] = extractor.getInt(element);
-		}
-
-		return vector;
-	}
-
-	public static long[] extractLongArray(Collection<?> collection, Class<?> clazz, String fieldName, boolean isMethod) {
-		final LongValueExtractor extractor = new LongValueExtractor(clazz, fieldName, isMethod);
-
-		final long[] vector = new long[collection.size()];
-
-		int i = 0;
-		for (Object element : collection) {
-			vector[i++] = extractor.getLong(element);
-		}
-
-		return vector;
-	}
-
-	public static String[] extractStringArray(Collection<?> collection, Class<?> clazz, String fieldName, boolean isMethod) {
-		final StringValueExtractor extractor = new StringValueExtractor(clazz, fieldName, isMethod);
-
-		final String[] vector = new String[collection.size()];
-
-		int i = 0;
-		for (Object element : collection) {
-			vector[i++] = extractor.getString(element);
-		}
-
-		return vector;
-	}
-
+    public static String @NonNull [] extractStringArray(final @NonNull Collection<?> collection,
+                                                        final @Nullable Class<?> clazz, final @NonNull String fieldName,
+                                                        final boolean isMethod) {
+        val extractor = new StringValueExtractor(clazz, fieldName, isMethod);
+        return extractor.getCollectionValue(collection);
+    }
 }

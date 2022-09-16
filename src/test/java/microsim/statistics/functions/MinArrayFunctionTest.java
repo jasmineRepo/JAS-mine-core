@@ -20,7 +20,7 @@ class MinArrayFunctionTest {
     @Test
     void testDoubleConstructor() {
         MinArrayFunction.Double actualResultDouble = new MinArrayFunction.Double(mock(DoubleArraySource.class));
-        assertEquals(0.0d, actualResultDouble.getDoubleValue(null));
+        assertEquals(0.0d, actualResultDouble.getDoubleValue(mock(Enum.class)));
         assertTrue(actualResultDouble.timeChecker.isEnabled());
     }
 
@@ -42,7 +42,7 @@ class MinArrayFunctionTest {
     @Test
     void testIntegerConstructor() {
         MinArrayFunction.Integer actualInteger = new MinArrayFunction.Integer(mock(IntArraySource.class));
-        assertEquals(0, actualInteger.getIntValue(null));
+        assertEquals(0, actualInteger.getIntValue(mock(Enum.class)));
         assertTrue(actualInteger.timeChecker.isEnabled());
     }
 
@@ -56,7 +56,7 @@ class MinArrayFunctionTest {
 
     @Test
     void testIntegerGetDoubleValue() {
-        assertEquals(0.0d, (new MinArrayFunction.Integer(mock(IntArraySource.class))).getDoubleValue(null));
+        assertEquals(0.0d, (new MinArrayFunction.Integer(mock(IntArraySource.class))).getDoubleValue(mock(Enum.class)));
     }
 
     @Test
@@ -69,7 +69,7 @@ class MinArrayFunctionTest {
     @Test
     void testLongConstructor() {
         MinArrayFunction.Long actualResultLong = new MinArrayFunction.Long(mock(LongArraySource.class));
-        assertEquals(0L, actualResultLong.getLongValue(null));
+        assertEquals(0L, actualResultLong.getLongValue(mock(Enum.class)));
         assertTrue(actualResultLong.timeChecker.isEnabled());
     }
 
@@ -83,7 +83,7 @@ class MinArrayFunctionTest {
 
     @Test
     void testLongGetDoubleValue() {
-        assertEquals(0.0d, (new MinArrayFunction.Long(mock(LongArraySource.class))).getDoubleValue(null));
+        assertEquals(0.0d, (new MinArrayFunction.Long(mock(LongArraySource.class))).getDoubleValue(mock(Enum.class)));
     }
 }
 

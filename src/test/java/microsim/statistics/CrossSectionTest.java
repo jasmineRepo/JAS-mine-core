@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class CrossSectionTest {
     @Test
     void testDoubleConstructor() {
         CrossSection.Double actualResultDouble = new CrossSection.Double(new ArrayList<>());
-        assertNull(actualResultDouble.getDoubleArray());
         assertTrue(actualResultDouble.target.isEmpty());
         assertTrue(actualResultDouble.timeChecker.isEnabled());
     }
@@ -27,9 +27,8 @@ class CrossSectionTest {
 
     @Test
     void testDoubleConstructor6() {
-        CrossSection.Double actualResultDouble = new CrossSection.Double(new ArrayList<>(), null);
-
-        assertNull(actualResultDouble.valueID);
+        CrossSection.Double actualResultDouble = new CrossSection.Double(new ArrayList<>(), mock(Enum.class));
+        assertInstanceOf(Enum.class, actualResultDouble.valueID);
         assertTrue(actualResultDouble.target.isEmpty());
         assertNull(actualResultDouble.getFilter());
         assertTrue(actualResultDouble.isCheckingTime());
@@ -39,7 +38,6 @@ class CrossSectionTest {
     @Test
     void testIntegerConstructor() {
         CrossSection.Integer actualInteger = new CrossSection.Integer(new ArrayList<>());
-        assertNull(actualInteger.getIntArray());
         assertTrue(actualInteger.target.isEmpty());
         assertTrue(actualInteger.timeChecker.isEnabled());
     }
@@ -56,10 +54,10 @@ class CrossSectionTest {
 
     @Test
     void testIntegerConstructor6() {
-        CrossSection.Integer actualInteger = new CrossSection.Integer(new ArrayList<>(), null);
+        CrossSection.Integer actualInteger = new CrossSection.Integer(new ArrayList<>(), mock(Enum.class));
 
         assertNull(actualInteger.getFilter());
-        assertNull(actualInteger.valueID);
+        assertInstanceOf(Enum.class, actualInteger.valueID);
         assertTrue(actualInteger.target.isEmpty());
         assertTrue(actualInteger.isCheckingTime());
         assertTrue(actualInteger.timeChecker.isEnabled());
@@ -68,7 +66,6 @@ class CrossSectionTest {
     @Test
     void testLongConstructor() {
         CrossSection.Long actualResultLong = new CrossSection.Long(new ArrayList<>());
-        assertNull(actualResultLong.getLongArray());
         assertTrue(actualResultLong.target.isEmpty());
         assertTrue(actualResultLong.timeChecker.isEnabled());
     }
@@ -85,10 +82,11 @@ class CrossSectionTest {
 
     @Test
     void testLongConstructor6() {
-        CrossSection.Long actualResultLong = new CrossSection.Long(new ArrayList<>(), null);
+        assertThrows(NullPointerException.class, () -> new CrossSection.Long(new ArrayList<>(), null));
+        CrossSection.Long actualResultLong = new CrossSection.Long(new ArrayList<>(), mock(Enum.class));
 
         assertNull(actualResultLong.getFilter());
-        assertNull(actualResultLong.valueID);
+        assertInstanceOf(Enum.class, actualResultLong.valueID);
         assertTrue(actualResultLong.target.isEmpty());
         assertTrue(actualResultLong.isCheckingTime());
         assertTrue(actualResultLong.timeChecker.isEnabled());

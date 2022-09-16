@@ -1,103 +1,89 @@
 package microsim.statistics.functions;
 
+import jamjam.Sum;
+import lombok.NonNull;
+import lombok.val;
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
+import java.util.Arrays;
+
 /**
- * This class computes the average of the last given number of values in an array taken from a data source.
- * The mean function return always a double value, so it implements the
- * <i>DoubleSource</i> interface and the standard  <i>DoubleSource</i> one.
+ * This class computes the average of the last given number of values in an array taken from a data source. The mean
+ * function return always a double value, so it implements the {@link DoubleSource} interface and the standard
+ * {@link DoubleSource} one.
  */
 public class MovingAverageArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
-	protected double mean;
-	protected int window;
+    protected double mean;
+    protected int window;
 
-	/** Create a count function on an integer array source.
-	 * @param source The data source.
-	 */
-	public MovingAverageArrayFunction(IntArraySource source, int window) {
-		super(source);
-		this.window = window;
-	}
+    /**
+     * Create a count function on an integer array source.
+     *
+     * @param source The data source.
+     */
+    public MovingAverageArrayFunction(final @NonNull IntArraySource source, final int windowSize) {
+        super(source);
+        if (windowSize < 1) throw new IllegalArgumentException("Unacceptable window size");
+        this.window = windowSize;
+    }
 
-	/** Create a count function on a long array source.
-	 * @param source The data source.
-	 */
-	public MovingAverageArrayFunction(LongArraySource source, int window) {
-		super(source);
-		this.window = window;
-	}
+    /**
+     * Create a count function on a long array source.
+     *
+     * @param source The data source.
+     */
+    public MovingAverageArrayFunction(final @NonNull LongArraySource source, final int windowSize) {
+        super(source);
+        if (windowSize < 1) throw new IllegalArgumentException("Unacceptable window size");
+        this.window = windowSize;
+    }
 
-	/** Create a count function on a double array source.
-	 * @param source The data source.
-	 */
-	public MovingAverageArrayFunction(DoubleArraySource source, int window) {
-		super(source);
-		this.window = window;
-	}
+    /**
+     * Create a count function on a double array source.
+     *
+     * @param source The data source.
+     */
+    public MovingAverageArrayFunction(final @NonNull DoubleArraySource source, final int windowSize) {
+        super(source);
+        if (windowSize < 1) throw new IllegalArgumentException("Unacceptable window size");
+        this.window = windowSize;
+    }
 
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
-	 */
-	public void apply(double[] data) {
-		int firstElement = data.length - window;
-		if (firstElement < 0)
-			firstElement = 0;
-		double vals = window;
-		if (data.length < window)
-			vals = data.length;
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final double @NonNull [] data) {
+        val firstElement = Math.max(data.length - window, 0);
+        val vals = Math.min(data.length, window);
+        mean = Sum.sum(Arrays.stream(data).skip(firstElement).limit(vals)) / vals; // todo check that it returns correct values
+    }
 
-		double sum = 0.0;
-		for (int i = firstElement; i < data.length ; i++) {
-			sum += data[i];
-		}
-		mean = sum / vals;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final int @NonNull [] data) {
+        val firstElement = Math.max(data.length - window, 0);
+        val vals = Math.min(data.length, window);
+        mean = Sum.sum(Arrays.stream(data).asDoubleStream().skip(firstElement).limit(vals)) / vals; // todo check that it returns correct values
+    }
 
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(int[])
-	 */
-	public void apply(int[] data) {
-		int firstElement = data.length - window;
-		if (firstElement < 0)
-			firstElement = 0;
-		double vals = window;
-		if (data.length < window)
-			vals = data.length;
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final long @NonNull [] data) {
+        val firstElement = Math.max(data.length - window, 0);
+        val vals = Math.min(data.length, window);
+        mean = Sum.sum(Arrays.stream(data).asDoubleStream().skip(firstElement).limit(vals)) / vals; // todo check that it returns correct values
+    }
 
-		double sum = 0.0;
-		for (int i = firstElement; i < data.length ; i++) {
-			sum += data[i];
-		}
-		mean = sum / vals;
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-	 */
-	public void apply(long[] data) {
-		int firstElement = data.length - window;
-		if (firstElement < 0)
-			firstElement = 0;
-		double vals = window;
-		if (data.length < window)
-			vals = data.length;
-
-		double sum = 0.0;
-		for (int i = firstElement; i < data.length ; i++) {
-			sum += data[i];
-		}
-		mean = sum / vals;
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-	 */
-	public double getDoubleValue(Enum<?> variableID) {
-		return mean;
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    public double getDoubleValue(final @NonNull Enum<?> variableID) {
+        return mean;
+    }
 }

@@ -1,147 +1,147 @@
 package microsim.statistics.functions;
 
+import lombok.NonNull;
 import microsim.statistics.*;
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.LongSource;
 
+import java.util.Arrays;
+
 /**
- * This class computes the maximum value in an array of source values. According to the source data type
- * there are four data-type oriented implementations. Each of them implements always the
- * <i>DoubleSource</i> interface.
+ * This class computes the maximum value in an array of source values. According to the source data type there are three
+ * data-type oriented implementations. Each of them implements always the {@link DoubleSource} interface.
  */
 public abstract class MaxArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
-	/** Create a maximum function on an integer array source.
-	 * @param source The data source.
-	 */
-	public MaxArrayFunction(IntArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a maximum function on an integer array source.
+     *
+     * @param source The data source.
+     */
+    public MaxArrayFunction(final @NonNull IntArraySource source) {
+        super(source);
+    }
 
-	/** Create a maximum function on a long array source.
-	 * @param source The data source.
-	 */
-	public MaxArrayFunction(LongArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a maximum function on a long array source.
+     *
+     * @param source The data source.
+     */
+    public MaxArrayFunction(final @NonNull LongArraySource source) {
+        super(source);
+    }
 
-	/** Create a maximum function on a double array source.
-	 * @param source The data source.
-	 */
-	public MaxArrayFunction(DoubleArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a maximum function on a double array source.
+     *
+     * @param source The data source.
+     */
+    public MaxArrayFunction(final @NonNull DoubleArraySource source) {
+        super(source);
+    }
 
-	/**
-	 * MaxFunction operating on double source values.
-	 */
-	public static class Double extends MaxArrayFunction implements DoubleSource
-	{
-		/** Create a maximum function on a double array source.
-		 * @param source The data source.
-		 */
-		public Double(DoubleArraySource source) {
-			super(source);
-		}
+    /**
+     * MaxFunction operating on double source values.
+     */
+    public static class Double extends MaxArrayFunction implements DoubleSource {
+        protected double dmax;
 
-		protected double dmax;
+        /**
+         * Create a maximum function on a double array source.
+         *
+         * @param source The data source.
+         */
+        public Double(final @NonNull DoubleArraySource source) {
+            super(source);
+        }
 
-		/* (non-Javadoc)
-		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-		 */
-		public void apply(double[] data) {
-			dmax = java.lang.Double.MIN_VALUE;
+        /**
+         * {@inheritDoc}
+         */
+        public void apply(final double @NonNull [] data) {
+            dmax = java.lang.Double.MIN_VALUE;
+            Arrays.stream(data).filter(datum -> dmax < datum).forEach(datum -> dmax = datum);
+        }
 
-			for (double datum : data)
-				if (dmax < datum)
-					dmax = datum;
+        /**
+         * {@inheritDoc}
+         */
+        public double getDoubleValue(final @NonNull Enum<?> id) {
+            return dmax;
+        }
+    }
 
-		}
+    /**
+     * MaxFunction operating on long source values.
+     */
+    public static class Long extends MaxArrayFunction implements LongSource {
+        protected long lmax;
 
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public double getDoubleValue(Enum<?> id) {	return dmax; }
-	}
+        /**
+         * Create a maximum function on a long array source.
+         *
+         * @param source The data source.
+         */
+        public Long(final @NonNull LongArraySource source) {
+            super(source);
+        }
 
-	/**
-	 * MaxFunction operating on long source values.
-	 */
-	public static class Long extends MaxArrayFunction implements LongSource
-	{
-		/** Create a maximum function on a long array source.
-		 * @param source The data source.
-		 */
-		public Long(LongArraySource source) {
-			super(source);
-		}
+        public void apply(final long @NonNull [] data) {
+            lmax = java.lang.Long.MIN_VALUE;
+            Arrays.stream(data).filter(datum -> lmax < datum).forEach(datum -> lmax = datum);
+        }
 
-		protected long lmax;
+        /**
+         * {@inheritDoc}
+         */
+        public long getLongValue(final @NonNull Enum<?> id) {
+            return lmax;
+        }
 
-		/* (non-Javadoc)
-		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-		 */
-		public void apply(long[] data) {
-			lmax = java.lang.Long.MIN_VALUE;
+        /**
+         * {@inheritDoc}
+         */
+        public double getDoubleValue(final @NonNull Enum<?> variableID) {
+            return lmax;
+        }
+    }
 
-			for (long datum : data)
-				if (lmax < datum)
-					lmax = datum;
+    /**
+     * MaxFunction operating on integer source values.
+     */
+    public static class Integer extends MaxArrayFunction implements IntSource {
+        protected int imax;
 
-		}
+        /**
+         * Create a maximum function on an integer array source.
+         *
+         * @param source The data source.
+         */
+        public Integer(final @NonNull IntArraySource source) {
+            super(source);
+        }
 
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public long getLongValue(Enum<?> id) {	return lmax; }
+        /**
+         * {@inheritDoc}
+         */
+        public void apply(final int @NonNull [] data) {
+            imax = java.lang.Integer.MIN_VALUE;
+            Arrays.stream(data).filter(datum -> imax < datum).forEach(datum -> imax = datum);
+        }
 
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public double getDoubleValue(Enum<?> variableID) {
-			return lmax;
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        public int getIntValue(final @NonNull Enum<?> id) {
+            return imax;
+        }
 
-	/**
-	 * MaxFunction operating on integer source values.
-	 */
-	public static class Integer extends MaxArrayFunction implements IntSource
-	{
-		/** Create a maximum function on an integer array source.
-		 * @param source The data source.
-		 */
-		public Integer(IntArraySource source) {
-			super(source);
-		}
-
-		protected int imax;
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-		 */
-		public void apply(int[] data) {
-
-			imax = java.lang.Integer.MIN_VALUE;
-
-			for (int datum : data)
-				if (imax < datum)
-					imax = datum;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public int getIntValue(Enum<?> id) {
-			return imax;
-		}
-
-		/* (non-Javadoc)
-		 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-		 */
-		public double getDoubleValue(Enum<?> variableID) {
-			return imax;
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        public double getDoubleValue(final @NonNull Enum<?> variableID) {
+            return imax;
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package microsim.event;
 
 
+import lombok.NonNull;
+
 public interface EventListener {
 
-	void onEvent(Enum<?> type);
+    void onEvent(final @NonNull Enum<?> type);
 }

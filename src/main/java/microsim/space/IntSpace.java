@@ -1,334 +1,259 @@
 package microsim.space;
 
+import lombok.NonNull;
+import lombok.val;
 import microsim.engine.SimulationEngine;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
- * A bidimensional grid containing integer values.
- *
- * <p>
- * Title: JAS
- * </p>
- * <p>
- * Description: Java Agent-based Simulation library
- * </p>
- * <p>
- * Copyright (C) 2002 Michele Sonnessa
- * </p>
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * @author Michele Sonnessa
- *         <p>
+ * A bi-dimensional grid containing integer values.
  */
 public class IntSpace extends AbstractSpace<Integer> {
-	protected int[] m;
-	private int size;
+    private final int size;
+    protected int[] m;
 
-	/**
-	 * Create a grid of given size.
-	 *
-	 * @param xSize
-	 *            The width of the grid.
-	 * @param ySize
-	 *            The height of the grid.
-	 */
-	public IntSpace(int xSize, int ySize) {
-		super(xSize, ySize);
-		m = new int[xSize * ySize];
-		size = xSize * ySize;
-	}
+    /**
+     * Create a grid of given size.
+     *
+     * @param xSize The width of the grid.
+     * @param ySize The height of the grid.
+     */
+    public IntSpace(final int xSize, final int ySize) {
+        super(xSize, ySize);
+        m = new int[xSize * ySize];
+        size = xSize * ySize;
+    }
 
-	/**
-	 * Create a copy of the given grid.
-	 *
-	 * @param grid
-	 *            The source grid.
-	 */
-	public IntSpace(IntSpace grid) {
-		super(grid.getXSize(), grid.getYSize());
-		m = new int[xSize * ySize];
-		size = xSize * ySize;
-		for (int x = 0; x < xSize; x++)
-			for (int y = 0; y < ySize; y++)
-				this.setInt(x, y, grid.getInt(x, y));
-	}
+    /**
+     * Create a copy of the given grid.
+     *
+     * @param grid The source grid.
+     */
+    public IntSpace(final @NonNull IntSpace grid) {
+        super(grid.getXSize(), grid.getYSize());
+        m = new int[xSize * ySize];
+        size = xSize * ySize;
+        for (int x = 0; x < xSize; x++)
+            for (int y = 0; y < ySize; y++) this.setInt(x, y, grid.getInt(x, y));
+    }
 
-	private int at(int x, int y) {
-		return y * xSize + x;
-	}
+    protected int at(final int x, final int y) {
+        return y * xSize + x;
+    }
 
-	public void randomPopulate(double splitProbability, int probableValue, int defaultValue) {
-		for (int i = 0; i < getXSize(); i++) {
-			for (int j = 0; j < getYSize(); j++) {
-				if (SimulationEngine.getRnd().nextDouble() < splitProbability)
-					setInt(i, j, probableValue);
-				else
-					setInt(i, j, defaultValue);
-			}
-		}
-	}
+    public void randomPopulate(final double splitProbability, final int probableValue, final int defaultValue) {
+        for (int i = 0; i < getXSize(); i++)
+            for (int j = 0; j < getYSize(); j++)
+                setInt(i, j, SimulationEngine.getRnd().nextDouble() < splitProbability ? probableValue : defaultValue);
+    }
 
-	/**
-	 * Return an Integer object containing the value at given position.
-	 *
-	 * @param x
-	 *            The x coordinate. WARNING: No bounds checking for fast access.
-	 * @param y
-	 *            The y coordinate. WARNING: No bounds checking for fast access.
-	 * @return The Integer wrapper for value stored at x,y position of the grid.
-	 */
-	public Integer get(int x, int y) {
-		return m[at(x, y)];
-	}
+    /**
+     * Return an Integer object containing the value at given position.
+     *
+     * @param x The {@code x} coordinate.
+     * @param y The {@code y} coordinate.
+     * @return The Integer wrapper for value stored at {@code x,y} position of the grid.
+     */
+    public @NonNull Integer get(final int x, final int y) {
+        return m[at(x, y)];
+    }
 
-	/**
-	 * Return the value at given position.
-	 *
-	 * @param x
-	 *            The x coordinate. WARNING: No bounds checking for fast access.
-	 * @param y
-	 *            The y coordinate. WARNING: No bounds checking for fast access.
-	 * @return The value stored at x,y position of the grid.
-	 */
-	public int getInt(int x, int y) {
-		return m[at(x, y)];
-	}
+    /**
+     * Return the value at given position.
+     *
+     * @param x The {@code x} coordinate.
+     * @param y The {@code y} coordinate.
+     * @return The value stored at {@code x,y} position of the grid.
+     */
+    public int getInt(final int x, final int y) {
+        return m[at(x, y)];
+    }
 
-	/**
-	 * Set the given value at given position.
-	 *
-	 * @param x
-	 *            The x coordinate. WARNING: No bounds checking for fast access.
-	 * @param y
-	 *            The y coordinate. WARNING: No bounds checking for fast access.
-	 * @param obj
-	 *            An object wrapper for a number class. It is possible to pass
-	 *            Interger, Double, or Long values.
-	 */
-	public void set(int x, int y, Object obj) {
-		if (obj == null) {
-			m[at(x, y)] = 0;
-			return;
-		}
+    /**
+     * Set the given value at given position.
+     *
+     * @param x   The {@code x} coordinate. WARNING: No bounds checking for fast access.
+     * @param y   The {@code y} coordinate. WARNING: No bounds checking for fast access.
+     * @param obj An object wrapper for a number class. It is possible to pass Integer, Double, or Long values.
+     */
+    public void set(final int x, final int y, @Nullable Object obj) {
+        if (obj == null) {
+            m[at(x, y)] = 0;
+            return;
+        }
 
-		if (!(obj instanceof Number))
-			throw new ClassCastException();
+        if (!(obj instanceof Number)) throw new ClassCastException("Passed object is not a number of any kind.");
 
-		m[at(x, y)] = ((Number) obj).intValue();
-	}
+        m[at(x, y)] = ((Number) obj).intValue();
+    }
 
-	/**
-	 * Swap the content of the (x1, y1) and (x2, y2) cells of the grid.
-	 *
-	 * @param x1
-	 *            The x coordinate for the first cell.
-	 * @param y1
-	 *            The y coordinate for the first cell.
-	 * @param x2
-	 *            The x coordinate for the second cell.
-	 * @param y2
-	 *            The y coordinate for the second cell.
-	 */
-	public void swapPositions(int x1, int y1, int x2, int y2) {
-		int d = m[at(x1, y1)];
-		m[at(x1, y1)] = m[at(x2, y2)];
-		m[at(x2, y2)] = d;
-	}
+    /**
+     * Swap the content of the {@code (x1,y1)} and {@code (x2,y2)} cells of the grid.
+     *
+     * @param x1 The {@code x} coordinate for the first cell.
+     * @param y1 The {@code y} coordinate for the first cell.
+     * @param x2 The {@code x} coordinate for the second cell.
+     * @param y2 The {@code y} coordinate for the second cell.
+     */
+    public void swapPositions(final int x1, final int y1, final int x2, final int y2) {
+        val d = m[at(x1, y1)];
+        m[at(x1, y1)] = m[at(x2, y2)];
+        m[at(x2, y2)] = d;
+    }
 
-	/**
-	 * Set the given value at given position.
-	 *
-	 * @param x
-	 *            The x coordinate. WARNING: No bounds checking for fast access.
-	 * @param y
-	 *            The y coordinate. WARNING: No bounds checking for fast access.
-	 * @param value
-	 *            An integer value to put at x,y position.
-	 */
-	public void setInt(int x, int y, int value) {
-		m[at(x, y)] = value;
-	}
+    /**
+     * Set the given value at given position.
+     *
+     * @param x     The {@code x} coordinate. WARNING: No bounds checking for fast access.
+     * @param y     The {@code y} coordinate. WARNING: No bounds checking for fast access.
+     * @param value An integer value to put at {@code x,y} position.
+     */
+    public void setInt(final int x, final int y, final int value) {
+        m[at(x, y)] = value;
+    }
 
-	/**
-	 * Return the size of the grid. It is width * height.
-	 *
-	 * @return The number of cells in the grid.
-	 */
-	public int size() {
-		return size;
-	}
+    /**
+     * Return the size of the grid that is {@code width * height}.
+     *
+     * @return The number of cells in the grid.
+     */
+    public int size() {
+        return size;
+    }
 
-	/** Set all cells to 0 value. */
-	public void clear() {
-		for (int i = 0; i < xSize; i++)
-			for (int j = 0; j < ySize; j++)
-				m[at(i, j)] = 0;
-	}
+    /**
+     * Set all cells to 0 value.
+     */
+    public void clear() {
+        Arrays.fill(m, 0);
+    }
 
-	/**
-	 * Set all cells to the given value.
-	 *
-	 * @param initValue
-	 *            The value to put into each cell.
-	 */
-	public void resetTo(int initValue) {
-		for (int x = 0; x < xSize; x++)
-			for (int y = 0; y < ySize; y++)
-				m[at(x, y)] = initValue;
-	}
+    /**
+     * Set all cells to the given value.
+     *
+     * @param initValue The value to put into each cell.
+     */
+    public void resetTo(final int initValue) {
+        Arrays.fill(m, initValue);
+    }
 
-	/**
-	 * Sum the given value to the value of each cell.
-	 *
-	 * @param arg
-	 *            The value to be added.
-	 */
-	public void add(int arg) {
-		for (int i = 0; i < xSize; i++)
-			for (int j = 0; j < ySize; j++)
-				m[at(i, j)] += arg;
-	}
+    /**
+     * Sum the given value to the value of each cell.
+     *
+     * @param arg The value to be added.
+     */
+    public void add(final int arg) {
+        IntStream.range(0, size).forEach(i -> m[i] += arg);
+    }
 
-	/**
-	 * Multiply the given value to the value of each cell.
-	 *
-	 * @param arg
-	 *            The value to be multiplyed.
-	 */
-	public void multiply(int arg) {
-		for (int i = 0; i < xSize; i++)
-			for (int j = 0; j < ySize; j++)
-				m[at(i, j)] *= arg;
-	}
+    /**
+     * Multiply the given value to the value of each cell.
+     *
+     * @param arg The value to be multiplied.
+     */
+    public void multiply(final int arg) {
+        IntStream.range(0, size).forEach(i -> m[i] *= arg);
+    }
 
-	/**
-	 * Get the minimum value stored into the grid.
-	 *
-	 * @return The minimum value of the grid.
-	 */
-	public int min() {
-		int minimum = m[0];
-		for (int row = 0; row < xSize; row++)
-			for (int col = 0; col < ySize; col++)
-				if (m[at(row, col)] < minimum)
-					minimum = m[at(row, col)];
+    /**
+     * Get the minimum value stored into the grid.
+     *
+     * @return The minimum value of the grid.
+     */
+    public int min() {
+        int minimum = m[0];
+        for (int i = 0; i < size; i++) if (m[i] < minimum) minimum = m[i];
 
-		return minimum;
-	}
+        return minimum;
+    }
 
-	/**
-	 * Get the maximum value stored into the grid.
-	 *
-	 * @return The maximum value of the grid.
-	 */
-	public int max() {
-		int maximum = m[0];
-		for (int row = 0; row < xSize; row++)
-			for (int col = 0; col < ySize; col++)
-				if (m[at(row, col)] > maximum)
-					maximum = m[at(row, col)];
+    /**
+     * Get the maximum value stored into the grid.
+     *
+     * @return The maximum value of the grid.
+     */
+    public int max() {
+        int maximum = m[0];
+        for (int i = 0; i < size; i++) if (m[i] > maximum) maximum = m[i];
 
-		return maximum;
-	}
+        return maximum;
+    }
 
-	/**
-	 * Sum the value of each cell.
-	 *
-	 * @return The sum the value of each cell.
-	 */
-	public int sum() {
-		int total = 0;
-		for (int row = 0; row < xSize; row++)
-			for (int col = 0; col < ySize; col++)
-				total += m[at(row, col)];
+    /**
+     * Sum the value of each cell.
+     *
+     * @return The sum the value of each cell.
+     */
+    public int sum() {
+        return Arrays.stream(m, 0, size).sum();
+    }
 
-		return total;
-	}
+    /**
+     * Compute the sample mean value of the values stored in the grid.
+     *
+     * @return The mean value.
+     */
+    public double mean() {
+        return (double) sum() / (xSize * ySize);
+    }
 
-	/**
-	 * Compute the sample mean value of the values stored in the grid.
-	 *
-	 * @return The mean value.
-	 */
-	public double mean() {
-		double sum = 0;
-		for (int row = 0; row < xSize; row++)
-			for (int col = 0; col < ySize; col++)
-				sum += m[at(row, col)];
+    /**
+     * Compute the sample variance value of the values stored in the grid.
+     *
+     * @return The variance value.
+     */
+    public double variance() { // fixme
+        double s_squared = 0;
+        double mn = mean();
+        for (int row = 0; row < xSize; row++)
+            for (int col = 0; col < ySize; col++) {
+                double temp = m[at(row, col)] - mn;
+                s_squared += (temp * temp);
+            }
 
-		return sum / (xSize * ySize);
-	}
+        return s_squared / (xSize * ySize);
+    }
 
-	/**
-	 * Compute the sample variance value of the values stored in the grid.
-	 *
-	 * @return The variance value.
-	 */
-	public double variance() {
-		double s_squared = 0;
-		double mn = mean();
-		for (int row = 0; row < xSize; row++)
-			for (int col = 0; col < ySize; col++) {
-				double temp = m[at(row, col)] - mn;
-				s_squared += (temp * temp);
-			}
+    /**
+     * Return the matrix of values representing the grid.
+     *
+     * @return A matrix of integer with the same dimensions of the grid.
+     */
+    public int @NonNull [] getMatrix() {
+        return m;
+    }
 
-		return s_squared / (xSize * ySize);
-	}
+    /**
+     * Copies the given IntGrid content in this grid.
+     *
+     * @param dm The source IntGrid to be copied.
+     */
+    public void copyGridTo(final @NonNull IntSpace dm) {
+        int[] aMatrix = new int[xSize * ySize];
+        System.arraycopy(m, 0, aMatrix, 0, xSize * ySize);
+        dm.m = aMatrix;
+    }
 
-	/**
-	 * Return the matrix of values representing the grid.
-	 *
-	 * @return A matrix of integer with the same dimensions of the grid.
-	 */
-	public int[] getMatrix() {
-		return m;
-	}
+    /**
+     * Copies the int[] matrix content in this grid.
+     *
+     * @param dm The source matrix to be copied.
+     */
+    public void copyGridTo(final int @NonNull [] dm) {
+        System.arraycopy(m, 0, dm, 0, xSize * ySize);
+    }
 
-	/**
-	 * Copies the given IntGrid content in this grid.
-	 *
-	 * @param dm
-	 *            The source IntGrid to be copied.
-	 */
-	public void copyGridTo(IntSpace dm) {
-		int[] aMatrix = new int[xSize * ySize];
-		System.arraycopy(m, 0, aMatrix, 0, xSize * ySize);
-		dm.m = aMatrix;
-	}
-
-	/**
-	 * Copies the int[] matrix content in this grid.
-	 *
-	 * @param dm
-	 *            The source matrix to be copied.
-	 */
-	public void copyGridTo(int[] dm) {
-		System.arraycopy(m, 0, dm, 0, xSize * ySize);
-	}
-
-	/*
-	 * Return the value contained by the given cell.
-	 *
-	 * @param x The x coordinate.
-	 *
-	 * @param y The y coordinate.
-	 *
-	 * @return The int value contained by the (x,y) cell.
-	 */
-	public int countObjectsAt(int x, int y) {
-		return m[at(x, y)];
-	}
+    /**
+     * Return the value contained by the given cell.
+     *
+     * @param x The {@code x} coordinate.
+     * @param y The {@code y} coordinate.
+     * @return The int value contained by the ({@code x,y}) cell.
+     */
+    public int countObjectsAt(final int x, final int y) {
+        return m[at(x, y)];
+    }
 }

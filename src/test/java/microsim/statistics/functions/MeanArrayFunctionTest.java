@@ -5,15 +5,14 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class MeanArrayFunctionTest {
     @Test
     void testConstructor() {
         MeanArrayFunction actualMeanArrayFunction = new MeanArrayFunction(mock(DoubleArraySource.class));
-        assertEquals(0.0d, actualMeanArrayFunction.getDoubleValue(null));
+        assertEquals(0.0d, actualMeanArrayFunction.getDoubleValue(mock(Enum.class)));
         assertTrue(actualMeanArrayFunction.timeChecker.isEnabled());
     }
 
@@ -51,8 +50,9 @@ class MeanArrayFunctionTest {
     @Test
     void testApply2() {
         MeanArrayFunction meanArrayFunction = new MeanArrayFunction(mock(DoubleArraySource.class));
-        meanArrayFunction.apply(new double[]{});
+        meanArrayFunction.apply(new double[]{0});
         assertEquals(0.0d, meanArrayFunction.mean);
+        assertThrows(IllegalArgumentException.class, () -> meanArrayFunction.apply(new double[]{}));
     }
 
     @Test

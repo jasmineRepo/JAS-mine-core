@@ -5,6 +5,8 @@ package microsim.agent;
  */
 public interface Weight {
 
+    /**
+     * @return the weight of an object.
+     */
     double getWeight();
-
 }

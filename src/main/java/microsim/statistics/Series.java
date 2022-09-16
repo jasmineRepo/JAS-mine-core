@@ -3,6 +3,7 @@ package microsim.statistics;
 import cern.mateba.list.tdouble.DoubleArrayList;
 import cern.mateba.list.tint.IntArrayList;
 import cern.mateba.list.tlong.LongArrayList;
+import lombok.NonNull;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.reflectors.DoubleInvoker;
@@ -10,7 +11,7 @@ import microsim.statistics.reflectors.IntegerInvoker;
 import microsim.statistics.reflectors.LongInvoker;
 
 import java.io.Serial;
-import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * A series is a sequential collection of values coming from a given variable source over time.
@@ -21,22 +22,21 @@ public abstract class Series implements EventListener, UpdatableSource {
     public abstract void updateSource();
 
     /**
-     * SimEventListener callback function. It supports only jas.engine.Sim.EVENT_UPDATE event.
+     * {@link EventListener} callback function. It supports only {@link CommonEventType#Update} event.
      *
-     * @param type The action id. Only jas.engine.Sim.EVENT_UPDATE is supported.
+     * @param type The action id. Only {@link CommonEventType#Update} is supported.
      * @throws UnsupportedOperationException If actionType is not supported.
      */
-    public void onEvent(Enum<?> type) {
-        if (type.equals(CommonEventType.Update))
-            updateSource();
-        else
-            throw new UnsupportedOperationException("The SimpleStatistics object does not support " + type + " operation.");
+    public void onEvent(final @NonNull Enum<?> type) {
+        if (type.equals(CommonEventType.Update)) updateSource();
+        else throw new UnsupportedOperationException("The SimpleStatistics object does not support " + type +
+            " operation.");
 
     }
 
     /**
-     * Return the current status of the time checker. A time checker avoid the object to update
-     * more than one time per simulation step. The default value is enabled (true).
+     * Return the current status of the time checker. A time checker avoid the object to update more than one time per
+     * simulation step. The default value is enabled (true).
      *
      * @return True if the computer is currently checking time before update cached data, false if disabled.
      */
@@ -45,20 +45,20 @@ public abstract class Series implements EventListener, UpdatableSource {
     }
 
     /**
-     * Set the current status of the time checker. A time checker avoid the object to update
-     * more than one time per simulation step. The default value is enabled (true).
+     * Set the current status of the time checker. A time checker avoid the object to update more than one time per
+     * simulation step. The default value is enabled (true).
      *
      * @param b True if the computer is currently checking time before update cached data, false if disabled.
      */
-    public void setCheckingTime(boolean b) {
+    public void setCheckingTime(final boolean b) {
         timeChecker.setEnabled(b);
     }
 
     private static class BufferedDoubleArrayList extends DoubleArrayList {
         @Serial
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = -5282364300130897480L;
 
-        public void add(double element) {
+        public void add(final double element) {
             if (size == elements.length) ensureCapacity(size + 50);
             elements[size++] = element;
         }
@@ -66,9 +66,9 @@ public abstract class Series implements EventListener, UpdatableSource {
 
     private static class BufferedIntArrayList extends IntArrayList {
         @Serial
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = -378494696495647634L;
 
-        public void add(int element) {
+        public void add(final int element) {
             if (size == elements.length) ensureCapacity(size + 50);
             elements[size++] = element;
         }
@@ -76,9 +76,9 @@ public abstract class Series implements EventListener, UpdatableSource {
 
     private static class BufferedLongArrayList extends LongArrayList {
         @Serial
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 2437067294390409378L;
 
-        public void add(long element) {
+        public void add(final long element) {
             if (size == elements.length) ensureCapacity(size + 50);
             elements[size++] = element;
         }
@@ -91,22 +91,22 @@ public abstract class Series implements EventListener, UpdatableSource {
         protected Enum<?> valueID;
 
         /**
-         * Create a statistic probe on a collection of IDoubleSource objects.
+         * Create a statistic probe on a collection of {@link DoubleSource} objects.
          *
-         * @param source  The collection containing IDoubleSource object.
+         * @param source  The collection containing {@link DoubleSource} object.
          * @param valueID The value identifier defined by source object.
          */
-        public Double(DoubleSource source, Enum<?> valueID) {
+        public Double(final @NonNull DoubleSource source, final @NonNull Enum<?> valueID) {
             target = source;
             this.valueID = valueID;
             valueList = new BufferedDoubleArrayList();
         }
 
         /**
-         * Create a statistic probe on a collection of IDoubleSource objects.
-         * It uses the IDoubleSource.DEFAULT variable id.
+         * Create a statistic probe on a collection of {@link DoubleSource} objects.
+         * It uses the {@link DoubleSource.Variables#Default} variable id.
          *
-         * @param source The collection containing IDoubleSource object.
+         * @param source The collection containing {@link DoubleSource} object.
          */
         public Double(DoubleSource source) {
             target = source;
@@ -121,20 +121,19 @@ public abstract class Series implements EventListener, UpdatableSource {
          * @param valueName     The name of the field or the method returning the variable to be probed.
          * @param getFromMethod Specifies if valueName is a method or a property value.
          */
-        public Double(Object source, String valueName, boolean getFromMethod) {
+        public Double(final @NonNull Object source, final @NonNull String valueName, final boolean getFromMethod) {
             this.valueID = DoubleSource.Variables.Default;
             target = new DoubleInvoker(source, valueName, getFromMethod);
             valueList = new BufferedDoubleArrayList();
         }
 
-        public double[] getDoubleArray() {
+        public double @NonNull [] getDoubleArray() {
             return cern.mateba.Arrays.trimToCapacity(valueList.elements(), valueList.size());
         }
 
-        public DoubleArrayList getDoubleArrayList() {
+        public @NonNull DoubleArrayList getDoubleArrayList() {
             return valueList;
         }
-
 
         public void updateSource() {
             if (timeChecker.isUpToDate()) return;
@@ -146,9 +145,7 @@ public abstract class Series implements EventListener, UpdatableSource {
             StringBuilder buf = new StringBuilder();
             buf.append("Series.Double [");
             int size = valueList.size() - 1;
-            for (var i = 0; i < size; i++) {
-                buf.append(valueList.getQuick(i)).append(" ");
-            }
+            IntStream.range(0, size).forEachOrdered(i -> buf.append(valueList.getQuick(i)).append(" "));
             buf.append(valueList.getQuick(size)).append("]\n");
             return buf.toString();
         }
@@ -161,24 +158,24 @@ public abstract class Series implements EventListener, UpdatableSource {
         protected Enum<?> valueID;
 
         /**
-         * Create a statistic probe on a collection of LongSource objects.
+         * Create a statistic probe on a collection of {@link LongSource} objects.
          *
-         * @param source  The collection containing LongSource object.
+         * @param source  The collection containing {@link LongSource} object.
          * @param valueID The value identifier defined by source object.
          */
-        public Long(LongSource source, Enum<?> valueID) {
+        public Long(final @NonNull LongSource source, final @NonNull Enum<?> valueID) {
             target = source;
             this.valueID = valueID;
             valueList = new BufferedLongArrayList();
         }
 
         /**
-         * Create a statistic probe on a collection of LongSource objects.
-         * It uses the LongSource variable id.
+         * Create a statistic probe on a collection of {@link LongSource} objects.
+         * It uses the {@link LongSource.Variables#Default} variable id.
          *
-         * @param source The collection containing LongSource object.
+         * @param source The collection containing {@link LongSource} object.
          */
-        public Long(LongSource source) {
+        public Long(final @NonNull LongSource source) {
             target = source;
             this.valueID = LongSource.Variables.Default;
             valueList = new BufferedLongArrayList();
@@ -191,45 +188,36 @@ public abstract class Series implements EventListener, UpdatableSource {
          * @param valueName     The name of the field or the method returning the variable to be probed.
          * @param getFromMethod Specifies if valueName is a method or a property value.
          */
-        public Long(Object source, String valueName, boolean getFromMethod) {
+        public Long(final @NonNull Object source, final @NonNull String valueName, final boolean getFromMethod) {
             this.valueID = LongSource.Variables.Default;
             target = new LongInvoker(source, valueName, getFromMethod);
             valueList = new BufferedLongArrayList();
         }
 
-        public long[] getLongArray() {
+        public long @NonNull [] getLongArray() {
             return cern.mateba.Arrays.trimToCapacity(valueList.elements(), valueList.size());
         }
 
-        public double[] getDoubleArray() // fixme make all functions consistent
-        {
-            long[] elements = valueList.elements();
-            double[] list = new double[valueList.size()];
-            Arrays.setAll(list, i -> elements[i]);
-
-            return list;
+        public double @NonNull [] getDoubleArray() {
+            return IntStream.range(0, valueList.size()).mapToDouble(i -> (double) valueList.elements()[i]).toArray();
         }
 
-        public LongArrayList getLongArrayList() {
+        public @NonNull LongArrayList getLongArrayList() {
             return valueList;
         }
 
-        public String toString() {
+        public @NonNull String toString() {
             StringBuilder buf = new StringBuilder();
-            buf.append("Series.Double [");
+            buf.append("Series.Long [");
             int size = valueList.size() - 1;
-            for (var i = 0; i < size; i++) {
-                buf.append(valueList.getQuick(i)).append(" ");
-            }
+            IntStream.range(0, size).forEachOrdered(i -> buf.append(valueList.getQuick(i)).append(" "));
             buf.append(valueList.getQuick(size)).append("]");
             return buf.toString();
         }
 
         public void updateSource() {
-            if (timeChecker.isUpToDate())
-                return;
-            if (target instanceof UpdatableSource)
-                ((UpdatableSource) target).updateSource();
+            if (timeChecker.isUpToDate()) return;
+            if (target instanceof UpdatableSource) ((UpdatableSource) target).updateSource();
             valueList.add(target.getLongValue(valueID));
         }
     }
@@ -241,24 +229,24 @@ public abstract class Series implements EventListener, UpdatableSource {
         protected Enum<?> valueID;
 
         /**
-         * Create a statistic probe on a collection of IntSource objects.
+         * Create a statistic probe on a collection of {@link IntSource} objects.
          *
-         * @param source  The collection containing IntSource object.
+         * @param source  The collection containing {@link IntSource} object.
          * @param valueID The value identifier defined by source object.
          */
-        public Integer(IntSource source, Enum<?> valueID) {
+        public Integer(final @NonNull IntSource source, final @NonNull Enum<?> valueID) {
             target = source;
             this.valueID = valueID;
             valueList = new BufferedIntArrayList();
         }
 
         /**
-         * Create a statistic probe on a collection of IntSource objects.
-         * It uses the IntSource variable id.
+         * Create a statistic probe on a collection of {@link IntSource} objects.
+         * It uses the {@link IntSource} variable id.
          *
-         * @param source The collection containing IntSource object.
+         * @param source The collection containing {@link IntSource} object.
          */
-        public Integer(IntSource source) {
+        public Integer(final @NonNull IntSource source) {
             target = source;
             this.valueID = IntSource.Variables.Default;
             valueList = new BufferedIntArrayList();
@@ -271,42 +259,36 @@ public abstract class Series implements EventListener, UpdatableSource {
          * @param valueName     The name of the field or the method returning the variable to be probed.
          * @param getFromMethod Specifies if valueName is a method or a property value.
          */
-        public Integer(Object source, String valueName, boolean getFromMethod) {
+        public Integer(final @NonNull Object source, final @NonNull String valueName, final boolean getFromMethod) {
             this.valueID = IntSource.Variables.Default;
             target = new IntegerInvoker(source, valueName, getFromMethod);
             valueList = new BufferedIntArrayList();
         }
 
-        public int[] getIntArray() {
+        public int @NonNull [] getIntArray() {
             return cern.mateba.Arrays.trimToCapacity(valueList.elements(), valueList.size());
         }
 
-        public double[] getDoubleArray() {
-            var list = new double[valueList.size()];
-            Arrays.setAll(list, i -> valueList.elements()[i]);
-            return list;
+        public double @NonNull [] getDoubleArray() {
+            return IntStream.range(0, valueList.size()).mapToDouble(i -> (double) valueList.elements()[i]).toArray();
         }
 
-        public IntArrayList getIntArrayList() {
+        public @NonNull IntArrayList getIntArrayList() {
             return valueList;
         }
 
-        public String toString() {
-            StringBuilder buf = new StringBuilder();// fixme duplicates, tons of them
-            buf.append("Series.Double [");
+        public @NonNull String toString() {
+            StringBuilder buf = new StringBuilder();
+            buf.append("Series.Integer [");
             int size = valueList.size() - 1;
-            for (int i = 0; i < size; i++) {
-                buf.append(valueList.getQuick(i)).append(" ");
-            }
+            IntStream.range(0, size).forEachOrdered(i -> buf.append(valueList.getQuick(i)).append(" "));
             buf.append(valueList.getQuick(size)).append("]\n");
             return buf.toString();
         }
 
         public void updateSource() {
-            if (timeChecker.isUpToDate())
-                return;
-            if (target instanceof UpdatableSource)
-                ((UpdatableSource) target).updateSource();
+            if (timeChecker.isUpToDate()) return;
+            if (target instanceof UpdatableSource) ((UpdatableSource) target).updateSource();
             valueList.add(target.getIntValue(valueID));
         }
     }

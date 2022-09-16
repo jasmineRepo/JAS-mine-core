@@ -7,7 +7,6 @@ import lombok.val;
 import microsim.alignment.AlignmentUtils;
 import microsim.engine.SimulationEngine;
 import org.apache.commons.collections4.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -15,6 +14,7 @@ import java.util.logging.Level;
 
 /**
  * An abstract class for all versions of the `sort-by-difference` algorithm.
+ *
  * @param <T> A class usually representing an agent.
  * @see <a href="https://www.jasss.org/17/1/15.html">Jinjing Li and Cathal O'Donoghue, Evaluating Binary Alignment
  * Methods in Microsimulation Models, Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
@@ -23,8 +23,8 @@ import java.util.logging.Level;
 @Log
 abstract public class AbstractSortByDifferenceAlignment<T> implements AlignmentUtils<T> {// todo find the original research
 
-    public void align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                      final @NotNull AlignmentProbabilityClosure<T> closure,
+    public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                      final @NonNull AlignmentProbabilityClosure<T> closure,
                       final double targetProbability) {
         validateProbabilityValue(targetProbability);
         val list = extractAgentList(agents, filter);
@@ -58,7 +58,7 @@ abstract public class AbstractSortByDifferenceAlignment<T> implements AlignmentU
      *                       will be ordered by the Double value decreasing.
      * @return a LinkedHashMap of type T objects that maintains the order of insertion.
      */
-    protected @NotNull Map<T, Double> sortByComparator(final @NonNull Map<T, Double> unsortedMap,
+    protected @NonNull Map<T, Double> sortByComparator(final @NonNull Map<T, Double> unsortedMap,
                                                        final boolean ascendingOrder) {
         val list = new LinkedList<>(unsortedMap.entrySet());
 
@@ -72,12 +72,13 @@ abstract public class AbstractSortByDifferenceAlignment<T> implements AlignmentU
 
     /**
      * Generates a sorting variable of a particular kind.
+     *
      * @param probability Probability values.
-     * @param random Random values in {@code (0, 1)}.
+     * @param random      Random values in {@code (0, 1)}.
      * @return an array of values.
      * @see <a href="https://www.jasss.org/17/1/15.html">Jinjing Li and Cathal O'Donoghue, Evaluating Binary Alignment
      * Methods in Microsimulation Models, Journal of Artificial Societies and Social Simulation 17 (1) 15</a>
      */
-    abstract double @NotNull [] generateSortingVariable(final double @NotNull [] probability,
-                                                        final double @NotNull [] random);
+    abstract double @NonNull [] generateSortingVariable(final double @NonNull [] probability,
+                                                        final double @NonNull [] random);
 }

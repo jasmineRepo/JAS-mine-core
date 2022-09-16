@@ -1,12 +1,15 @@
 package microsim.statistics;
 
+import lombok.NonNull;
+
 /**
- * Used by statistical object to access array of integer values.
+ * Used by statistical objects to access arrays of integer values.
  */
 public interface IntArraySource {
-	/**
-	 * Return the currently cached array of integer values.
-	 * @return An array of integer or a null pointer if the source is empty.
-	 */
-	int[] getIntArray();
+    /**
+     * Returns a particular array of {@code integer} values.
+     *
+     * @return an array of {@code integer}.
+     */
+    int @NonNull [] getIntArray();
 }

@@ -1,45 +1,35 @@
-/*
- * Created on 5-giu-2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package microsim.space;
 
-/**
- * @author michele
- *
- *         To change the template for this generated type comment go to
- *         Window>Preferences>Java>Code Generation>Code and Comments
- */
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
+
 public interface ObjectSpace {
 
-	public int getXSize();
+    int getXSize();
 
-	public int getYSize();
+    int getYSize();
 
-	public int boundX(int x);
+    int boundX(final int x);
 
-	public int boundY(int y);
+    int boundY(final int y);
 
-	public int reflectX(int x);
+    int reflectX(final int x);
 
-	public int reflectY(int y);
+    int reflectY(final int y);
 
-	public int torusX(int x);
+    int torusX(final int x);
 
-	public int torusY(int y);
+    int torusY(final int y);
 
-	public int countObjectsAt(int x, int y);
+    int countObjectsAt(final int x, final int y);
 
-	boolean addGridPosition(SpacePosition position);
+    boolean addGridPosition(final @NonNull SpacePosition position);
 
-	boolean removeGridPosition(SpacePosition position);
+    boolean removeGridPosition(final @NonNull SpacePosition position);
 
-	boolean moveGridPosition(SpacePosition object, int destinationX,
-			int destinationY);
+    boolean moveGridPosition(final @NonNull SpacePosition object, final int destinationX, final int destinationY);
 
-	public Object get(int x, int y);
+    @Nullable Object get(final int x, final int y);
 
-	public void set(int x, int y, Object obj);
+    void set(final int x, final int y, final @NonNull Object obj);
 }

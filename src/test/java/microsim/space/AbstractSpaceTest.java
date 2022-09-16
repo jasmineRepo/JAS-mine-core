@@ -16,7 +16,6 @@ class AbstractSpaceTest {
 
     @Test
     void testEquals() {
-        assertNotEquals(new DenseObjectSpace(3, 3), null);
         assertNotEquals(new DenseObjectSpace(3, 3), "Different type to AbstractSpace");
     }
 
@@ -31,7 +30,7 @@ class AbstractSpaceTest {
     @Test
     void testEquals3() {
         DenseObjectSpace denseObjectSpace = new DenseObjectSpace(3, 3);
-        assertNotEquals(denseObjectSpace, new DenseObjectSpace(3, 3));
+        assertEquals(denseObjectSpace, new DenseObjectSpace(3, 3));
     }
 }
 

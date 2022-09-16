@@ -3,26 +3,26 @@ package microsim.data.db.space;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public interface IIntSpaceEntity {
+public interface IntegerSpaceEntity {
 
-	Double getSimulationTime();
+    Double getSimulationTime();
 
-	void setSimulationTime(Double time);
+    void setSimulationTime(Double time);
 
-	Long getSimulationRun();
+    Long getSimulationRun();
 
-	void setSimulationRun(Long run);
+    void setSimulationRun(Long run);
 
-	Integer getX();
+    Integer getX();
 
-	void setX(Integer x);
+    void setX(Integer x);
 
-	Integer getY();
+    Integer getY();
 
-	void setY(Integer y);
+    void setY(Integer y);
 
-	Integer getValue();
+    Integer getValue();
 
-	void setValue(Integer value);
+    void setValue(Integer value);
 
 }

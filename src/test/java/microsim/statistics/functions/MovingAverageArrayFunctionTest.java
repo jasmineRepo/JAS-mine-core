@@ -5,8 +5,7 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class MovingAverageArrayFunctionTest {
@@ -15,7 +14,7 @@ class MovingAverageArrayFunctionTest {
     void testConstructor() {
         MovingAverageArrayFunction actualMovingAverageArrayFunction = new MovingAverageArrayFunction(
             mock(DoubleArraySource.class), 1);
-        assertEquals(0.0d, actualMovingAverageArrayFunction.getDoubleValue(null));
+        assertEquals(0.0d, actualMovingAverageArrayFunction.getDoubleValue(mock(Enum.class)));
         assertTrue(actualMovingAverageArrayFunction.timeChecker.isEnabled());
     }
 
@@ -62,10 +61,8 @@ class MovingAverageArrayFunctionTest {
 
     @Test
     void testApply2() {
-        MovingAverageArrayFunction movingAverageArrayFunction = new MovingAverageArrayFunction(
-            mock(DoubleArraySource.class), Integer.MIN_VALUE);
-        movingAverageArrayFunction.apply(new double[]{10.0d, 10.0d, 10.0d, 10.0d});
-        assertEquals(-1.862645149230957E-8d, movingAverageArrayFunction.mean);
+        assertThrows(IllegalArgumentException.class, () -> new MovingAverageArrayFunction(
+            mock(DoubleArraySource.class), Integer.MIN_VALUE));
     }
 
     @Test
@@ -87,33 +84,17 @@ class MovingAverageArrayFunctionTest {
     @Test
     void testApply5() {
         MovingAverageArrayFunction movingAverageArrayFunction = new MovingAverageArrayFunction(
-            mock(DoubleArraySource.class), Integer.MIN_VALUE);
-        movingAverageArrayFunction.apply(new int[]{1, 1, 1, 1});
-        assertEquals(-1.862645149230957E-9d, movingAverageArrayFunction.mean);
-    }
-
-    @Test
-    void testApply6() {
-        MovingAverageArrayFunction movingAverageArrayFunction = new MovingAverageArrayFunction(
             mock(DoubleArraySource.class), 1);
         movingAverageArrayFunction.apply(new int[]{});
         assertEquals(Double.NaN, movingAverageArrayFunction.mean);
     }
 
     @Test
-    void testApply7() {
+    void testApply6() {
         MovingAverageArrayFunction movingAverageArrayFunction = new MovingAverageArrayFunction(
             mock(DoubleArraySource.class), 1);
         movingAverageArrayFunction.apply(new long[]{1L, 1L, 1L, 1L});
         assertEquals(1.0d, movingAverageArrayFunction.mean);
-    }
-
-    @Test
-    void testApply8() {
-        MovingAverageArrayFunction movingAverageArrayFunction = new MovingAverageArrayFunction(
-            mock(DoubleArraySource.class), Integer.MIN_VALUE);
-        movingAverageArrayFunction.apply(new long[]{1L, 1L, 1L, 1L});
-        assertEquals(-1.862645149230957E-9d, movingAverageArrayFunction.mean);
     }
 
     @Test

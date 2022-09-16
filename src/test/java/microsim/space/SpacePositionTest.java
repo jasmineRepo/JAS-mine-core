@@ -2,8 +2,7 @@ package microsim.space;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SpacePositionTest {
 
@@ -58,7 +57,7 @@ class SpacePositionTest {
 
     @Test
     void testEquals() {
-        assertNotEquals(new SpacePosition(2, 3), null);
+        assertThrows(NullPointerException.class, () -> (new SpacePosition(2, 3)).equals(null));
         assertNotEquals(new SpacePosition(2, 3), "Different type to SpacePosition");
     }
 

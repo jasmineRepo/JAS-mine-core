@@ -19,7 +19,7 @@ class MultiplicativeScalingAlignmentTest {
 
     @Test
     void testAlign1() {
-        assertThrows(IllegalArgumentException.class, () -> (new MultiplicativeScalingAlignment<>()).align(null,
+        assertThrows(NullPointerException.class, () -> (new MultiplicativeScalingAlignment<>()).align(null,
             (Predicate<Object>) mock(Predicate.class), null, 10.0d));
     }
 }

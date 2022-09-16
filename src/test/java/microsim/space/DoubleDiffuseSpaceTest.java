@@ -200,7 +200,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMaximum2() {
-        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(1, 1, 1, true, 1);
+        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(1, 1, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(2, actualFindMaximumResult.length);
         assertEquals(0.0d, actualFindMaximumResult[0]);
         assertEquals(0.0d, actualFindMaximumResult[1]);
@@ -208,7 +208,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMaximum4() {
-        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 0, 1, true, 1);
+        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 0, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(2, actualFindMaximumResult.length);
         assertEquals(0.0d, actualFindMaximumResult[0]);
         assertEquals(0.0d, actualFindMaximumResult[1]);
@@ -216,7 +216,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMaximum6() {
-        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 3, 1, false, 1);
+        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 3, 1, false, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(2, actualFindMaximumResult.length);
         assertEquals(0.0d, actualFindMaximumResult[0]);
         assertEquals(0.0d, actualFindMaximumResult[1]);
@@ -224,12 +224,12 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMaximum12() {
-        assertEquals(0, (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 3, 0, false, 1).length);
+        assertEquals(0, (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 3, 0, false, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE).length);
     }
 
     @Test
     void testFindMaximum13() {
-        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 1, 1, true, 0);
+        double[] actualFindMaximumResult = (new DoubleDiffuseSpace(3, 3)).findMaximum(2, 1, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.VON_NEUMANN);
         assertEquals(2, actualFindMaximumResult.length);
         assertEquals(0.0d, actualFindMaximumResult[0]);
         assertEquals(0.0d, actualFindMaximumResult[1]);
@@ -237,7 +237,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMinimum2() {
-        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(1, 1, 1, true, 1);
+        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(1, 1, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(9, actualFindMinimumResult.length);
         assertEquals(0.0d, actualFindMinimumResult[0]);
         assertEquals(0.0d, actualFindMinimumResult[1]);
@@ -252,7 +252,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMinimum4() {
-        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 0, 1, true, 1);
+        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 0, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(9, actualFindMinimumResult.length);
         assertEquals(0.0d, actualFindMinimumResult[0]);
         assertEquals(0.0d, actualFindMinimumResult[1]);
@@ -267,7 +267,7 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMinimum6() {
-        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 3, 1, false, 1);
+        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 3, 1, false, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE);
         assertEquals(8, actualFindMinimumResult.length);
         assertEquals(0.0d, actualFindMinimumResult[0]);
         assertEquals(0.0d, actualFindMinimumResult[1]);
@@ -281,12 +281,12 @@ class DoubleDiffuseSpaceTest {
 
     @Test
     void testFindMinimum12() {
-        assertEquals(0, (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 3, 0, false, 1).length);
+        assertEquals(0, (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 3, 0, false, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.MOORE).length);
     }
 
     @Test
     void testFindMinimum13() {
-        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 1, 1, true, 0);
+        double[] actualFindMinimumResult = (new DoubleDiffuseSpace(3, 3)).findMinimum(2, 1, 1, true, DoubleDiffuseSpace.NEIGHBOURHOOD_TYPE.VON_NEUMANN);
         assertEquals(5, actualFindMinimumResult.length);
         assertEquals(0.0d, actualFindMinimumResult[0]);
         assertEquals(0.0d, actualFindMinimumResult[1]);

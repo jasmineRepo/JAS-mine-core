@@ -39,11 +39,6 @@ class MultiObjectSpaceTest {
     }
 
     @Test
-    void testCountAt2() {
-        assertEquals(0, (new MultiObjectSpace(3, 3)).countAt(1, 1));
-    }
-
-    @Test
     void testGet2() {
         assertNull((new MultiObjectSpace(3, 3)).get(1, 1, 1));
     }
@@ -182,9 +177,7 @@ class MultiObjectSpaceTest {
     void testRemove3() {
         MultiObjectSpace multiObjectSpace = new MultiObjectSpace(3, 3);
         multiObjectSpace.addGridPosition(new SpacePosition(2, 1));
-        assertTrue(multiObjectSpace.remove(null));
-        assertEquals(2, multiObjectSpace.modCount);
-        assertEquals(0, multiObjectSpace.size());
+        assertThrows(NullPointerException.class, () -> multiObjectSpace.remove(null));
     }
 
     @Test

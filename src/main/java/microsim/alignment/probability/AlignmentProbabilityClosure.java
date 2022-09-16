@@ -1,6 +1,6 @@
 package microsim.alignment.probability;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 public interface AlignmentProbabilityClosure<T> {
 
@@ -11,7 +11,7 @@ public interface AlignmentProbabilityClosure<T> {
      * @param agent an agent-representing object.
      * @return the probability of a 'positive' outcome for the agent.
      */
-    double getProbability(final @NotNull T agent);
+    double getProbability(final @NonNull T agent);
 
     /**
      * Method specifying the sampling of the aligned probability to determine the outcome for the agent.
@@ -19,5 +19,5 @@ public interface AlignmentProbabilityClosure<T> {
      * @param agent              an agent-representing object.
      * @param alignedProbability the corrected probability of a 'positive' outcome
      */
-    void align(final @NotNull T agent, final double alignedProbability);
+    void align(final @NonNull T agent, final double alignedProbability);
 }

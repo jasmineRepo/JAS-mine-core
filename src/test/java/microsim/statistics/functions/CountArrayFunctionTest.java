@@ -5,8 +5,7 @@ import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class CountArrayFunctionTest {
@@ -16,7 +15,7 @@ class CountArrayFunctionTest {
         actualCountArrayFunction.apply(new double[]{10.0d, 10.0d, 10.0d, 10.0d});
         actualCountArrayFunction.apply(new int[]{1, 1, 1, 1});
         actualCountArrayFunction.apply(new long[]{1L, 1L, 1L, 1L});
-        assertEquals(4, actualCountArrayFunction.getIntValue(null));
+        assertEquals(4, actualCountArrayFunction.getIntValue(mock(Enum.class)));
         assertTrue(actualCountArrayFunction.timeChecker.isEnabled());
     }
 
@@ -46,7 +45,7 @@ class CountArrayFunctionTest {
 
     @Test
     void testGetDoubleValue() {
-        assertEquals(0.0d, (new CountArrayFunction(mock(DoubleArraySource.class))).getDoubleValue(null));
+        assertEquals(0.0d, (new CountArrayFunction(mock(DoubleArraySource.class))).getDoubleValue(mock(Enum.class)));
     }
 }
 

@@ -1,11 +1,11 @@
 package microsim.alignment.outcome;
 
+import lombok.NonNull;
 import lombok.val;
 import microsim.agent.Weight;
 import microsim.alignment.AlignmentUtils;
 import microsim.engine.SimulationEngine;
 import org.apache.commons.collections4.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -42,8 +42,8 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      *
      * @see #align(Collection, Predicate, AlignmentOutcomeClosure, double, int)
      */
-    public void align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                      final @NotNull AlignmentOutcomeClosure<T> closure, final double targetShare) {
+    public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                      final @NonNull AlignmentOutcomeClosure<T> closure, final double targetShare) {
         align(agents, filter, closure, targetShare, -1);
     }
 
@@ -52,8 +52,8 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      *
      * @see #align(Collection, Predicate, AlignmentOutcomeClosure, double, int)
      */
-    public void align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                      final @NotNull AlignmentOutcomeClosure<T> closure, final int targetNumber) {
+    public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                      final @NonNull AlignmentOutcomeClosure<T> closure, final int targetNumber) {
         align(agents, filter, closure, targetNumber, -1);
     }
 
@@ -89,11 +89,11 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      *                              improve this delta, a member of the population undergoing alignment will be
      *                              resampled up to a maximum of 20 times on average in order to change their outcome,
      *                              before the alignment algorithm will give up and terminate.
-     * @implSpec {@code targetNumber} is rounded down for the sake of consistency.
      * @throws IllegalArgumentException when {@code targetShare} is out of {@code [0,1]} range.
+     * @implSpec {@code targetNumber} is rounded down for the sake of consistency.
      */
-    public void align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                      final @NotNull AlignmentOutcomeClosure<T> closure, final double targetShare,
+    public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                      final @NonNull AlignmentOutcomeClosure<T> closure, final double targetShare,
                       int maxResamplingAttempts) {
         if (targetShare < 0. || targetShare > 1.)
             throw new IllegalArgumentException("targetShare is out of [0, 1] range, this is impossible.");
@@ -116,7 +116,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * @param agents                A list of agents to potentially be resampled; the agent class must implement the
      *                              {@link Weight} interface by providing a getWeight() method. In the case of the
      *                              alignment algorithm, getWeight() must return a positive value.
-     * @param filter                Filters the {@code agents} so that only the relevant sub-population of agents is
+     * @param filter                Filters the {@code agents} so that only the relevant subpopulation of agents is
      *                              sampled.
      * @param closure               {@link AlignmentOutcomeClosure} that specifies how to define the outcome of the
      *                              agent and how to resample it.
@@ -125,7 +125,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * @param maxResamplingAttempts The maximum number of attempts to resample before terminating the alignment.
      *                              Introduced for situations when the resampling (as defined by the
      *                              {@link AlignmentOutcomeClosure}) is unable to alter the outcomes of enough agents,
-     *                              due to the nature of the sub-population and the definition of the outcome (i.e. if
+     *                              due to the nature of the subpopulation and the definition of the outcome (i.e. if
      *                              agents' attributes are so far away from a binary outcome threshold boundary, that
      *                              the probability of enough of them switching to the desired outcome is vanishingly
      *                              small). If lower than the size of the subset of the population whose outcomes need
@@ -137,8 +137,8 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      *                              before the alignment algorithm will give up and terminate.
      * @throws IllegalArgumentException when targetNumber is negative or exceeds the population size.
      */
-    public void align(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter,
-                      final @NotNull AlignmentOutcomeClosure<T> closure, final int targetNumber,
+    public void align(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter,
+                      final @NonNull AlignmentOutcomeClosure<T> closure, final int targetNumber,
                       int maxResamplingAttempts) {
         if (targetNumber < 0) throw new IllegalArgumentException("targetNumber is negative, this is impossible.");
 
@@ -149,7 +149,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
 
         if (targetNumber > effectiveSampleSize)
             throw new IllegalArgumentException("Resampling Alignment target is larger than the sample size" +
-                    " (over 100%)! This is impossible to reach.");
+                " (over 100%)! This is impossible to reach.");
         doAlignment(list, closure, targetNumber, maxResamplingAttempts);
     }
 
@@ -171,7 +171,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * - provided the rng seed stays the same - results must be identical.
      * @implSpec Resampling number adjustment is different for different signs of delta.
      */
-    public void doAlignment(@NotNull List<T> list, @NotNull AlignmentOutcomeClosure<T> closure,
+    public void doAlignment(@NonNull List<T> list, @NonNull AlignmentOutcomeClosure<T> closure,
                             final double targetNumber, int maxResamplingAttempts) {
         Collections.shuffle(list, SimulationEngine.getRnd());
         int count;
@@ -197,9 +197,9 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
             ArrayList<Object> out;
 
             if (deltaSimulationTarget > 0.) out = adjustDelta(trueAgentMap, closure, maxResamplingAttempts,
-                    deltaSimulationTarget);
+                deltaSimulationTarget);
             else if (deltaSimulationTarget < 0.) out = adjustDelta(falseAgentMap, closure, maxResamplingAttempts,
-                    deltaSimulationTarget);
+                deltaSimulationTarget);
             else return;
 
             count = (Integer) out.get(0);
@@ -216,7 +216,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
                 maxResamplingAttempts = adjustMaxResamplingAttempts((int) sumPositiveOutcomes, maxResamplingAttempts);
 
                 while (deltaSimulationTarget > 0 &&
-                        count < maxResamplingAttempts) {
+                    count < maxResamplingAttempts) {
                     T nextAgent = event((AbstractList<T>) list, SimulationEngine.getRnd());
                     if (closure.getOutcome(nextAgent)) {
                         count++;
@@ -230,7 +230,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
             } else if (deltaSimulationTarget < 0) {
                 maxResamplingAttempts = adjustMaxResamplingAttempts((int) sumPositiveOutcomes, maxResamplingAttempts);
                 while (deltaSimulationTarget < 0 &&
-                        count < maxResamplingAttempts) {
+                    count < maxResamplingAttempts) {
                     T nextAgent = event((AbstractList<T>) list, SimulationEngine.getRnd());
                     if (!closure.getOutcome(nextAgent)) {
                         count++;
@@ -246,13 +246,13 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
 
         if (count >= maxResamplingAttempts)
             System.out.printf("Count, %d, maxResamplingAttempts, %d, Resampling Alignment Algorithm has reached" +
-                            " the maximum number of resample attempts (on average, %d attempts per object to be" +
-                            " aligned) and has terminated. Alignment may have failed. The difference between the" +
-                            " population in the system with the desired outcome and the target number is %s (%s" +
-                            " percent). If this is too large, check the resampling method and the subset of" +
-                            " population to understand why not enough of the population are able to change their" +
-                            " outcomes.%n", count, maxResamplingAttempts, avgResampleAttempts,
-                    deltaSimulationTarget, deltaSimulationTarget * 100. / targetNumber);
+                    " the maximum number of resample attempts (on average, %d attempts per object to be" +
+                    " aligned) and has terminated. Alignment may have failed. The difference between the" +
+                    " population in the system with the desired outcome and the target number is %s (%s" +
+                    " percent). If this is too large, check the resampling method and the subset of" +
+                    " population to understand why not enough of the population are able to change their" +
+                    " outcomes.%n", count, maxResamplingAttempts, avgResampleAttempts,
+                deltaSimulationTarget, deltaSimulationTarget * 100. / targetNumber);
     }
 
     /**
@@ -265,7 +265,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * @param deltaValue The value of delta.
      * @return updated delta.
      */
-    private double finalAgentAdjustment(final @Nullable T agent, final @NotNull AlignmentOutcomeClosure<T> closure,
+    private double finalAgentAdjustment(final @Nullable T agent, final @NonNull AlignmentOutcomeClosure<T> closure,
                                         double deltaValue) {
         if (agent != null) {
             var s = -signum(deltaValue);
@@ -318,8 +318,8 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * exhausted, an attempt is made to run the final adjustment using
      * {@link #finalAgentAdjustment(Object, AlignmentOutcomeClosure, double)}.
      */
-    private @NotNull ArrayList<Object> adjustDelta(final @NotNull HashMap<T, Double> map,
-                                                   final @NotNull AlignmentOutcomeClosure<T> closure, int max,
+    private @NonNull ArrayList<Object> adjustDelta(final @NonNull HashMap<T, Double> map,
+                                                   final @NonNull AlignmentOutcomeClosure<T> closure, int max,
                                                    double delta) {
         int count = 0;
         T agent = null;
@@ -332,8 +332,8 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
 
         max = adjustMaxResamplingAttempts(map.size(), max);
         while (runningSignum == initialSignum &&
-                count < max &&
-                !map.isEmpty()) {
+            count < max &&
+            !map.isEmpty()) {
             count++;
             var nextAgent = event(map, false);
             var weight = ((Weight) nextAgent).getWeight();
@@ -366,7 +366,7 @@ public class ResamplingAlignment<T> implements AlignmentUtils<T> {
      * @return a list of filtered agents
      * @throws IllegalArgumentException when a weight is non-positive, Nan, or Infinity.
      */
-    private @Nullable List<T> alignmentSetup(final @NotNull Collection<T> agents, final @Nullable Predicate<T> filter) {
+    private @Nullable List<T> alignmentSetup(final @NonNull Collection<T> agents, final @Nullable Predicate<T> filter) {
         var list = extractAgentList(agents, filter);
         if (list.isEmpty()) return null;
 

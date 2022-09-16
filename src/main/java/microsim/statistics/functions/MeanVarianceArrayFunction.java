@@ -1,118 +1,97 @@
 package microsim.statistics.functions;
 
+import lombok.NonNull;
 import microsim.statistics.DoubleArraySource;
 import microsim.statistics.DoubleSource;
 import microsim.statistics.IntArraySource;
 import microsim.statistics.LongArraySource;
 
+import java.util.Arrays;
+
+import static jamjam.Mean.mean;
+import static jamjam.Variance.unweightedBiasedVariance;
+
 /**
- * This class computes the average and variance value of an array of values taken from a data source.
- * The mean function return always double values, so it implements only the
- * <i>IDoubleSource</i> interface. <BR>
- * In order to retrieve the mean pass the MeanVarianceFunction.MEAN argument to the getDoubleValue function,
- * while for the variance the MeanVarianceFunction.VARIANCE one.
+ * This class computes the average and variance value of an array of values taken from a data source. The mean function
+ * always returns double values, so it implements only the {@link DoubleSource} interface. <BR>
+ * In order to retrieve the mean pass the {@link MeanVarianceArrayFunction.Variables#Mean} argument to the
+ * {@link #getDoubleValue(Enum)}  function, while for the variance the
+ * {@link MeanVarianceArrayFunction.Variables#Variance} one.
  */
 public class MeanVarianceArrayFunction extends AbstractArrayFunction implements DoubleSource {
 
 
-	public enum Variables {
-		/**	Represent the mean function argument for the getDoubleValue method. */
-		Mean,
-		/**	Represent the variance function argument for the getDoubleValue method. */
-		Variance;
-	}
+    protected double mean, variance;
 
-	/** Create a mean function on an integer array source.
-	 * @param source The data source.
-	 */
-	public MeanVarianceArrayFunction(IntArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a mean function on an integer array source.
+     *
+     * @param source The data source.
+     */
+    public MeanVarianceArrayFunction(final @NonNull IntArraySource source) {
+        super(source);
+    }
 
-	/** Create a mean function on a long array source.
-	 * @param source The data source.
-	 */
-	public MeanVarianceArrayFunction(LongArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a mean function on a long array source.
+     *
+     * @param source The data source.
+     */
+    public MeanVarianceArrayFunction(final @NonNull LongArraySource source) {
+        super(source);
+    }
 
-	/** Create a mean function on a double array source.
-	 * @param source The data source.
-	 */
-	public MeanVarianceArrayFunction(DoubleArraySource source) {
-		super(source);
-	}
+    /**
+     * Create a mean function on a double array source.
+     *
+     * @param source The data source.
+     */
+    public MeanVarianceArrayFunction(final @NonNull DoubleArraySource source) {
+        super(source);
+    }
 
-	protected double mean, variance;
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final double @NonNull [] data) {
+        mean = mean(data);
+        variance = unweightedBiasedVariance(data, mean);
+    }
 
-	private void setValues(int count, double sum, double sumOfSquares)
-	{
-		if (count == 0)
-		{
-			mean = 0.0;
-			variance = 0.0;
-		}
-		else
-		{
-			mean = sum / (double) count;
-			variance = (sumOfSquares - mean * sum) / (double) count;
-			//This is a population variance as it is the variance of the array's data.
-		}
-		System.out.println("count " + count + ", mean " + mean + ", variance " + variance);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final int @NonNull [] data) {
+        mean = (double) Arrays.stream(data).asLongStream().sum() / data.length;
+        variance = unweightedBiasedVariance(data, mean);
+    }
 
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(double[])
-	 */
-	public void apply(double[] data) {
+    /**
+     * {@inheritDoc}
+     */
+    public void apply(final long @NonNull [] data) {
+        mean = (double) Arrays.stream(data).sum() / data.length;
+        variance = unweightedBiasedVariance(data, mean);
+    }
 
-		double sum = 0.0;
-		double sumOfSquares = 0.0;
-		for (double d : data) {
-			sum += d;
-			sumOfSquares += (d * d);
-		}
-		setValues(data.length, sum, sumOfSquares);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public double getDoubleValue(final @NonNull Enum<?> variableID) {
+        return switch ((Variables) variableID) {
+            case Mean -> mean;
+            case Variance -> variance;
+        };
+    }
 
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(int[])
-	 */
-	public void apply(int[] data) {
-
-		double sum = 0.0;
-		double sumOfSquares = 0.0;
-		for (double d : data) {
-			sum += d;
-			sumOfSquares += (d * d);
-		}
-		setValues(data.length, sum, sumOfSquares);
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.functions.IArrayFunction#apply(long[])
-	 */
-	public void apply(long[] data) {
-		double sum = 0.0;
-		double sumOfSquares = 0.0;
-		for (double d : data) {
-			sum += d;
-			sumOfSquares += (d * d);
-		}
-		setValues(data.length, sum, sumOfSquares);
-	}
-
-	/* (non-Javadoc)
-	 * @see jas.statistics.IDoubleSource#getDoubleValue(int)
-	 */
-	public double getDoubleValue(Enum<?> variableID) {
-		return switch ((Variables) variableID) {
-			case Mean -> mean;
-			case Variance -> variance;
-			default ->
-					throw new UnsupportedOperationException("The function result with id " + variableID + " is not supported.");
-		};
-	}
-
-
+    public enum Variables {
+        /**
+         * Represent the mean function argument for the {@link #getDoubleValue(Enum)} method.
+         */
+        Mean,
+        /**
+         * Represent the variance function argument for the {@link #getDoubleValue(Enum)} method.
+         */
+        Variance
+    }
 }

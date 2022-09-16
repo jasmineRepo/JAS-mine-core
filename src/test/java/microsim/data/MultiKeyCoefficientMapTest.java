@@ -14,7 +14,7 @@ class MultiKeyCoefficientMapTest {
 
     @Test
     void testConstructor3() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NullPointerException.class,
             () -> new MultiKeyCoefficientMap(new CaseInsensitiveMap(), null, new String[]{"42"}));
 
     }
@@ -43,7 +43,7 @@ class MultiKeyCoefficientMapTest {
 
     @Test
     void testConstructor8() {
-        assertThrows(IllegalArgumentException.class, () -> new MultiKeyCoefficientMap(null, null));
+        assertThrows(NullPointerException.class, () -> new MultiKeyCoefficientMap(null, null));
 
     }
 

@@ -67,7 +67,7 @@ class DoubleSpaceTest {
     void testSet2() {
         DoubleSpace doubleSpace = new DoubleSpace(3, 3);
         doubleSpace.set(1, 1, 1);
-        assertEquals(0.09876543209876545d, doubleSpace.variance());
+        assertEquals(0.09876543209876543d, doubleSpace.variance());
     }
 
     @Test
@@ -81,7 +81,7 @@ class DoubleSpaceTest {
     void testSetDbl2() {
         DoubleSpace doubleSpace = new DoubleSpace(3, 3);
         doubleSpace.setDbl(1, 1, 10.0d);
-        assertEquals(9.876543209876546d, doubleSpace.variance());
+        assertEquals(9.876543209876544d, doubleSpace.variance());
     }
 
     @Test

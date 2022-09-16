@@ -1,9 +1,9 @@
 package microsim.alignment.multiple;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import microsim.agent.Weight;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -601,21 +601,21 @@ class LogitScalingAlignmentTest {
             return false;
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public Predicate<A> and(@NotNull Predicate<? super A> other) {
+        public Predicate<A> and(@NonNull Predicate<? super A> other) {
             return Predicate.super.and(other);
         }
 
-        @NotNull
+        @NonNull
         @Override
         public Predicate<A> negate() {
             return Predicate.super.negate();
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public Predicate<A> or(@NotNull Predicate<? super A> other) {
+        public Predicate<A> or(@NonNull Predicate<? super A> other) {
             return Predicate.super.or(other);
         }
     }
@@ -623,12 +623,12 @@ class LogitScalingAlignmentTest {
     static class C implements AlignmentMultiProbabilityClosure<A> {
 
         @Override
-        public double @NotNull [] getProbability(@NotNull A agent) {
+        public double @NonNull [] getProbability(@NonNull A agent) {
             return agent.getProbability();
         }
 
         @Override
-        public void align(@NotNull A agent, double @NotNull [] alignedProbability) {
+        public void align(@NonNull A agent, double @NonNull [] alignedProbability) {
             agent.setProbability(alignedProbability);
         }
     }
@@ -646,21 +646,21 @@ class LogitScalingAlignmentTest {
             return false;
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public Predicate<Aprime> and(@NotNull Predicate<? super Aprime> other) {
+        public Predicate<Aprime> and(@NonNull Predicate<? super Aprime> other) {
             return Predicate.super.and(other);
         }
 
-        @NotNull
+        @NonNull
         @Override
         public Predicate<Aprime> negate() {
             return Predicate.super.negate();
         }
 
-        @NotNull
+        @NonNull
         @Override
-        public Predicate<Aprime> or(@NotNull Predicate<? super Aprime> other) {
+        public Predicate<Aprime> or(@NonNull Predicate<? super Aprime> other) {
             return Predicate.super.or(other);
         }
     }
@@ -668,12 +668,12 @@ class LogitScalingAlignmentTest {
     static class Cprime implements AlignmentMultiProbabilityClosure<Aprime> {
 
         @Override
-        public double @NotNull [] getProbability(@NotNull Aprime agent) {
+        public double @NonNull [] getProbability(@NonNull Aprime agent) {
             return agent.getProbability();
         }
 
         @Override
-        public void align(@NotNull Aprime agent, double @NotNull [] alignedProbability) {
+        public void align(@NonNull Aprime agent, double @NonNull [] alignedProbability) {
             agent.setProbability(alignedProbability);
         }
     }
