@@ -185,13 +185,13 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		} else if(targetNumber < 0) {
 			throw new IllegalArgumentException("ResamplingAlignment targetNumber is negative!  This is impossible to reach.");
 		}
-		
-		List<T> list = new ArrayList<T>();		
+
+		List<T> list = new ArrayList<T>();
 		if (filter != null)
 			CollectionUtils.select(agents, filter, list);
 		else
 			list.addAll(agents);
-		
+
 		Collections.shuffle(list, SimulationEngine.getRnd());
 		int n = list.size();
 		int sum = 0;
@@ -217,54 +217,75 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
 		// compute difference between simulation and target
 		double delta = sum - targetNumber;
 //		System.out.println("start delta is ," + delta + " and size of list is " + list.size() + " sum is ," + sum);
-		
 		int count = 0;
 		
 		// if too many positive outcomes (delta is positive)
 		if(delta > 0) {
-			while ( (delta > 0) && (count < maxResamplingAttempts) ) {
-				T agent = list.get(SimulationEngine.getRnd().nextInt(list.size()));
-				//			System.out.println("count " + count);
+			int resample = sum;
+			int indx = 0;
+			while ( (delta > 0) && (count < maxResamplingAttempts) && (resample > 0)) {
+				T agent = list.get(indx);
 				if (closure.getOutcome(agent)) {
-					count++;
+					// candidate for change
 					closure.resample(agent);
-					if (!closure.getOutcome(agent)) { 
+					if (!closure.getOutcome(agent)) {
+						// change succeeded
 						delta--;
-//						System.out.println("delta is now," + delta + " count was " + count);
+						resample--;
 						count = 0;
+					} else {
+						// change failed
+						count++;
 					}
 				}
-
+				if (indx < n-1)
+					indx++;
+				else
+					indx = 0;
 			}
 		}
 		else if(delta < 0) {	// if too few positive outcomes (delta is negative)
-			while ( (delta < 0) && (count < maxResamplingAttempts) ) {
-				T agent = list.get(SimulationEngine.getRnd().nextInt(list.size()));
-				if (!closure.getOutcome(agent)) {	
+			int resample = n - sum;
+			int indx = 0;
+			while ( (delta < 0) && (count < maxResamplingAttempts) && (resample > 0)) {
+				T agent = list.get(indx);
+				if (!closure.getOutcome(agent)) {
+					// candidate for change
 					count++;
 					closure.resample(agent);
-					if (closure.getOutcome(agent)) { 	
+					if (closure.getOutcome(agent)) {
+						// change succeeded
 						delta++;
-//						System.out.println("delta is now," + delta + " count was " + count);
+						resample--;
 						count = 0;
+					} else {
+						// change failed
+						count++;
 					}
 				}
+				if (indx < n-1)
+					indx++;
+				else
+					indx = 0;
 			}
 		}
-		
-		if(count >= maxResamplingAttempts) { 
-			System.out.println("Resampling Alignment Algorithm has reached the maximum number of "
-					+ "resample attempts (on average, " + avgResampleAttemptPerCapita + " attempts "
-							+ "per object to be aligned) and has terminated.  Alignment may have "
-							+ "failed.  The difference between the population in the system with the "
-							+ "desired outcome and the target number is " + delta + " (" 
-							+ (delta*100./((double)n)) + " percent).  If this is too large, check "
-							+ "the resampling method and the subset of population to understand why "
-							+ "not enough of the population are able to change their outcomes.");
+		if ( delta != 0) {
+
+			if(count >= maxResamplingAttempts) {
+				System.out.println("Resampling Alignment Algorithm has reached the maximum number of "
+						+ "resample attempts (on average, " + avgResampleAttemptPerCapita + " attempts "
+						+ "per object to be aligned) and has terminated.  Alignment may have "
+						+ "failed.");
+			} else {
+				System.out.println("Resampling Alignment Algorithm has run out of sample to meet alignment "
+						+ "target. Alignment may have failed.");
+			}
+			System.out.println("The difference between the population in the system with the "
+					+ "desired outcome and the target number is " + delta + " ("
+					+ (delta*100./((double)n)) + " percent).  If this is too large, check "
+					+ "the resampling method and the subset of population to understand why "
+					+ "not enough of the population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 		}
-//		System.out.println("final delta is ," + delta);
-		
 	}
-
 }
