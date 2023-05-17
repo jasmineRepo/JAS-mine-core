@@ -57,7 +57,8 @@ public class Experiment {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			runId = sdf.format(new Date());
 		}
-		return outputRootFolder + File.separatorChar + runId;		
+		// multiRunId represents the seed of this run
+		return outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
 	}
 	
 }
