@@ -98,7 +98,12 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	public synchronized void run() {
 		while (toBeContinued) {
 			executionActive = true;
-			go();
+			try {
+				go();
+			} catch (Exception e) {
+				System.out.println("Run " + multiRunId + " failed");
+			}
+
 			while (executionActive)
 				try {
 					sleep(300);
