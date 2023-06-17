@@ -191,62 +191,76 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public <E extends Enum<E>> double getProbitTransformOfScore(T event, IDoubleSource iDblSrc, Class<E> Regressors) {
-      MultiKeyCoefficientMap map = maps.get(event);
-      double score;
-      if(map.getKeysNames().length == 1) {
-          score = LinearRegression.computeScore(map, iDblSrc, Regressors, true);            //No additional conditioning regression keys used, so no need to check for them
-      }
-      else {
-          score = LinearRegression.computeScore(map, iDblSrc, Regressors);        //Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the IObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
-      }
+		MultiKeyCoefficientMap map = maps.get(event);
+		double score;
+		if(map.getKeysNames().length == 1) {
+		  score = LinearRegression.computeScore(map, iDblSrc, Regressors, true);            //No additional conditioning regression keys used, so no need to check for them
+		}
+		else {
+		  score = LinearRegression.computeScore(map, iDblSrc, Regressors);        //Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the IObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
+		}
 
-      return (double) normalRV.cdf(score);
-  }
+		return (double) normalRV.cdf(score);
+  	}
 
-	
-	public <E extends Enum<E>> T eventType(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {		
-		Map<T, Double> probs = new HashMap<T, Double>();
 
-		double denominator = 0.; 
-		
+	/**************************************************************************************
+	 * Method to return probabilities implied by multinomial probit for given observation
+	 * Author: Justin van de Ven
+	 * Date: 17 Jun 2023
+	 * @param iDblSrc observation
+	 * @param Regressors explanatory variables
+	 * @param enumType the types over which the multinomial probit distinguishes
+	 * @return a mapping of types to probabilities
+	 **************************************************************************************/
+	public <E extends Enum<E>> Map<T,Double> getProbabilites(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
+		Map<T, Double> probs = new HashMap<>();
+
+		double denominator = 0.;
+
 		for (T event : maps.keySet()) {
 			double probitTransformOfScore = getProbitTransformOfScore(event, iDblSrc, Regressors);
 			probs.put(event, probitTransformOfScore);
-			denominator += probitTransformOfScore;			
+			denominator += probitTransformOfScore;
 		}
-		
+
 		//Check whether there is a base case that has not been included in the regression specification variable (maps).
 		T[] eventProbs = enumType.getEnumConstants();
-//		T[] eventProbs = (T[]) maps.keySet().getClass().getEnumConstants();		//Results in Null Pointer Exception
 
 		int countNullEventProbs = 0;
-		for (int i = 0; i < eventProbs.length; i++) {
-			if (probs.get(eventProbs[i]) == null) {						//The multiprobit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
+		for (int ii = 0; ii < eventProbs.length; ii++) {
+			if (probs.get(eventProbs[ii]) == null) {					//The multiprobit regression can go without specifying coefficients for 1 of the outcomes as the probability of this event can be determined by the residual of the other probabilities.
 				countNullEventProbs++;									//Check no more than one event has null prob, so that it is valid to take the residual to find the probability
 				if(countNullEventProbs > 1) {
-//					throw new RuntimeException("countNullEventProbs > 1 in MultiProbitRegression object!  More than one event does not have a probability, so the residual cannot be used for the missing probabilities.");
 					throw new RuntimeException("MultiProbitRegression has been constructed with a map that does not contain enough of the possible values of the type T.  The map should contain the full number of T values, or one less than the full number of T values (in which case, the missing value is considered the 'default' case whose regression betas are all zero).");
+				} else {
+					denominator += 0.5;									//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
+					probs.put((T) eventProbs[ii], 0.5/denominator);		//The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the probit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of probit transforms for all events.
 				}
-				else {
-					denominator += 0.5;		//We include the base case, where score = 0 (as betas are set to zero).  The normalRV.cdf(0) = 0.5 (as the standard normal distribution is symmetric).  The other cases have already been incremented into the denominator.
-					probs.put((T) eventProbs[i], 0.5/denominator);		//The normalised probability of the base case is 0.5/denominator as the 0.5 comes from applying the probit transform (the cumulative standard normal distribution) to the score of 0, and the denominator is the sum of probit transforms for all events.				
-				}						
-			}			
+			}
 		}
-		
+
 		//Normalise the probabilities of the events specified in the regression maps
 		for (T event : maps.keySet()) {		//Only iterate through the cases specified in the regression maps - the base case has already been normalised.
 			double probitTransformOfScoreForEvent = probs.get(event);
 			probs.put(event, probitTransformOfScoreForEvent/denominator);		//Normalise the probit transform of score (the application of the standard normal cumulative distribution to the score) of the event by the sum for all events
 		}
-		
-		double[] probArray = new double[probs.size()]; 
-		for (int i = 0; i < eventProbs.length; i++) {
+
+		return probs;
+	}
+
+
+	public <E extends Enum<E>> T eventType(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
+
+		Map<T, Double> probs = getProbabilites(iDblSrc, Regressors, enumType);
+
+		T[] eventProbs = enumType.getEnumConstants();
+		double[] probArray = new double[probs.size()];
+		for (int i = 0; i < probs.size(); i++) {
 			probArray[i] = probs.get(eventProbs[i]);
 		}
 		
 		return RegressionUtils.event(eventProbs, probArray, random);				
 	}
 
-	
 }

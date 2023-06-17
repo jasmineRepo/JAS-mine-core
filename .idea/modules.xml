@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/JAS-mine-core.iml" filepath="$PROJECT_DIR$/.idea/JAS-mine-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microsim-core/JAS-mine-core.iml" filepath="$PROJECT_DIR$/microsim-core/JAS-mine-core.iml" />
     </modules>
   </component>
 </project>
