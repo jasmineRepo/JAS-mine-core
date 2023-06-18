@@ -147,7 +147,12 @@ public class LinearRegression implements ILinearRegression {
 		else {
 			return computeScore(map, iDblSrc, enumType);		//Additional conditioning regression keys used (map has more than one key in the multiKey, so need to use reflection (perhaps slow) in order to extract the underlying agents' properties e.g. gender or civil status, in order to determine the relevant regression co-efficients.  If time is critical, consider making the underlying agent (the IDoubleSource) also implement the IObjectSource interface, which uses a faster method to retrieve information about the agent instead of reflection.
 		}
-	}	
+	}
+
+	public double getCoefficient(String regressor) {
+		String columnName = RegressionColumnNames.COEFFICIENT.toString();
+		return ((Number)(map.getValue(regressor, columnName))).doubleValue();
+	}
 
 	
 	/**

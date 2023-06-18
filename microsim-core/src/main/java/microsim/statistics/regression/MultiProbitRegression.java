@@ -188,6 +188,7 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// New methods 
 	// @author Ross Richardson
+	// @author Justin van de Ven - editted to add getProbabilities method
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public <E extends Enum<E>> double getProbitTransformOfScore(T event, IDoubleSource iDblSrc, Class<E> Regressors) {
@@ -206,6 +207,9 @@ public class MultiProbitRegression<T extends Enum<T>> implements IMultipleChoice
 
 	/**************************************************************************************
 	 * Method to return probabilities implied by multinomial probit for given observation
+	 *
+	 * WARNING: THIS METHOD DOES NOT EVALUATE PROBABILITIES FOR MULTINOMIAL PROBIT CORRECTLY
+	 *
 	 * Author: Justin van de Ven
 	 * Date: 17 Jun 2023
 	 * @param iDblSrc observation
