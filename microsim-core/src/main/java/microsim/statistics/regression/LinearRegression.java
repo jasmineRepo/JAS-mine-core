@@ -150,8 +150,16 @@ public class LinearRegression implements ILinearRegression {
 	}
 
 	public double getCoefficient(String regressor) {
-		String columnName = RegressionColumnNames.COEFFICIENT.toString();
-		return ((Number)(map.getValue(regressor, columnName))).doubleValue();
+		if(map.getKeysNames().length == 1) {
+			if(map.getValuesNames().length == 1) {
+				return ((Number)(map.getValue(regressor))).doubleValue();
+			} else {
+				String columnName = RegressionColumnNames.COEFFICIENT.toString();
+				return ((Number)(map.getValue(regressor, columnName))).doubleValue();
+			}
+		} else {
+			throw new RuntimeException("attempt to access individual regression coefficients not currently supported for multinomial models");
+		}
 	}
 
 	
