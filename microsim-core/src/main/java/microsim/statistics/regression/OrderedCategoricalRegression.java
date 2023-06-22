@@ -8,6 +8,7 @@ import microsim.statistics.IDoubleSource;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -24,6 +25,9 @@ public class OrderedCategoricalRegression<T extends Enum<T>> extends LinearRegre
         this.enumType = enumType;
         regression = rr;
         if (RegressionType.OrderedProbit.equals(regression)) normalRV = new Normal(0.0, 1.0, new MersenneTwister(random.nextInt()));
+        if (this.enumType.getEnumConstants().length <= 2) {
+            throw new RuntimeException("Ordered categorical regression requires a regression type with more than 2 alternatives");
+        }
     }
 
     public OrderedCategoricalRegression(MultiKeyCoefficientMap map, Class<T> enumType, RegressionType rr, Random rnd) {
@@ -39,7 +43,7 @@ public class OrderedCategoricalRegression<T extends Enum<T>> extends LinearRegre
     }
 
     public <E extends Enum<E>> Map<T, Double> getProbabilities(IDoubleSource iDblSrc, Class<E> Regressors) {
-        Map<T, Double> probs = new HashMap<>();
+        Map<T, Double> probs = new LinkedHashMap<>();
 
         double score0 = super.getScore(iDblSrc, Regressors);
 
