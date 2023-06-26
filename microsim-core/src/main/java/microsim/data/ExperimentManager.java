@@ -176,7 +176,8 @@ public class ExperimentManager {
 			}
 		}
 		else{
-			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
+//			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
+			System.out.println("Reading from database at: " + DatabaseUtils.databaseInputUrl);
 		}
 		
 		if (saveExperimentOnDatabase) {
