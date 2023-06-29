@@ -1,5 +1,5 @@
 # JAS-mine-core
-JAS-mine is a Java platform that aims at providing a unique simulation tool for discrete-event simulations, including agent-based and microsimulation models. 
+JAS-mine is a Java platform that aims at providing a unique simulation tool for discrete-event simulations, including agent-based and microsimulation models.
 With the aim to develop large-scale, data-driven models, the main architectural choice of JAS-mine is to use whenever possible standard, open-source tools already available in the software development community.
 
 The main value added of the platform lies in the integration with RDBMS (relational database management systems) tools through ad-hoc microsimulation Java libraries.

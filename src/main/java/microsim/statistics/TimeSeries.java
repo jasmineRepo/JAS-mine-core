@@ -1,10 +1,10 @@
 package microsim.statistics;
 
-import cern.colt.list.DoubleArrayList;
-import cern.colt.list.FloatArrayList;
-import cern.colt.list.IntArrayList;
-import cern.colt.list.LongArrayList;
+import cern.mateba.list.tdouble.DoubleArrayList;
+import cern.mateba.list.tint.IntArrayList;
+import cern.mateba.list.tlong.LongArrayList;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import microsim.engine.SimulationEngine;
 import microsim.event.CommonEventType;
@@ -48,7 +48,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Add a new series.
-	 * 
+	 *
 	 * @param aSeries
 	 *            An instance of the SeriesStats class.
 	 * @throws IllegalArgumentException
@@ -61,23 +61,12 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	/**
 	 * Add a new series.
 	 * @param source
-	 *            The IDoubleSource object.
+	 *            The {@link DoubleSource} object.
 	 * @param valueID
 	 *            The value identifier defined by source object.
 	 */
 	public void addSeries(DoubleSource source, Enum<?> valueID) {
 		series.add(new Series.Double(source, valueID));
-	}
-
-	/**
-	 * Add a new series.
-	 * @param source
-	 *            The FloatSource object.
-	 * @param valueID
-	 *            The value identifier defined by source object.
-	 */
-	public void addSeries(FloatSource source, Enum<?> valueID) {
-		series.add(new Series.Float(source, valueID));
 	}
 
 	/**
@@ -118,9 +107,6 @@ public class TimeSeries implements EventListener, UpdatableSource {
 		if (ReflectionUtils.isDoubleSource(target.getClass(), variableName,
 				getFromMethod))
 			aSeries = new Series.Double(target, variableName, getFromMethod);
-		else if (ReflectionUtils.isFloatSource(target.getClass(), variableName,
-				getFromMethod))
-			aSeries = new Series.Float(target, variableName, getFromMethod);
 		else if (ReflectionUtils.isIntSource(target.getClass(), variableName,
 				getFromMethod))
 			aSeries = new Series.Integer(target, variableName, getFromMethod);
@@ -148,7 +134,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return the list of contained time series.
-	 * 
+	 *
 	 * @return An array list containing SeriesStats objects.
 	 */
 	public ArrayList<Series> getSeriesList() {
@@ -157,7 +143,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return a series at the given index.
-	 * 
+	 *
 	 * @param seriesIndex
 	 *            The name of the series.
 	 * @return The asked series. Null if series does not exists.
@@ -173,7 +159,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Return the number of series.
-	 * 
+	 *
 	 * @return The number of series.
 	 */
 	public int getSeriesCount() {
@@ -192,7 +178,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	 * Store the entire data content on the given output file. It is used the
 	 * default separator and the time description is stored with the absolute
 	 * one.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -206,7 +192,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 	/**
 	 * Store the entire data content on the given output file. It is used the
 	 * default separator.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -222,7 +208,7 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Store the entire data content on the given output file.
-	 * 
+	 *
 	 * @param path
 	 *            The optional path string. Passing an empty string it is
 	 *            ignored.
@@ -265,10 +251,6 @@ public class TimeSeries implements EventListener, UpdatableSource {
 						IntArrayList dl;
 						dl = ((Series.Integer) s).getIntArrayList();
 						out.write("" + dl.get(i) + separator);
-					} else if (s instanceof Series.Float) {
-						FloatArrayList dl;
-						dl = ((Series.Float) s).getFloatArrayList();
-						out.write("" + dl.get(i) + separator);
 					} else {
 						LongArrayList dl;
 						dl = ((Series.Long) s).getLongArrayList();
@@ -298,14 +280,14 @@ public class TimeSeries implements EventListener, UpdatableSource {
 
 	/**
 	 * Perform one of the defined actions.
-	 * 
+	 *
 	 * @param type
 	 *            One of the following actions:<br>
 	 *            <i>Sim.EVENT_UPDATE</i> calls the <i>update()</i> method.<br>
 	 *            <i>TimeSeries.EVENT_SAVE</i> calls the <i>saveToFile()</i>
 	 *            method.<br>
 	 * */
-	public void onEvent(Enum<?> type) {
+	public void onEvent(@NonNull Enum<?> type) {
 		if (type instanceof CommonEventType) {
 			switch ((CommonEventType) type) {
 				case Update -> updateSource();

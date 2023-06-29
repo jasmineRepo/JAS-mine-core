@@ -1,16 +1,16 @@
 package microsim.event;
 
 public enum Order {
-	BEFORE_ALL (Integer.MIN_VALUE),
-	AFTER_ALL (Integer.MAX_VALUE);
-	
-	private final int ordering;
+    BEFORE_ALL(Integer.MIN_VALUE),
+    AFTER_ALL(Integer.MAX_VALUE);
 
-    private Order(int ordering) {
+    private final int ordering;
+
+    Order(final int ordering) {
         this.ordering = ordering;
     }
 
-	public int getOrdering() {
-		return ordering;
-	}
+    public int getOrdering() {
+        return ordering;
+    }
 }

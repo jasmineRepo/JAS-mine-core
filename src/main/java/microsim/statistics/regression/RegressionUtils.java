@@ -1,5 +1,6 @@
 package microsim.statistics.regression;
 
+import lombok.NonNull;
 import lombok.val;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
@@ -7,8 +8,6 @@ import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.random.RandomGenerator;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -24,7 +23,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random)
      */
-    public static <T> @NotNull T event(final @NotNull Class<T> eventClass, final double @NotNull [] prob) {
+    public static <T> @NonNull T event(final @NonNull Class<T> eventClass, final double @NonNull [] prob) {
         return event(eventClass.getEnumConstants(), prob, SimulationEngine.getRnd());
     }
 
@@ -34,7 +33,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random, boolean)
      */
-    public static <T> @NotNull T event(final @NotNull Class<T> eventClass, final double @NotNull [] weight,
+    public static <T> @NonNull T event(final @NonNull Class<T> eventClass, final double @NonNull [] weight,
                                        final boolean checkWeightSum) {
         return event(eventClass.getEnumConstants(), weight, SimulationEngine.getRnd(), checkWeightSum);
     }
@@ -44,7 +43,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random)
      */
-    public static <T> @NotNull T event(final T @NotNull [] events, final double @NotNull [] prob) {
+    public static <T> @NonNull T event(final T @NonNull [] events, final double @NonNull [] prob) {
         return event(events, prob, SimulationEngine.getRnd());
     }
 
@@ -53,7 +52,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random, boolean)
      */
-    public static <T> @NotNull T event(final T @NotNull [] events, final double @NotNull [] weight,
+    public static <T> @NonNull T event(final T @NonNull [] events, final double @NonNull [] weight,
                                        final boolean checkWeightSum) {
         return event(events, weight, SimulationEngine.getRnd(), checkWeightSum);
     }
@@ -63,7 +62,7 @@ public class RegressionUtils {
      *
      * @see #event(Map, Random)
      */
-    public static <T> @NotNull T event(final @NotNull Map<T, Double> map) {
+    public static <T> @NonNull T event(final @NonNull Map<T, Double> map) {
         return event(map, SimulationEngine.getRnd());
     }
 
@@ -72,7 +71,7 @@ public class RegressionUtils {
      *
      * @see #event(Map, Random, boolean)
      */
-    public static <T> @NotNull T event(final @NotNull Map<T, Double> map, final boolean checkWeightSum) {
+    public static <T> @NonNull T event(final @NonNull Map<T, Double> map, final boolean checkWeightSum) {
         return event(map, SimulationEngine.getRnd(), checkWeightSum); // todo check if this rng is not null always
     }
 
@@ -81,8 +80,8 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random, boolean)
      */
-    public static <T> @NotNull T event(final T @NotNull [] events, final double @NotNull [] prob,
-                                       final @NotNull Random rnd) {
+    public static <T> @NonNull T event(final T @NonNull [] events, final double @NonNull [] prob,
+                                       final @NonNull Random rnd) {
         return event(events, prob, rnd, true);
     }
 
@@ -101,8 +100,8 @@ public class RegressionUtils {
      *                       to the weights and use these in the random sampling of the event.
      * @return a randomly chosen event.
      */
-    public static <T> @NotNull T event(final T @NotNull [] events, final double @NotNull [] weights,
-                                       final @NotNull Random rnd, final boolean checkWeightSum) {
+    public static <T> @NonNull T event(final T @NonNull [] events, final double @NonNull [] weights,
+                                       final @NonNull Random rnd, final boolean checkWeightSum) {
         validateWeights(weights, checkWeightSum);
         return events[(Integer) tosser(0, rnd, weights).get(0) - 1];
     }
@@ -123,7 +122,7 @@ public class RegressionUtils {
      * @param rnd  A random number generator.
      * @return a boolean that shows if a random boolean is in the [0, prob) interval.
      */
-    public static boolean event(final double prob, final @NotNull Random rnd) {
+    public static boolean event(final double prob, final @NonNull Random rnd) {
         if (prob < 0. || prob > 1.) throw new IllegalArgumentException("prob outside the valid interval [0,1]!");
         else return rnd.nextDouble() < prob;
     }
@@ -133,7 +132,7 @@ public class RegressionUtils {
      *
      * @see #event(Map, Random, boolean)
      */
-    public static <T> @NotNull T event(final @NotNull Map<T, Double> map, final @NotNull Random rnd) {
+    public static <T> @NonNull T event(final @NonNull Map<T, Double> map, final @NonNull Random rnd) {
         return event(map, rnd, true);
     }
 
@@ -142,7 +141,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], double[], Random, boolean)
      */
-    public static <T> @NotNull T event(final @NotNull Map<T, Double> map, final @NotNull Random rnd,
+    public static <T> @NonNull T event(final @NonNull Map<T, Double> map, final @NonNull Random rnd,
                                        final boolean checkWeightSum) {
         @SuppressWarnings("unchecked")
         //Conversion from set of T to array of T, so conversion should not need checking
@@ -163,7 +162,7 @@ public class RegressionUtils {
      * @param weights An array of corresponding weights.
      * @return an integer that is used as an index later.
      */
-    static private @NotNull ArrayList<Object> tosser(final int length, final @NotNull Random rnd,
+    static private @NonNull ArrayList<Object> tosser(final int length, final @NonNull Random rnd,
                                                      final double @Nullable [] weights) {
         var out = new ArrayList<>();
         val toss = rnd.nextDouble();
@@ -173,7 +172,7 @@ public class RegressionUtils {
         if ((length > 0) && weights != null)
             throw new IllegalArgumentException("Contradicting arguments.");
 
-        // fixme validate that the case with identical weights results in the same values as when there is no weights at all all the time.
+        // fixme validate that the case with identical weights results in the same values as when there is no weights at all the time.
 
         if (weights == null) {
             if (length == 0) throw new ArithmeticException("Division by zero.");
@@ -204,18 +203,18 @@ public class RegressionUtils {
      * @param checkSumWeights A boolean flag to switch on/off the sum of weights check.
      * @return the sum of all weights.
      */
-    private static double validateWeights(final double @NotNull [] weights, final boolean checkSumWeights) {
+    private static double validateWeights(final double @NonNull [] weights, final boolean checkSumWeights) {
         for (int i = 0; i < weights.length; i++)
             if (weights[i] <= 0.) throw new IllegalArgumentException("Negative" +
-                    " weights (probabilities) are not allowed! Check 'weights' array " + Arrays.toString(weights) +
-                    " element number " + i + ", which currently has the value " + weights[i] + ".");
+                " weights (probabilities) are not allowed! Check 'weights' array " + Arrays.toString(weights) +
+                " element number " + i + ", which currently has the value " + weights[i] + ".");
 
         var x = sum(weights);
 
         if (checkSumWeights) if (x != 1.0) throw new IllegalArgumentException("As checkWeightSum is set to true, the" +
-                " probability weights must sum to 1. The current weights object " + Arrays.toString(weights) + " has" +
-                " elements that sum to " + x + ". Either ensure probability weights sum to 1, or set checkWeightSum" +
-                " to false so that the weights will be automatically normalised.");
+            " probability weights must sum to 1. The current weights object " + Arrays.toString(weights) + " has" +
+            " elements that sum to " + x + ". Either ensure probability weights sum to 1, or set checkWeightSum" +
+            " to false so that the weights will be automatically normalised.");
         else for (int i = 0; i < weights.length; i++) weights[i] /= x;
 
         return x;
@@ -229,7 +228,7 @@ public class RegressionUtils {
      * @param rnd    A random generator.
      * @return the event chosen.
      */
-    public static <T> @NotNull T event(final T @NotNull [] events, final @NotNull Random rnd) {
+    public static <T> @NonNull T event(final T @NonNull [] events, final @NonNull Random rnd) {
         return events[(Integer) tosser(events.length, rnd, null).get(0) - 1];
     }
 
@@ -238,7 +237,7 @@ public class RegressionUtils {
      *
      * @see #event(Object[], Random)
      */
-    public static <T> @NotNull T event(final @NotNull AbstractList<T> events, final @NotNull Random rnd) {
+    public static <T> @NonNull T event(final @NonNull AbstractList<T> events, final @NonNull Random rnd) {
         return events.get((Integer) tosser(events.size(), rnd, null).get(0) - 1);
     }
 
@@ -247,7 +246,7 @@ public class RegressionUtils {
      *
      * @see #eventPiecewiseConstant(double[], double[], Random, boolean)
      */
-    public static double eventPiecewiseConstant(final double @NotNull [] events, final double @NotNull [] prob,
+    public static double eventPiecewiseConstant(final double @NonNull [] events, final double @NonNull [] prob,
                                                 final Random rnd) {
         return eventPiecewiseConstant(events, prob, rnd, true);
     }
@@ -267,8 +266,8 @@ public class RegressionUtils {
      *                       dividing each element by the sum of the elements).
      * @return The value of the event drawn from a compact domain
      */
-    public static double eventPiecewiseConstant(final double @NotNull [] events, final double @NotNull [] weights,
-                                                final @NotNull Random rnd, final boolean checkWeightSum) {
+    public static double eventPiecewiseConstant(final double @NonNull [] events, final double @NonNull [] weights,
+                                                final @NonNull Random rnd, final boolean checkWeightSum) {
         double cumulativeProbability = validateWeights(weights, checkWeightSum);
 
         var out = tosser(0, rnd, weights);
@@ -276,7 +275,7 @@ public class RegressionUtils {
         double toss = (Double) out.get(1);
 
         return events[i - 1] + (events[i] -
-                events[i - 1]) * ((toss + weights[i - 1] - cumulativeProbability) / weights[i - 1]);
+            events[i - 1]) * ((toss + weights[i - 1] - cumulativeProbability) / weights[i - 1]);
         // fixme improve this expression
     }
 
@@ -294,18 +293,18 @@ public class RegressionUtils {
      *            covariance matrix.
      * @return a {@code MultiKeyCoefficientMap} containing a new set of bootstrapped regression coefficients.
      */
-    public static @NotNull MultiKeyCoefficientMap bootstrap(final @NotNull MultiKeyCoefficientMap map) {
+    public static @NonNull MultiKeyCoefficientMap bootstrap(final @NonNull MultiKeyCoefficientMap map) {
         var keys = map.getKeysNames();
         int numRowsInCovarianceMatrix = map.size();
         //TODO: Check this is correct AND robust, i.e. if we envisage changing the structure of the .xls files, what impact does that have?
         int regressorColumnIndex;
         if (keys.length > 1) throw new IllegalArgumentException("There are more conditional keys in the multiKey of" +
-                " the map in RegressionUtils.bootstrap(map). This cannot currently be handled.  \nThe Stack Trace is " +
-                "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+            " the map in RegressionUtils.bootstrap(map). This cannot currently be handled.  \nThe Stack Trace is " +
+            "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
         else if (keys[0].equals(RegressionColumnNames.REGRESSOR.toString())) regressorColumnIndex = 0;
         else throw new NullPointerException("There is no key named " + RegressionColumnNames.REGRESSOR + " in the" +
-                    " map argument of RegressionUtils.bootstrap(map).  If map was loaded from an Excel spreadsheet, " +
-                    "check there is a column with the heading '" + RegressionColumnNames.REGRESSOR + "'.");
+                " map argument of RegressionUtils.bootstrap(map).  If map was loaded from an Excel spreadsheet, " +
+                "check there is a column with the heading '" + RegressionColumnNames.REGRESSOR + "'.");
         var valuesNames = map.getValuesNames();
         int numValueColumns = valuesNames.length;
 
@@ -325,9 +324,9 @@ public class RegressionUtils {
 
         }
         if (estimateIndex == -1) throw new NullPointerException("There is no value label named " +
-                RegressionColumnNames.COEFFICIENT + " in the map argument of RegressionUtils.bootstrap(map). If map" +
-                " was loaded from an Excel spreadsheet, check there is a column with the heading '" +
-                RegressionColumnNames.COEFFICIENT + "'.");
+            RegressionColumnNames.COEFFICIENT + " in the map argument of RegressionUtils.bootstrap(map). If map" +
+            " was loaded from an Excel spreadsheet, check there is a column with the heading '" +
+            RegressionColumnNames.COEFFICIENT + "'.");
 
         var means = new double[numRowsInCovarianceMatrix];
         var covarianceMatrix = new double[numRowsInCovarianceMatrix][numRowsInCovarianceMatrix];
@@ -342,7 +341,7 @@ public class RegressionUtils {
             for (String covariableName : indexOfValuesNameMap.keySet()) {
                 int columnIndex = indexOfValuesNameMap.get(covariableName);
                 covarianceMatrix[rowIndex][columnIndex] =
-                        ((Number) mapValuesRow[valuesMap.get(covariableName)]).doubleValue();
+                    ((Number) mapValuesRow[valuesMap.get(covariableName)]).doubleValue();
                 //Should throw null pointer exception if the RHS returns null
             }
         }
@@ -350,8 +349,8 @@ public class RegressionUtils {
         var realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrix);
         MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);
         //Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori
-        var multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means,
-                covarianceMatrix);
+        var multiNormDist = new MultivariateNormalDistribution(SimulationEngine.getRnd(), means,
+            covarianceMatrix);
         means = multiNormDist.sample();
         //This returns the bootstrapped values of the estimates
 
@@ -392,19 +391,19 @@ public class RegressionUtils {
      * @return a {@code MultiKeyCoefficientMap} of new regression coefficients that is bootstrapped from the input
      * estimates map.
      */
-    public static @NotNull MultiKeyCoefficientMap bootstrap(final @NotNull MultiKeyCoefficientMap coefficients,
-                                                            final @NotNull MultiKeyCoefficientMap covarianceMatrix) {
+    public static @NonNull MultiKeyCoefficientMap bootstrap(final @NonNull MultiKeyCoefficientMap coefficients,
+                                                            final @NonNull MultiKeyCoefficientMap covarianceMatrix) {
         var coefficientKeys = coefficients.getKeysNames();
         if (coefficientKeys.length > 1) throw new IllegalArgumentException("The estimates map in " +
-                "RegressionUtils.bootstrap(estimates, covarianceMatrix) should only have one key entry in the" +
-                " MultiKey (and this should be a name of a covariate).\nThe Stack Trace is\n" +
-                Arrays.toString(Thread.currentThread().getStackTrace()));
+            "RegressionUtils.bootstrap(estimates, covarianceMatrix) should only have one key entry in the" +
+            " MultiKey (and this should be a name of a covariate).\nThe Stack Trace is\n" +
+            Arrays.toString(Thread.currentThread().getStackTrace()));
 
         var valuesNames = coefficients.getValuesNames();
         if (valuesNames.length > 1) throw new IllegalArgumentException("The estimates map in" +
-                " RegressionUtils.bootstrap(estimates, covarianceMatrix) should only have one value corresponding to" +
-                " each MultiKey (and this should be the value of a regression coefficient corresponding to the key's" +
-                " covariate). \nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
+            " RegressionUtils.bootstrap(estimates, covarianceMatrix) should only have one value corresponding to" +
+            " each MultiKey (and this should be the value of a regression coefficient corresponding to the key's" +
+            " covariate). \nThe Stack Trace is\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
 
         int numCovariates = coefficients.size();
         var covariates = new String[numCovariates];
@@ -426,14 +425,14 @@ public class RegressionUtils {
             means[row] = ((Number) coefficients.getValue(covariates[row])).doubleValue();
             for (int col = 0; col < numCovariates; col++)
                 covarianceMatrixOrdered[row][col] = ((Number) covarianceMatrix.getValue(covariates[row],
-                        covariates[col])).doubleValue();
+                    covariates[col])).doubleValue();
         }
 
         var realCovarianceMatrix = new Array2DRowRealMatrix(covarianceMatrixOrdered);
         MatrixUtils.checkSymmetric(realCovarianceMatrix, SYMMETRIC_MATRIX_EPS);
         //Not used as cannot know the appropriate value of SYMMETRIC_MATRIX_EPS (relative tolerance) a priori
-        var multiNormDist = new MultivariateNormalDistribution((RandomGenerator) SimulationEngine.getRnd(), means,
-                covarianceMatrixOrdered);
+        var multiNormDist = new MultivariateNormalDistribution(SimulationEngine.getRnd(), means,
+            covarianceMatrixOrdered);
         means = multiNormDist.sample();        //This returns the bootstrapped values of the estimates
 
         var bootstrapMap = new MultiKeyCoefficientMap(coefficientKeys, valuesNames);
@@ -480,10 +479,10 @@ public class RegressionUtils {
      * whose values are {@code MultiKeyCoefficientMap} with new regression coefficients (one set of coefficients for
      * each event).
      */
-    public static <T> @NotNull Map<T, MultiKeyCoefficientMap> bootstrapMultinomialRegression(
-            final @NotNull Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap,
-            final @NotNull MultiKeyCoefficientMap covarianceMatrix,
-            final @NotNull Class<T> enumType) {
+    public static <T> @NonNull Map<T, MultiKeyCoefficientMap> bootstrapMultinomialRegression(
+        final @NonNull Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap,
+        final @NonNull MultiKeyCoefficientMap covarianceMatrix,
+        final @NonNull Class<T> enumType) {
         var possibleEvents = enumType.getEnumConstants();
 
         var specifiedEvents = eventRegressionCoefficientMap.keySet();
@@ -509,31 +508,31 @@ public class RegressionUtils {
                     var otherMultiKeys = map.keySet();
                     //Check dimensions match
                     if (multiKeyMapKeyNames.length != otherKeyNames.length) throw new IllegalArgumentException("The" +
-                            " number of keys in the regression coefficient MultiKeyCofficientMap for event " + t +
-                            " does not match the number of keys in event " + baseT);
+                        " number of keys in the regression coefficient MultiKeyCofficientMap for event " + t +
+                        " does not match the number of keys in event " + baseT);
                     if (multiKeyMapValueNames.length != otherValueNames.length) throw new IllegalArgumentException(
-                            "The number of value names in the regression coefficient MultiKeyCofficientMap for event " +
-                                    t + " does not match the number of value names in event " + baseT);
+                        "The number of value names in the regression coefficient MultiKeyCofficientMap for event " +
+                            t + " does not match the number of value names in event " + baseT);
                     if (map.keySet().size() != covariateMultiKeys.size()) throw new IllegalArgumentException("The" +
-                            " number of covariates specified in the regression coefficient MultiKeyCofficientMap for" +
-                            " event " + t + " does not match the number of covariates in event " + baseT);
+                        " number of covariates specified in the regression coefficient MultiKeyCofficientMap for" +
+                        " event " + t + " does not match the number of covariates in event " + baseT);
 
                     //Check key names and value names match between events
                     for (int i = 0; i < multiKeyMapKeyNames.length; i++)
                         if (!multiKeyMapKeyNames[i].equals(otherKeyNames[i])) throw new IllegalArgumentException("The" +
-                                " key names in the regression coefficient MultiKeyCofficientMap for event " + t +
-                                " do not match the key names in event " + baseT);
+                            " key names in the regression coefficient MultiKeyCofficientMap for event " + t +
+                            " do not match the key names in event " + baseT);
                     for (int i = 0; i < multiKeyMapValueNames.length; i++)
                         if (!multiKeyMapValueNames[i].equals(otherValueNames[i])) throw new IllegalArgumentException(
-                                "The value names in the regression coefficient MultiKeyCofficientMap for event " + t +
-                                        " do not match the value names in event " + baseT);
+                            "The value names in the regression coefficient MultiKeyCofficientMap for event " + t +
+                                " do not match the value names in event " + baseT);
                     //Check that all events have the same MultiKeys (regression covariates)
                     for (var mk : otherMultiKeys)
                         if (!covariateMultiKeys.contains(mk))
                             throw new IllegalArgumentException("The covariate " + ((MultiKey<?>) mk).getKey(0) +
-                                    " specified in the regression coefficient MultiKeyCofficientMap for event " + t +
-                                    " does not appear in the set of covariates of event " + baseT +
-                                    ". Check that all events have the same set of regression covariates!");
+                                " specified in the regression coefficient MultiKeyCofficientMap for event " + t +
+                                " does not appear in the set of covariates of event " + baseT +
+                                ". Check that all events have the same set of regression covariates!");
                 }
                 count++;
             } else {
@@ -541,10 +540,10 @@ public class RegressionUtils {
                 //The multinomial regression can go without specifying coefficients for 1 of the events (outcomes) of
                 // the type T as the probability of this event can be determined by the residual of the other probabilities.
                 if (missingEvents > 1) throw new RuntimeException("MultiProbitRegression has been constructed with a " +
-                        "map that does not contain enough of the possible values of the type T. The map should" +
-                        " contain the full number of T values, or one less than the full number of T values (in which" +
-                        " case, the missing value is considered the 'default' case whose regression betas are all" +
-                        " zero).");
+                    "map that does not contain enough of the possible values of the type T. The map should" +
+                    " contain the full number of T values, or one less than the full number of T values (in which" +
+                    " case, the missing value is considered the 'default' case whose regression betas are all" +
+                    " zero).");
             }
         }
 

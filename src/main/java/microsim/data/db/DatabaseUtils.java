@@ -1,11 +1,13 @@
 package microsim.data.db;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import lombok.NonNull;
 import lombok.extern.java.Log;
 import lombok.val;
 import microsim.annotation.GUIparameter;
-import microsim.data.MultiKeyCoefficientMap;
-import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -14,354 +16,159 @@ import org.hibernate.tool.schema.TargetType;
 import org.hibernate.tool.schema.internal.HibernateSchemaManagementTool;
 import org.hibernate.tool.schema.spi.ScriptTargetOutput;
 import org.hibernate.tool.schema.spi.TargetDescriptor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 
-@Log public class DatabaseUtils {
+import static java.util.Arrays.stream;
 
-	private static EntityManagerFactory emf = null;
-	private static EntityManagerFactory outEntityManagerFactory = null;
+@Log
+public class DatabaseUtils {
+    public static String databaseInputUrl;
+    public static String databaseOutputUrl;
+    public static Long autoincrementSeed = 1000000L;
+    private static EntityManagerFactory outEntityManagerFactory;
 
-	public static String databaseInputUrl = null;
-	
-	public static String databaseOutputUrl = null;
-		
-	public static Long autoincrementSeed = 1000000L;
-	
-	public static Experiment createExperiment(final EntityManager entityManager, Experiment experiment,
-											  final Object... models)
-			throws IllegalArgumentException, IllegalAccessException {
-	
-		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
-			return experiment;
-		
-		val transaction = entityManager.getTransaction();
-		transaction.begin();
+    public static Experiment createExperiment(final @NonNull EntityManager entityManager,
+                                              @NonNull Experiment experiment,
+                                              final @NonNull Object... models) {
 
-		experiment.parameters = new ArrayList<>();
+        if (SimulationEngine.getInstance().isTurnOffDatabaseConnection()) return experiment;
 
-		for (Object model : models) {
-			for (Field field : model.getClass().getDeclaredFields()) {
-				GUIparameter modelParameter = field.getAnnotation(GUIparameter.class);
-				if (modelParameter != null) {
-					field.setAccessible(true);
-					val parameter = new ExperimentParameter();
-					parameter.experiment = experiment;
-					parameter.name = field.getName();
-					val obj = field.get(model);
-					parameter.value = (obj != null ? obj.toString() : "null");
+        val transaction = entityManager.getTransaction();
+        transaction.begin();
 
-					experiment.parameters.add(parameter);
-				}
-			}
-		}
-		experiment = entityManager.merge(experiment);
-		transaction.commit();
+        experiment.parameters = new ArrayList<>();
 
-		return experiment;
-	}
+        for (var model : models) {
+            for (Field field : model.getClass().getDeclaredFields()) {
+                val modelParameter = field.getAnnotation(GUIparameter.class);
+                if (modelParameter != null) {
+                    field.setAccessible(true);
+                    val parameter = new ExperimentParameter();
+                    parameter.experiment = experiment;
+                    parameter.name = field.getName();
+                    Object obj;
+                    try {
+                        obj = field.get(model);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                    parameter.value = (obj != null ? obj.toString() : "null");
 
-	public static void snap(EntityManager em, Long run, Double time, Object target) throws Exception {
-		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
-			return;
+                    experiment.parameters.add(parameter);
+                }
+            }
+        }
+        experiment = entityManager.merge(experiment);
+        transaction.commit();
 
-    	Field idField = null;
-    	for(Field fld : target.getClass().getDeclaredFields()) {
-    		if(fld.getType().equals(PanelEntityKey.class)) {
-    			idField = fld;
-    			break;
-    		}
-    	}
-    	if (idField != null) idField.setAccessible(true);
-		else {
-			String m = "Object of type %s cannot be exported to database as it does not have a field " +
-					   "of type PanelEntityKey.class or it is null!";
-			throw new IllegalArgumentException(String.format(m, target.getClass()));
-		}
+        return experiment;
+    }
 
-		val transaction = em.getTransaction();
-		transaction.begin();
+    public static void snap(final @NonNull EntityManager em, final @Nullable Object target) {
+        if (SimulationEngine.getInstance().isTurnOffDatabaseConnection()) return;
+        var isCollection = false;
 
-		try {
-			em.detach(target);
-			val key = (PanelEntityKey) idField.get(target);
-			PanelEntityKey newId = new PanelEntityKey();
-			newId.setId(key != null ? key.getId() : autoincrementSeed++);
-			newId.setSimulationTime(SimulationEngine.getInstance().getTime());
-			newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
-			idField.set(target, newId);
-			em.merge(target);
-			idField.set(target, key);
-		} catch (Exception e) {
-			transaction.rollback();
-			throw e;
-		}
+        if (target != null) {
+            if (target instanceof Collection<?>)
+                if (((Collection<?>) target).size() > 0) isCollection = true;
+                else return;
+        } else return;
 
-		transaction.commit();
-	}
+        Field idField;
+        final Field[] fieldArray;
+        if (isCollection) fieldArray = ((Collection<?>) target).iterator().next().getClass().getDeclaredFields();
+        else fieldArray = target.getClass().getDeclaredFields();
 
-	public static void snap(Object target) throws Exception {// fixme collection is an object too
-		snap(DatabaseUtils.getOutEntityManger(),
-				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
-				SimulationEngine.getInstance().getTime(),
-				target);
-	}
-	
-	public static void snap(Collection<?> targetCollection) throws Exception {
-		snap(DatabaseUtils.getOutEntityManger(),
-				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
-				SimulationEngine.getInstance().getTime(),
-				targetCollection);
-	}
-	
-	public static void snap(EntityManager em, Long run, Double time, Collection<?> targetCollection) throws Exception {
+        idField = stream(fieldArray).filter(fld -> fld.getType().equals(PanelEntityKey.class)).findFirst().orElse(null);
 
-		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
-			return;
-		
-		if (targetCollection != null && targetCollection.size() > 0) {
-			EntityTransaction transaction;
-	    	Field idField = null;
-	    	for(Field fld : targetCollection.iterator().next().getClass().getDeclaredFields()) {
-	    		if(fld.getType().equals(PanelEntityKey.class)) {
-	    			idField = fld;
-	    			break;
-	    		}
-	    	}
-	    	if (idField != null) idField.setAccessible(true);
-			else {
-				String m = "Object of type %s cannot be exported to database as it does not have a field " +
-						"of type PanelEntityKey.class or it is null!";
-				throw new IllegalArgumentException(String.format(m, Object.class));
-			}
+        if (idField != null) idField.setAccessible(true);
+        else {
+            String m = "Object of type %s cannot be exported to database as it does not have a field " +
+                "of type PanelEntityKey.class or it is null!";
+            throw new IllegalArgumentException(String.format(m, target.getClass()));
+        }
 
-			transaction = em.getTransaction();
-			transaction.begin();
+        val transaction = em.getTransaction();
+        transaction.begin();
 
-			for (Object panelTarget : targetCollection) {
-				try {
-					em.detach(panelTarget);// fixme duplicate
-					val key = (PanelEntityKey) idField.get(panelTarget);
-					PanelEntityKey newId = new PanelEntityKey();
-					newId.setId(key != null ? key.getId() : autoincrementSeed++);
-					newId.setSimulationTime(SimulationEngine.getInstance().getTime());
-					newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
-					idField.set(panelTarget, newId);
-					em.merge(panelTarget);
-					idField.set(panelTarget, key);
-				} catch (Exception e) {
-					if (transaction.isActive())
-						transaction.rollback();
-					throw e;
-				}
-			}
-			transaction.commit();
-		}
-	}
+        val scratchCollection = isCollection ? ((Collection<?>) target) : new ArrayList<>(Set.of(target));
 
-	public static void copy(EntityManager em, Long run, Double time, Object target) throws Exception {
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+        for (var panelTarget : scratchCollection) {
+            try {
+                em.detach(panelTarget);
+                val key = (PanelEntityKey) idField.get(panelTarget);
+                val newId = new PanelEntityKey();
+                newId.setId(key != null ? key.getId() : autoincrementSeed++);
+                newId.setSimulationTime(SimulationEngine.getInstance().getTime());
+                newId.setSimulationRun(SimulationEngine.getInstance().getCurrentExperiment().id);
+                idField.set(panelTarget, newId);
+                em.merge(panelTarget);
+                idField.set(panelTarget, key);
+            } catch (IllegalAccessException e) {
+                if (!isCollection || transaction.isActive())
+                    transaction.rollback();
+                throw new RuntimeException(e);
+            }
+        }
 
-		try {
-			em.merge(target);
-		} catch (Exception e) {
-			tx.rollback();
-			throw e;
-		}
+        transaction.commit();
+    }
 
-		tx.commit();
-	}
+    public static void snap(final @Nullable Object target) {
+        val em = DatabaseUtils.getOutEntityManger();
+        if (em == null) throw new IllegalArgumentException("Entity manager can't be null.");
 
-	public static void copy(EntityManager em, Long run, Double time, Collection<?> targetCollection) throws Exception {
-		if (targetCollection != null && targetCollection.size() > 0) {
-			EntityTransaction tx = em.getTransaction();
-			tx.begin();
+        snap(DatabaseUtils.getOutEntityManger(), target);
+    }
 
-			for (Object panelTarget : targetCollection) {
-				try {
-					em.merge(panelTarget);
-				} catch (Exception e) {
-					tx.rollback();
-					throw e;
-				}
-			}
+    public static @Nullable EntityManager getOutEntityManger() {
+        if (SimulationEngine.getInstance().isTurnOffDatabaseConnection()) return null;
 
-			tx.commit();
-		}
-	}
+        if (outEntityManagerFactory == null) {
+            try {
+                val configOverrides = new Properties();
+                configOverrides.put("hibernate.hbm2ddl.auto", "update");
+                configOverrides.put("hibernate.archive.autodetection", "class");
+                if (databaseOutputUrl != null) configOverrides.put("hibernate.connection.url", databaseOutputUrl);
+                val serviceRegistry = new StandardServiceRegistryBuilder()
+                    .applySettings(configOverrides)
+                    .build();
 
-	public static EntityManager getEntityManger() {
-		return getEntityManger(true);
-	}
-	
-	/**
-	 * Singleton of hibernate session factory
-	 * 
-	 * @return The static session factory. If null something went wrong during
-	 *         initialization.
-	 */
-	public static @Nullable EntityManager getEntityManger(boolean autoUpdate) {
-		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
-			return null;
-		
-		if (emf == null) {
-			try {
-				val configOverrides = new Properties();
-				if (autoUpdate) 
-					configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
-				if (databaseInputUrl != null)
-					configOverrides.put("hibernate.connection.url", databaseInputUrl);
+                val metadata = new MetadataSources(serviceRegistry)
+                    .addAnnotatedClass(Experiment.class)
+                    .addAnnotatedClass(ExperimentParameter.class);
 
-				emf = Persistence.createEntityManagerFactory("sim-model", configOverrides);
+                val smt = new HibernateSchemaManagementTool();
+                smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
 
-			} catch (Throwable ex) {
-				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
-				if (ex instanceof PersistenceException)
-					log.log(Level.SEVERE, ex.getCause().toString());
-				throw new ExceptionInInitializerError(ex);
-			}
-		}
+                val sc = smt.getSchemaCreator(null);
+                val md = metadata.buildMetadata();
+                sc.doCreation(md, null, null, null,
+                    new TargetDescriptor() {
+                        @Override
+                        public EnumSet<TargetType> getTargetTypes() {
+                            return EnumSet.of(TargetType.DATABASE);
+                        }
 
-		return emf.createEntityManager();
-	}
+                        @Override
+                        public ScriptTargetOutput getScriptTargetOutput() {
+                            return null;
+                        }
+                    });
 
-	public static void inputSchemaUpdateEntityManger() {
-		if (emf == null) {
-			try {
-				val configOverrides = new Properties();
-				configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
-				if (databaseInputUrl != null) configOverrides.put("hibernate.connection.url", databaseInputUrl);
-				val serviceRegistry = new StandardServiceRegistryBuilder()
-																					.applySettings(configOverrides)
-																					.build();
-				val metadata = new MetadataSources(serviceRegistry);
+                outEntityManagerFactory = Persistence.createEntityManagerFactory("sim-model-out", configOverrides);
 
-				val smt = new HibernateSchemaManagementTool();
-				smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
-				val sc = smt.getSchemaCreator(null);
-				val md = metadata.buildMetadata();
-				sc.doCreation(md, null, null, null,
-						new TargetDescriptor() {
-							@Override
-							public EnumSet<TargetType> getTargetTypes() {
-								return EnumSet.of(TargetType.DATABASE);
-							}
+            } catch (Throwable ex) {
+                log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
+                if (ex instanceof PersistenceException) log.log(Level.SEVERE, ex.getCause().toString());
+                throw new ExceptionInInitializerError(ex);
+            }
+        }
 
-							@Override
-							public ScriptTargetOutput getScriptTargetOutput() {
-								return null;
-							}
-						});
-
-				val localEmf = Persistence.createEntityManagerFactory("sim-model", configOverrides);
-				val em = localEmf.createEntityManager();
-
-				val tx = em.getTransaction();
-				tx.begin();
-				em.flush();
-				tx.commit();
-
-			} catch (Throwable ex) {
-				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
-				if (ex instanceof PersistenceException)
-					log.log(Level.SEVERE, ex.getCause().toString());
-				throw new ExceptionInInitializerError(ex);
-			}
-		}
-		
-	}
-
-	public static void safeRollback(EntityTransaction tx) {
-		if (tx != null && tx.isActive())
-			tx.rollback();
-	}
-
-	public static EntityManager getOutEntityManger() {
-		return getOutEntityManger("sim-model-out");
-	}
-
-	public static @Nullable EntityManager getOutEntityManger(String persistenceUnitName) {
-		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
-			return null;
-		
-		if (outEntityManagerFactory == null) {
-			try {
-				val configOverrides = new Properties();// fixme duplicating code
-				configOverrides.put("hibernate.hbm2ddl.auto", "update");
-				configOverrides.put("hibernate.archive.autodetection", "class");
-				if (databaseOutputUrl != null) configOverrides.put("hibernate.connection.url", databaseOutputUrl);
-				val serviceRegistry = new StandardServiceRegistryBuilder()
-																					.applySettings(configOverrides)
-																					.build();
-
-				val metadata = new MetadataSources(serviceRegistry)
-												.addAnnotatedClass(Experiment.class)
-												.addAnnotatedClass(ExperimentParameter.class);
-
-				val smt = new HibernateSchemaManagementTool();// fixme the same code as in inputSchemaUpdateEntityManger as a temporary measure
-				smt.injectServices((ServiceRegistryImplementor) serviceRegistry);
-
-				val sc = smt.getSchemaCreator(null);
-				val md = metadata.buildMetadata();
-				sc.doCreation(md, null, null, null,
-						new TargetDescriptor() {
-							@Override
-							public EnumSet<TargetType> getTargetTypes() {
-								return EnumSet.of(TargetType.DATABASE);
-							}
-
-							@Override
-							public ScriptTargetOutput getScriptTargetOutput() {
-								return null;
-							}
-						});
-
-
-				//SchemaUpdate schemaUpdate = new SchemaUpdate();
-				//schemaUpdate.execute(enumSet, metadata.buildMetadata());
-
-				outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides);
-
-			} catch (Throwable ex) {
-				log.log(Level.SEVERE, "Initial EntityManagerFactory creation failed." + ex);
-				if (ex instanceof PersistenceException)
-					log.log(Level.SEVERE, ex.getCause().toString());
-				throw new ExceptionInInitializerError(ex);
-			}
-		}
-
-		return outEntityManagerFactory.createEntityManager();
-	}
-
-	public static List<?> loadTable(Class<?> clazz) {
-		return loadTable(getEntityManger(), clazz);
-	}
-
-	public static List<?> loadTable(@NotNull EntityManager entityManager, @NotNull Class<?> clazz) {
-		return entityManager.createQuery("from %s rec ".formatted(clazz.getSimpleName())).getResultList();
-	}
-
-	public static @NotNull MultiKeyCoefficientMap loadCoefficientMap(Class<?> clazz)
-			throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
-		return loadCoefficientMap(getEntityManger(), clazz);
-	}
-
-	public static @NotNull MultiKeyCoefficientMap loadCoefficientMap(@NotNull EntityManager entityManager,
-																	 Class<?> clazz)
-			throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
-
-		val transaction = entityManager.getTransaction();
-		transaction.begin();
-		val res = loadTable(entityManager, clazz);
-		transaction.commit();
-
-		return MultiKeyCoefficientMapFactory.createMapFromAnnotatedList(res);
-	}
+        return outEntityManagerFactory.createEntityManager();
+    }
 }

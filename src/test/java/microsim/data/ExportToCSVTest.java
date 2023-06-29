@@ -20,48 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExportToCSVTest {
-    static class A {
-        @Getter
-        final static String fieldA = "fieldA";
-    }
-
-    static class B extends A {
-        @Getter
-        final static String fieldB = "fieldB";
-    }
-
-    static class C {
-    }
-
-    static class D {
-        final private String fieldD = "fieldD";
-    }
-
-    static class E {
-        PanelEntityKey fieldE;
-    }
-
-    static class F {
-        PanelEntityKey fieldF = new PanelEntityKey();
-        String string = "scratch";
-    }
-
-    static class G {
-        PanelEntityKey fieldG = new PanelEntityKey();
-
-        String stringD = "scratchD";
-        String stringC = "scratchC";
-        String stringB = "scratchB";
-        String stringA = "scratchA";
-    }
-
     @Test
     @DisplayName("Incorrect input type")
     void testConstructor() {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertEquals("Target", (new ExportToCSV("Target")).targetObject);
             assertThat(logCaptor.getLogs()).hasSize(1).contains("The object of type class java.lang.String" +
-                    " does not have a field of type PanelEntityKey.class, no data is written.");
+                " does not have a field of type PanelEntityKey.class, no data is written.");
         }
     }
 
@@ -84,7 +49,7 @@ class ExportToCSVTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertEquals((new ExportToCSV(stub)).targetCollection.size(), 2);
             assertThat(logCaptor.getLogs()).hasSize(1).contains("The collection has no usable fields" +
-                    ", no data is written.");
+                ", no data is written.");
         }
     }
 
@@ -103,8 +68,8 @@ class ExportToCSVTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertEquals((new ExportToCSV(List.of(new Object(), new Object()))).targetCollection.size(), 2);
             assertThat(logCaptor.getLogs()).hasSize(2).contains("java.lang.UnsupportedOperationException:" +
-                            " Passed collection is immutable/fixed size, switching to the slow implementation.",
-                    "The collection has no usable fields, no data is written.");
+                    " Passed collection is immutable/fixed size, switching to the slow implementation.",
+                "The collection has no usable fields, no data is written.");
         }
     }
 
@@ -115,8 +80,8 @@ class ExportToCSVTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertEquals((new ExportToCSV(stub)).targetCollection.size(), 3);
             assertThat(logCaptor.getLogs()).hasSize(2).contains("java.lang.UnsupportedOperationException: " +
-                            "remove: Passed collection is immutable/fixed size, switching to the slow implementation.",
-                    "All objects in the collection are null, no data is written.");
+                    "remove: Passed collection is immutable/fixed size, switching to the slow implementation.",
+                "All objects in the collection are null, no data is written.");
         }
     }
 
@@ -172,8 +137,8 @@ class ExportToCSVTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertNull(new ExportToCSV(new B()).targetCollection);
             assertThat(logCaptor.getLogs()).hasSize(1).contains("The object of type " +
-                    "class microsim.data.ExportToCSVTest$B does not have a field of type PanelEntityKey.class, " +
-                    "no data is written.");
+                "class microsim.data.ExportToCSVTest$B does not have a field of type PanelEntityKey.class, " +
+                "no data is written.");
         }
     }
 
@@ -230,7 +195,7 @@ class ExportToCSVTest {
     @DisplayName("File name generator")
     void testGenerateFilename3() {
         assertEquals("Object", (new ExportToCSV("Target")).generateFilename(new Object(),
-                true, ExportToCSVTest.B.class.getDeclaredFields()[0]));
+            true, ExportToCSVTest.B.class.getDeclaredFields()[0]));
     }
 
     @Test
@@ -239,9 +204,9 @@ class ExportToCSVTest {
         val scratch = new ExportToCSV("Target");
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertNull(scratch.generateFilename(new Object(),
-                    false, ExportToCSVTest.B.class.getDeclaredFields()[0]));
+                false, ExportToCSVTest.B.class.getDeclaredFields()[0]));
             assertThat(logCaptor.getLogs()).hasSize(1).contains("Target object doesn't have fields of the " +
-                    "PanelEntityKey type, no data is written.");
+                "PanelEntityKey type, no data is written.");
         }
     }
 
@@ -251,9 +216,9 @@ class ExportToCSVTest {
         val scratch = new ExportToCSV("Target");
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertNull(scratch.generateFilename(new Object(),
-                    false, D.class.getDeclaredFields()[0]));
+                false, D.class.getDeclaredFields()[0]));
             assertThat(logCaptor.getLogs()).hasSize(1).contains("Failed to append to the filename due to " +
-                    "no access, no data is written.");
+                "no access, no data is written.");
         }
     }
 
@@ -273,16 +238,20 @@ class ExportToCSVTest {
         }
     }
 
-    @Test @DisplayName("Dump null to CSV") void testDumpToCSV2() {
+    @Test
+    @DisplayName("Dump null to CSV")
+    void testDumpToCSV2() {
         val scratch = new ExportToCSV(null);
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             scratch.dumpToCSV();
             assertThat(logCaptor.getLogs()).hasSize(1).contains("ExportToCSV's targetCollection and " +
-                    "targetObject fields are both null! Cannot export to CSV.");
+                "targetObject fields are both null! Cannot export to CSV.");
         }
     }
 
-    @Test @DisplayName("Dump actual list of data to CSV") void testDumpToCSV3() {
+    @Test
+    @DisplayName("Dump actual list of data to CSV")
+    void testDumpToCSV3() {
         val list = new ArrayList<>();
         list.add(new F());
         list.add(new F());
@@ -291,12 +260,15 @@ class ExportToCSVTest {
         scratch.dumpToCSV();
     }
 
-    @Test @DisplayName("Dump actual data object to CSV") void testDumpToCSV4() {
+    @Test
+    @DisplayName("Dump actual data object to CSV")
+    void testDumpToCSV4() {
         val scratch = new ExportToCSV(new F());
         scratch.dumpToCSV();
     }
 
-    @Test @DisplayName("Add strings to buffer")
+    @Test
+    @DisplayName("Add strings to buffer")
     void testAddSimParametersToBuffer2() {
         val scratch = new ExportToCSV("Target");
         val file = new File("scratch_path");
@@ -314,7 +286,7 @@ class ExportToCSVTest {
         try (LogCaptor logCaptor = LogCaptor.forClass(ExportToCSV.class)) {
             assertNull(new ExportToCSV(new E()).targetCollection);
             assertThat(logCaptor.getLogs()).hasSize(1).contains("The field of the PanelEntityKey type is not " +
-                    "initialized, i.e., null, no data is written.");
+                "initialized, i.e., null, no data is written.");
         }
     }
 
@@ -322,12 +294,11 @@ class ExportToCSVTest {
     @DisplayName("Match class field names with incorrect input")
     void testFindUnderlyingField() {
         assertNull(ExportToCSV.findUnderlyingField(Object.class, "Field Name"));
-        assertNull(ExportToCSV.findUnderlyingField(null, null));
+        assertThrows(NullPointerException.class, () -> ExportToCSV.findUnderlyingField(null, null));
         assertNull(ExportToCSV.findUnderlyingField(Boolean.class, "Field Name"));
         assertNull(ExportToCSV.findUnderlyingField(Object.class, ""));
         assertNull(ExportToCSV.findUnderlyingField(Object.class, "   "));
         assertNull(ExportToCSV.findUnderlyingField(Object.class, "Field Name"));
-        assertNull(ExportToCSV.findUnderlyingField(null, null));
         assertNull(ExportToCSV.findUnderlyingField(Boolean.class, "Field Name"));
         assertNull(ExportToCSV.findUnderlyingField(Object.class, ""));
     }
@@ -365,7 +336,9 @@ class ExportToCSVTest {
         assertEquals(testValues, referenceValues);
     }
 
-    @Test @DisplayName("Check name sorting") void testGetAllFields5() {
+    @Test
+    @DisplayName("Check name sorting")
+    void testGetAllFields5() {
         val scratch = ExportToCSV.getAllFields(ExportToCSVTest.G.class);
         val referenceList = new ArrayList<>();
 
@@ -380,5 +353,40 @@ class ExportToCSVTest {
             actualList.add(value.getName());
 
         assertEquals(actualList, referenceList);
+    }
+
+    static class A {
+        @Getter
+        final static String fieldA = "fieldA";
+    }
+
+    static class B extends A {
+        @Getter
+        final static String fieldB = "fieldB";
+    }
+
+    static class C {
+    }
+
+    static class D {
+        final private String fieldD = "fieldD";
+    }
+
+    static class E {
+        PanelEntityKey fieldE;
+    }
+
+    static class F {
+        PanelEntityKey fieldF = new PanelEntityKey();
+        String string = "scratch";
+    }
+
+    static class G {
+        PanelEntityKey fieldG = new PanelEntityKey();
+
+        String stringD = "scratchD";
+        String stringC = "scratchC";
+        String stringB = "scratchB";
+        String stringA = "scratchA";
     }
 }

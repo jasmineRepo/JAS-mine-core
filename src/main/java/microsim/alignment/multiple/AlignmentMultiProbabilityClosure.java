@@ -1,5 +1,8 @@
 package microsim.alignment.multiple;
 
+
+import lombok.NonNull;
+
 /**
  * A general interface for alignment procedures with multiple outcomes.
  *
@@ -14,7 +17,7 @@ public interface AlignmentMultiProbabilityClosure<T> {
      * @param agent An agent object.
      * @return A double array with probabilities.
      */
-    double[] getProbability(T agent);
+    double @NonNull [] getProbability(final @NonNull T agent);
 
     /**
      * Aligns (corrects) probabilities of a given agent.
@@ -22,6 +25,6 @@ public interface AlignmentMultiProbabilityClosure<T> {
      * @param agent              An agent for correction.
      * @param alignedProbability Probabilities that replace old values.
      */
-    void align(T agent, double[] alignedProbability);
+    void align(final @NonNull T agent, final double @NonNull [] alignedProbability);
 
 }
