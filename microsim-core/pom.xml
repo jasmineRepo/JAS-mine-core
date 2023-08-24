@@ -6,7 +6,7 @@
 	</properties>
 	<groupId>com.github.jasmineRepo</groupId>
 	<artifactId>JAS-mine-core</artifactId>
-	<version>4.1.0</version>
+	<version>4.2.0</version>
 	<build>
 		<plugins>
 			<plugin>
