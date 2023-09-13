@@ -118,13 +118,19 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 
 					Object[] keyValueVector = new Object[2];
 					String keyHere = key.substring(0,key.length()-target.length());
-					Object[] valHere = (Object[]) multinomialCoefficients.getValue(key);
-					Double valHereDouble = (Double) valHere[0];
+					Double valHere;
+					if(multinomialCoefficients.getValuesNames().length == 1) {
+						valHere = ((Number)(multinomialCoefficients.getValue(key))).doubleValue();
+					}
+					else {
+						String columnName = RegressionColumnNames.COEFFICIENT.toString();
+						valHere = ((Number)(multinomialCoefficients.getValue(key, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+					}
 					keyValueVector[0] = keyHere;
-					keyValueVector[1] = valHereDouble;
+					keyValueVector[1] = valHere;
 					coefficients.putValue(keyValueVector);
 					added += 1;
-					if (valHereDouble!=null & valHereDouble!=0.0)
+					if (valHere!=null && valHere!=0.0)
 						flagAdd = true;
 				}
 			}
