@@ -58,7 +58,11 @@ public class Experiment {
 			runId = sdf.format(new Date());
 		}
 		// multiRunId represents the seed of this run
-		return outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
+		if (multiRunId == null) {
+			return outputRootFolder + File.separatorChar + runId;
+		} else {
+			return outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
+		}
 	}
 	
 }
