@@ -143,6 +143,28 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 			throw new IllegalArgumentException("Wrong number of key parameters");		
 	}
 
+	/**
+	 * OBTAIN VALUE BY ROW AND COLUMN REFERENCE; ASSUMES 2D TABLE
+	 * @param row
+	 * @param col
+	 * @return
+	 */
+	public Object getRowColumnValue(Object row, String col) {
+		if (keys.length > 1)
+			throw new RuntimeException("Row and column reference only coded for single key objects");
+		Object[] values = (Object[]) getValue(row);
+		if (values==null)
+			return null;
+		String[] valuesNames = getValuesNames();
+		for (int ii=0; ii<valuesNames.length; ii++) {
+			if (valuesNames[ii].equals(col)) {
+				return values[ii];
+			}
+		}
+		return null;
+	}
+
+
 	public void putValue(Object ... keyValues) {		
 		if (keyValues.length == keys.length + 1) {
 			switch (keyValues.length) {
@@ -263,5 +285,4 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 		HashedMap mapClone = new HashedMap(this.decorated());
 		return new MultiKeyCoefficientMap(mapClone, this.getKeysNames(), this.getValuesNames());
 	}
-	
 }
