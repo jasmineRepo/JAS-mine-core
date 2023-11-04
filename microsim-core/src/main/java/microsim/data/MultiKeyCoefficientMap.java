@@ -164,7 +164,6 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 		return null;
 	}
 
-
 	public void putValue(Object ... keyValues) {		
 		if (keyValues.length == keys.length + 1) {
 			switch (keyValues.length) {
@@ -240,6 +239,32 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 			throw new IllegalArgumentException("Wrong number of key parameters");
 	}
 
+	public void replaceValue(Object ... keyValues) {
+		if (keyValues.length != keys.length + 1)
+			throw new IllegalArgumentException("Wrong number of parameters supplied to replace value");
+		switch (keyValues.length) {
+			case 1:
+				throw new IllegalArgumentException("Wrong number of key parameters");
+			case 2:
+				MultiKey key0;
+				if (keyValues[0] instanceof MultiKey) {        //Ross: If we don't do this check, a new MultiKey of a MultiKey is created unnecessarily, which then leads to a null pointer exception as the MultKeyCoefficientMap does not have a key entry of the type MultiKey(MultiKey()).
+					key0 = (MultiKey) keyValues[0];
+				} else {
+					key0 = new MultiKey(new Object[] { keyValues[0] });
+				}
+				if (super.containsKey(key0))
+					super.remove(key0);
+				break;
+			case 3:
+				if (super.containsKey(keyValues[0], keyValues[1]))
+					super.remove(keyValues[0], keyValues[1]);
+				break;
+			default:
+				throw new IllegalArgumentException("Wrong number of key parameters");
+		}
+		putValue(keyValues);
+	}
+
 	/**
 	 * This method allows the instance of the MultiKeyCoefficientMap to provide a clone of the names of the keys.
 	 * This is especially useful for getting the name of the variables used as keys in the Regression classes
@@ -254,7 +279,6 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 			keysClone[i] = keys[i];
 		}
 		return keysClone;
-		
 	}
 	
 	

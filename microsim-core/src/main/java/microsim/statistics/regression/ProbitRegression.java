@@ -33,12 +33,18 @@ public class ProbitRegression extends LinearRegression implements IBinaryChoiceR
 		return (double) normalRV.cdf(score);
 	}
 	
-	public double getProbability(Object individual) {
-		final double score = super.getScore(individual);		
-		return (double) normalRV.cdf(score);		
+	public double getProbability(Object obj) {
+		if (obj instanceof Double) {
+			if (obj==null)
+				throw new RuntimeException("problem evaluating probit probability from score");
+			return (double) normalRV.cdf((double)obj);
+		} else {
+			final double score = super.getScore(obj);
+			return (double) normalRV.cdf(score);
+		}
 	}
-	
-//	@Override
+
+	//	@Override
 	public boolean event(Object individual) {
 		final double probability = getProbability(individual);
 		return (random.nextDouble() < probability);		
