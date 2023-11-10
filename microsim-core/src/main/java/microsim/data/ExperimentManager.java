@@ -40,7 +40,10 @@ public class ExperimentManager {
 //	public String inputDatabaseName = "input.odb";
 
 	private static ExperimentManager manager = null;
-	
+
+	/** The flag determines whether the input folder should remain constant for multiruns */
+	public boolean isMultiRun = false;
+
 	private ExperimentManager() {
 		
 	}
@@ -175,9 +178,10 @@ public class ExperimentManager {
 				}
 			}
 		}
-		else{
-//			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
+		else if (isMultiRun) {
 			System.out.println("Reading from database at: " + DatabaseUtils.databaseInputUrl);
+		} else {
+			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
 		}
 		
 		if (saveExperimentOnDatabase) {
