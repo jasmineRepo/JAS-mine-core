@@ -11,7 +11,10 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 
 	private Random random;
 
+	private Class<T> enumType = null;
+
 	private Map<T, MultiKeyCoefficientMap> maps = null;
+
 
 	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps) {
 		random = SimulationEngine.getRnd();
@@ -30,41 +33,19 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiLogitRegression object do not match!");
 					}
 				}
-//				if((maps.get(event)).getValue(covariate).equals(0)) {
-//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-//				}
 			}
 			count++;
 		}
-
 	}
 
 	public MultiLogitRegression(Map<T, MultiKeyCoefficientMap> maps, Random random) {
+		this(maps);
 		this.random = random;
-		this.maps = maps;
-		int count = 0;
-		Set<String> covariateNames = new HashSet<String>();
-		for(T event : maps.keySet()) {
-			@SuppressWarnings("unchecked")
-			Set<Object> covariateSet = (maps.get(event)).keySet();
-			for(Object covariate : covariateSet) {
-				if(count == 0) {
-					covariateNames.add(covariate.toString());
-				}
-				else {
-					if(!covariateNames.contains(covariate.toString()) || covariateNames.size() != covariateSet.size()) {
-						throw new RuntimeException("The covariates specified for each outcome of type T in the MultiLogitRegression object do not match!");
-					}
-				}
-//				if((maps.get(event)).getValue(covariate).equals(0)) {
-//					System.out.print("\nWarning - Regression object has been created with a regression co-efficient of 0 for regressor " + covariate.toString() + ". Check whether it is desired to have a regression co-efficient of 0 (which means the regressor has no influence on the regression score).  Although the simulation will run, consider removing unnecessary regression co-efficients to improve computational efficiency.  Stack Trace is:"
-//							+ "\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-//				}
-			}
-			count++;
-		}
+	}
 
+	public MultiLogitRegression(Class<T> enumType, Map<T, MultiKeyCoefficientMap> maps) {
+		this(maps);
+		this.enumType = enumType;
 	}
 
 
@@ -286,10 +267,17 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 		return score;
 	}
 
-
 	public <E extends Enum<E>> Map<T,Double> getProbabilites(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
-		Map<T, Double> probs = new HashMap<>();
+		this.enumType = enumType;
+		return getProbabilites(iDblSrc, Regressors);
+	}
 
+	public <E extends Enum<E>> Map<T,Double> getProbabilites(IDoubleSource iDblSrc, Class<E> Regressors) {
+
+		if (enumType==null)
+			throw new RuntimeException("call to get probabilities from MultiLogitRegression object without supplying enum type");
+
+		Map<T, Double> probs = new HashMap<>();
 		double denominator = 1.0;
 		for (T event : maps.keySet()) {
 			double expScore = Math.exp(getScore(event, iDblSrc, Regressors));
@@ -320,7 +308,6 @@ public class MultiLogitRegression<T extends Enum<T>> implements IMultipleChoiceR
 
 		return probs;
 	}
-
 
 	public <E extends Enum<E>> T eventType(IDoubleSource iDblSrc, Class<E> Regressors, Class<T> enumType) {
 		Map<T, Double> probs = getProbabilites(iDblSrc, Regressors, enumType);
