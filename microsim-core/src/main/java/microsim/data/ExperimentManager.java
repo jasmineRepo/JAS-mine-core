@@ -179,7 +179,7 @@ public class ExperimentManager {
 			}
 		}
 		else if (isMultiRun) {
-			System.out.println("Reading from database at: " + DatabaseUtils.databaseInputUrl);
+			log.info("Persisting database connection at: " + DatabaseUtils.databaseInputUrl);
 		} else {
 			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
 		}
