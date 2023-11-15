@@ -243,7 +243,7 @@ public class DatabaseUtils {
 		if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
 			return null;
 		
-		if (entityManagerFactory == null | autoUpdate) {
+		if (entityManagerFactory == null) {
 			try {
 				// Create the EntityManagerFactory
 
