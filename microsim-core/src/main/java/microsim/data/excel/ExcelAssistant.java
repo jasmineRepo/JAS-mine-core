@@ -136,6 +136,9 @@ public class ExcelAssistant {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw e;
 		}
 		
 		return map;

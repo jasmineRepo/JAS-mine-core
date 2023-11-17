@@ -180,6 +180,9 @@ public class ExportCSV {
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 	
@@ -265,8 +268,11 @@ public class ExportCSV {
         	try { 
         		bufferWriter.flush(); 
         	} catch (IOException e) {  
-        			e.printStackTrace(); 
-        	} 
+        			e.printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
+				throw e;
+			}
         }
 	}	
 	
