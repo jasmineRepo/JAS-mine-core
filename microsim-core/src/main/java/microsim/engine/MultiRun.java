@@ -120,6 +120,8 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 		counter++;
 		
 		engine = new SimulationEngine();
+
+		ExperimentManager.getInstance().isMultiRun = true;
 		
 		if(counter==2) {		//After the first simulation (which by default copies the input files to the output folder), check the settings on whether to copy input files to new folder for each simulation run
 			ExperimentManager.getInstance().copyInputFolderStructure = copyInputFolderStructure;		//By default do not copy the input folder for each simulation run after the first simulation.

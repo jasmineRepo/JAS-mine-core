@@ -40,7 +40,10 @@ public class ExperimentManager {
 //	public String inputDatabaseName = "input.odb";
 
 	private static ExperimentManager manager = null;
-	
+
+	/** The flag determines whether the input folder should remain constant for multiruns */
+	public boolean isMultiRun = false;
+
 	private ExperimentManager() {
 		
 	}
@@ -175,7 +178,9 @@ public class ExperimentManager {
 				}
 			}
 		}
-		else{
+		else if (isMultiRun) {
+			log.info("Persisting database connection at: " + DatabaseUtils.databaseInputUrl);
+		} else {
 			 DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
 		}
 		
