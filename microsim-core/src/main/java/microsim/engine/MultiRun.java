@@ -101,7 +101,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 			try {
 				go();
 			} catch (Exception e) {
-				System.out.println("Run failed");
+				System.out.println("Run failed: " + e.getMessage());
 				System.exit(0);
 			}
 
