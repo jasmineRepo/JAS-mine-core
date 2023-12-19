@@ -47,10 +47,10 @@ public class Experiment {
 	public List<ExperimentParameter> parameters;
 	
 	@Transient
-	public String inputFolder = "./input";
+	public static String inputFolder = "./input";
 	
 	@Transient
-	public String outputRootFolder = "./output";
+	public static String outputRootFolder = "./output";
 	
 	public String getOutputFolder() {
 		if (runId == null) {
