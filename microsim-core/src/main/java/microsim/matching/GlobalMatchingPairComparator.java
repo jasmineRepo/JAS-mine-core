@@ -7,8 +7,8 @@ import java.util.Comparator;
  */
 public class GlobalMatchingPairComparator implements Comparator<GlobalMatchingPair> {
 
+    @Override
     public int compare(GlobalMatchingPair o1, GlobalMatchingPair o2) {
-        double val = (o1.getScore() - o2.getScore()) * 1000.0;
-        return (int)val;
+        return Double.compare(o1.getScore(), o2.getScore());
     }
 }
