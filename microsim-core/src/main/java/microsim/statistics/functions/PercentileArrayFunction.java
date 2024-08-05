@@ -25,11 +25,13 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements ID
 		P5,
 		P10,
 		P20,
+		P25,
 		P30,
 		P40,
 		P50,
 		P60,
 		P70,
+		P75,
 		P80,
 		P90,
 		P95,
@@ -64,7 +66,7 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements ID
 		super(source);
 	}
 
-	protected double p1, p5, p10, p20, p30, p40, p50, p60, p70, p80, p90, p95, p99;
+	protected double p1, p5, p10, p20, p25, p30, p40, p50, p60, p70, p75, p80, p90, p95, p99;
 	
 	
 	/* (non-Javadoc)
@@ -77,11 +79,13 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements ID
 		p5 = stats.getPercentile(5);
 		p10 = stats.getPercentile(10);
 		p20 = stats.getPercentile(20);
+		p25 = stats.getPercentile(25);
 		p30 = stats.getPercentile(30);
 		p40 = stats.getPercentile(40);
 		p50 = stats.getPercentile(50);
 		p60 = stats.getPercentile(60);
 		p70 = stats.getPercentile(70);
+		p75 = stats.getPercentile(75);
 		p80 = stats.getPercentile(80);
 		p90 = stats.getPercentile(90);
 		p95 = stats.getPercentile(95);
@@ -117,11 +121,13 @@ public class PercentileArrayFunction extends AbstractArrayFunction implements ID
 			case P5: return p5;
 			case P10: return p10;
 			case P20: return p20;
+			case P25: return p25;
 			case P30: return p30;
 			case P40: return p40;
 			case P50: return p50;
 			case P60: return p60;
 			case P70: return p70;
+			case P75: return p75;
 			case P80: return p80;
 			case P90: return p90;
 			case P95: return p95;
