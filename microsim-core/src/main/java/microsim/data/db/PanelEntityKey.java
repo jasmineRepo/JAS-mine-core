@@ -19,6 +19,10 @@ public class PanelEntityKey implements Serializable {
 	@Column(name="simulation_run")
 	private long simulationRun;
 
+	@Column(name="working_id")
+	private long workingId = 0L;
+
+
 	public PanelEntityKey() {
 		super();
 	}
@@ -51,5 +55,8 @@ public class PanelEntityKey implements Serializable {
 	public void setSimulationRun(Long simulationRun) {
 		this.simulationRun = simulationRun;
 	}
-		
+
+	public long getWorkingId() { return workingId; }
+
+	public void setWorkingId(long workingId) { this.workingId = workingId; }
 }
