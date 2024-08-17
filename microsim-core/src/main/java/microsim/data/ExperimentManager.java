@@ -171,7 +171,8 @@ public class ExperimentManager {
 				String[] files = inputDir.list();
 				for (String file : files) {
 //					if (! file.equals("input.odb") && ! file.startsWith("."))
-					if (! file.startsWith(".")) {
+					//if (! file.startsWith(".")) {
+					if (file.endsWith(".xlsx") || file.endsWith(".xls") || file.endsWith(".db")) {
 						log.debug("Copying " + file + " to output folder");
 						copy(inputDir + File.separator + file, outFolder);
 					}
