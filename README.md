@@ -16,6 +16,6 @@ See www.jas-mine.net for more details.
 
 Categories: Modeling, Simulations, ORM (Object-relational mapping)
 
-License: GNU Library or Lesser General Public License version 2.0 (LGPLv2)
+License: European Union Public Licence (EUPL)
 
 Features: Artificial Intelligence Simulation Social sciences
