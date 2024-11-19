@@ -628,7 +628,7 @@ public class RegressionUtils {
 	 * @return Map<E, MultiKeyCoefficientMap> multinomialCoeffMap
 	 * @param <E> Enum object
 	 */
-	public static <E extends Enum<E>> Map<E, MultiKeyCoefficientMap> populateMultinomialCoefficientMap(Class<E> clazz, MultiKeyCoefficientMap multinomialCoefficients) {
+	public static <E extends Enum<E> & IntegerValuedEnum> Map<E, MultiKeyCoefficientMap> populateMultinomialCoefficientMap(Class<E> clazz, MultiKeyCoefficientMap multinomialCoefficients) {
 
 		// create return object
 		Map<E, MultiKeyCoefficientMap> multinomialCoeffMap = new LinkedHashMap<>();
@@ -694,15 +694,4 @@ public class RegressionUtils {
 
 		return multinomialCoeffMap;
 	}
-
-	
-	/**
-	 * @deprecated  As of release 4.0.7 because of typo in method name, replaced by {@link #bootstrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType)}
-	 */
-	@Deprecated
-	public static <T> Map<T, MultiKeyCoefficientMap> boostrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType) {
-		return bootstrapMultinomialRegression(eventRegressionCoefficientMap, covarianceMatrix, enumType);		
-	}
-	
-	
 }

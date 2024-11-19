@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class OrderedProbitRegression<T extends Enum<T>> extends OrderedCategoricalRegression {
+public class OrderedProbitRegression<T extends Enum<T> & IntegerValuedEnum> extends OrderedCategoricalRegression {
 
     public OrderedProbitRegression(MultiKeyCoefficientMap map, Class<T> enumType) {
         super(map, enumType, RegressionType.OrderedProbit);

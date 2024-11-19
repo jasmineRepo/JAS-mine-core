@@ -4,17 +4,20 @@ import java.util.*;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.IDoubleSource;
+import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
 
 public class GeneralisedOrderedLogitRegression<T extends Enum<T> & IntegerValuedEnum> {
 
 	private MultiChoiceMap<T> mapObject;
 
 
-	public GeneralisedOrderedLogitRegression(Class<T> enumType, Map<T, MultiKeyCoefficientMap> maps) {
+	public GeneralisedOrderedLogitRegression(Class<T> enumType, MultiKeyCoefficientMap multinomialCoefficients) {
+		Map<T, MultiKeyCoefficientMap> maps = populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
 		mapObject = new MultiChoiceMap<>(enumType, maps);
 		mapObject.setEnumList();
 	}
 
+	public Class<T> getEnumType() { return mapObject.getEnumType(); }
 
 	public <E extends Enum<E>> Map<T,Double> getProbabilities(IDoubleSource iDblSrc, Class<E> Regressors) {
 
@@ -27,7 +30,7 @@ public class GeneralisedOrderedLogitRegression<T extends Enum<T> & IntegerValued
 
 			T event = eventsList.get(ii);
 			double expScore = Math.exp(scores.get(event));
-			probHere = expScore / (1.0 + expScore);
+			probHere = 1.0 / (1.0 + expScore);
 			if (probHere > probPreceding) {
 				double prob = probHere - probPreceding;
 				probs.put(event, prob);
@@ -36,7 +39,7 @@ public class GeneralisedOrderedLogitRegression<T extends Enum<T> & IntegerValued
 				probs.put(event, -1.0);
 			}
 		}
-		probs.put(eventsList.get(eventsList.size()-1), 1.0 - probPreceding);
+		probs.put((T) eventsList.get(eventsList.size()-1), 1.0 - probPreceding);
 
 		return probs;
 	}

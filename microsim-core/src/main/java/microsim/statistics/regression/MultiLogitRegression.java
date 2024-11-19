@@ -5,13 +5,23 @@ import java.util.*;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.IDoubleSource;
 
+import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
+
 public class MultiLogitRegression<T extends Enum<T> & IntegerValuedEnum> {
 
 	private MultiChoiceMap<T> mapObject;
 
 
-	public MultiLogitRegression(Class<T> enumType, Map<T, MultiKeyCoefficientMap> maps) {
+	public MultiLogitRegression(Class<T> enumType, MultiKeyCoefficientMap multinomialCoefficients) {
+		Map<T, MultiKeyCoefficientMap> maps = populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
 		mapObject = new MultiChoiceMap<>(enumType, maps);
+	}
+
+	public MultiLogitRegression(Class<T> enumType, Map<T, MultiKeyCoefficientMap> maps, boolean preProcessedFlag) {
+		if (preProcessedFlag)
+			mapObject = new MultiChoiceMap<>(enumType, maps);
+		else
+			throw new RuntimeException("problem instantiating MultiLogitRegression");
 	}
 
 

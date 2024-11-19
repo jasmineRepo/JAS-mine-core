@@ -40,12 +40,7 @@ public class MultiChoiceMap<T extends IntegerValuedEnum> {
 
         // obtain ordered list
         enumList = Arrays.asList(enumType.getEnumConstants());
-        enumList.sort(new Comparator<T>() {
-            @Override
-            public int compare(final T o1, final T o2) {
-                return o1.getValue() - o2.getValue();
-            }
-        });
+        enumList.sort(Comparator.comparingInt(IntegerValuedEnum::getValue));
     }
     public Map<T, MultiKeyCoefficientMap> getMaps() {return maps;}
     public Class<T> getEnumType() {return enumType;}
