@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class OrderedCategoricalRegression<T extends Enum<T>> extends LinearRegression {
+public class OrderedCategoricalRegression<T extends Enum<T> & IntegerValuedEnum> extends LinearRegression {
 
     private Random random;
     private Class<T> enumType;
@@ -43,6 +43,7 @@ public class OrderedCategoricalRegression<T extends Enum<T>> extends LinearRegre
     }
 
     public <E extends Enum<E>> Map<T, Double> getProbabilities(IDoubleSource iDblSrc, Class<E> Regressors) {
+
         Map<T, Double> probs = new LinkedHashMap<>();
 
         double score0 = super.getScore(iDblSrc, Regressors);

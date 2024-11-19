@@ -1,11 +1,6 @@
 package microsim.statistics.regression;
 
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
@@ -621,14 +616,82 @@ public class RegressionUtils {
 		return newMap;
 		
 	}
-	
+
+
+
 	/**
-	 * @deprecated  As of release 4.0.7 because of typo in method name, replaced by {@link #bootstrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType)}
+	 * Method to package multinomialCoeffMap
+	 * @param clazz an enum class defining the multinomial alternatives considered for analysis
+	 * @param multinomialCoefficients a standard MultiKeyCoefficientMap object used to read parameters from Excel and bootstrap
+	 *                                The method assumes that coefficients are supplied for each (or N-1) discrete alternative,
+	 *                                where "_XXX" is appended to each coefficient name to indicate association with alternative "XXX"
+	 * @return Map<E, MultiKeyCoefficientMap> multinomialCoeffMap
+	 * @param <E> Enum object
 	 */
-	@Deprecated
-	public static <T> Map<T, MultiKeyCoefficientMap> boostrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType) {
-		return bootstrapMultinomialRegression(eventRegressionCoefficientMap, covarianceMatrix, enumType);		
+	public static <E extends Enum<E> & IntegerValuedEnum> Map<E, MultiKeyCoefficientMap> populateMultinomialCoefficientMap(Class<E> clazz, MultiKeyCoefficientMap multinomialCoefficients) {
+
+		// create return object
+		Map<E, MultiKeyCoefficientMap> multinomialCoeffMap = new LinkedHashMap<>();
+
+		// check inputs
+		if (!clazz.isEnum())
+			throw new RuntimeException("call to population multinomial coefficient map without defining enum class");
+		if (clazz.getEnumConstants().length < 3)
+			throw new RuntimeException("multinomial regression must include at least three enum alternatives");
+		if (multinomialCoefficients.getKeysNames().length != 1)
+			throw new RuntimeException("The remapping routine for multinomial regressions is designed for use with single key coefficient maps.");
+
+		// construct regressors key list
+		HashSet<String> regressors = new HashSet<String>();
+		for (Object multiKey : multinomialCoefficients.keySet()) {
+			final String key = (String) ((MultiKey) multiKey).getKey(0);
+			if(!regressors.add(key))
+				throw new RuntimeException("Regressor key " + key + " in multinomial remapping is not unique.");
+		}
+
+		// populate return object
+		int added = 0;
+		for(E ee : clazz.getEnumConstants()) {
+			// loop over each discrete option
+
+			// initialise storage object
+			String[] keyVector = new String[]{"REGRESSOR"};
+			String[] valueVector = new String[]{"COEFFICIENT"};
+			MultiKeyCoefficientMap coefficients = new MultiKeyCoefficientMap(keyVector, valueVector);
+
+			// define identifier and flags
+			String target = new StringBuilder().append("_").append(ee).toString();
+			boolean flagAdd = false;
+			for (String key : regressors) {
+				// search for coefficients to add to current
+
+				if (key.endsWith(target)) {
+
+					Object[] keyValueVector = new Object[2];
+					String keyHere = key.substring(0,key.length()-target.length());
+					Double valHere;
+					if(multinomialCoefficients.getValuesNames().length == 1) {
+						valHere = ((Number)(multinomialCoefficients.getValue(key))).doubleValue();
+					}
+					else {
+						String columnName = RegressionColumnNames.COEFFICIENT.toString();
+						valHere = ((Number)(multinomialCoefficients.getValue(key, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+					}
+					keyValueVector[0] = keyHere;
+					keyValueVector[1] = valHere;
+					coefficients.putValue(keyValueVector);
+					added += 1;
+					if (valHere!=null && valHere!=0.0)
+						flagAdd = true;
+				}
+			}
+			if (flagAdd) {
+				multinomialCoeffMap.put(ee, coefficients);
+			}
+		}
+		if (added != regressors.size())
+			throw new RuntimeException("Failed to allocate all supplied regressors in multinomial remapping.");
+
+		return multinomialCoeffMap;
 	}
-	
-	
 }
