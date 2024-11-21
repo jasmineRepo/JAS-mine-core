@@ -11,6 +11,8 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
 /*****************************************************************
  * Multinomial Discrete Variable Models
  *
+ * @author Justin van de Ven
+ *
  * NOTE: Probit variant not currently supported
  *
  * Let y define a discrete valued set {y_0,y_1,..., y_n}
@@ -44,6 +46,13 @@ public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impl
         if (eventList.size()<3)
             throw new RuntimeException("GeneralisedOrderedRegression requires at least three events");
         calculator = new ProbabilityCalculator(type);
+    }
+
+
+    public List<E1> getEventList() {return eventList;}
+
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors) {
+        return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
     public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {

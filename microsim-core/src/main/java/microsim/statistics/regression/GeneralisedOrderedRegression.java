@@ -11,6 +11,8 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
 /*****************************************************************
  * Generalised Ordered Discrete Variable Models
  *
+ * @author Justin van de Ven
+ *
  * Let y define a discrete valued set {y_0,y_1,..., y_n}
  *   Each y_i is an indicator variable for discrete value i, where higher values of i reflect some natural ordering of the set
  * Define yhat_j = sum(y_j+1,...,y_n)
@@ -32,6 +34,13 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
         if (eventList.size()<3)
             throw new RuntimeException("GeneralisedOrderedRegression requires at least three events");
         calculator = new ProbabilityCalculator(type);
+    }
+
+
+    public List<E1> getEventList() {return eventList;}
+
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors) {
+        return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
     public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {

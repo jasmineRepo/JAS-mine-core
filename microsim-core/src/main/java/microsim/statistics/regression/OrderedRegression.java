@@ -12,6 +12,8 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
 /*****************************************************************
  * Ordered Discrete Variable Models
  *
+ * @author Justin van de Ven
+ *
  * Let y define a discrete valued set {y_0,y_1,..., y_n}
  *   Each y_i is an indicator variable for discrete value i, where higher values of i reflect some natural ordering of the set
  * ystar = Xb - e
@@ -49,6 +51,12 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
         } else {
             throw new RuntimeException("attempt to access individual regression coefficients not currently supported for multinomial coefficient maps");
         }
+    }
+
+    public List<E1> getEventList() {return eventList;}
+
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors) {
+        return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
     public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {

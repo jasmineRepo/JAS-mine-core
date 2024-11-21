@@ -9,6 +9,8 @@ import java.util.*;
 /*****************************************************************
  * Binomial Models
  *
+ * @author Justin van de Ven
+ *
  * Let y define a variable that can take one of two values {0,1}
  * ystar = Xb - e
  * y = 1 if ystar>=0 and 0 otherwise
@@ -30,6 +32,7 @@ public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impleme
         calculator = new ProbabilityCalculator(type);
     }
 
+    public List<E1> getEventList() {return eventList;}
 
     public <E2 extends Enum<E2>> double getScore(IDoubleSource iDblSrc, Class<E2> Regressors) {
         return calculator.getScore(map, iDblSrc, Regressors);
@@ -44,10 +47,8 @@ public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impleme
         return getProbability(eventList.get(1), iDblSrc, Regressors);
     }
 
-    public <E2 extends Enum<E2>> double getProbability(E1 event, IDoubleSource iDblSrc, Class<E2> Regressors) {
-
-        Map<E1, Double> probs = getProbabilities(iDblSrc, Regressors);
-        return probs.get(event);
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors) {
+        return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
     public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {

@@ -2,6 +2,7 @@ package microsim.statistics.regression;
 
 public enum RegressionType implements IntegerValuedEnum {
 
+    Linear(-1),
     Logit(0),
     Probit(1),
     OrderedLogit(0),

@@ -10,6 +10,9 @@ import java.util.Map;
 
 /*****************************************************************
  * Manages calculation of probabilities for dichotomous choice models
+ *
+ * @author Justin van de Ven
+ *
  * See McFadden, D. (1984), "Econometric analysis of qualitative choice models". In Z. Griliches and M.D. Intriligator, Handbook of Econometrics
  *
  * ystar = Xb - e  (can deduct e because assume e is symmetric)
@@ -43,8 +46,10 @@ public class ProbabilityCalculator {
         double probability;
         if (type.getValue()==0)
             probability = 1.0 / (1.0 + Math.exp(-score));
-        else
+        else if (type.getValue()==1)
             probability = normalDistribution.cumulativeProbability(score);
+        else
+            throw new IllegalArgumentException("Unsupported regression type for generating probability: " + type.name());
         return probability;
     }
 
