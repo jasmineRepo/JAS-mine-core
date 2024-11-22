@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![](https://jitpack.io/v/jasmineRepo/JAS-mine-core.svg)](https://jitpack.io/#jasmineRepo/JAS-mine-core)
+<!-- badges: end -->
+
 # JAS-mine-core
 JAS-mine is a Java platform that aims at providing a unique simulation tool for discrete-event simulations, including agent-based and microsimulation models. 
 With the aim to develop large-scale, data-driven models, the main architectural choice of JAS-mine is to use whenever possible standard, open-source tools already available in the software development community.
