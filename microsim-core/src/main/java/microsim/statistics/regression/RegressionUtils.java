@@ -618,9 +618,11 @@ public class RegressionUtils {
 	}
 
 
-
 	/**
 	 * Method to package multinomialCoeffMap
+	 *
+	 * @author Justin van de Ven
+	 *
 	 * @param clazz an enum class defining the multinomial alternatives considered for analysis
 	 * @param multinomialCoefficients a standard MultiKeyCoefficientMap object used to read parameters from Excel and bootstrap
 	 *                                The method assumes that coefficients are supplied for each (or N-1) discrete alternative,
@@ -644,7 +646,7 @@ public class RegressionUtils {
 		// construct regressors key list
 		HashSet<String> regressors = new HashSet<String>();
 		for (Object multiKey : multinomialCoefficients.keySet()) {
-			final String key = (String) ((MultiKey) multiKey).getKey(0);
+			final String key = ((MultiKey) multiKey).getKey(0).toString();
 			if(!regressors.add(key))
 				throw new RuntimeException("Regressor key " + key + " in multinomial remapping is not unique.");
 		}
@@ -693,5 +695,74 @@ public class RegressionUtils {
 			throw new RuntimeException("Failed to allocate all supplied regressors in multinomial remapping.");
 
 		return multinomialCoeffMap;
+	}
+
+
+	/**
+	 * Appends @secondaryMap to @primaryMap
+	 *
+	 * @author Justin van de Ven
+	 */
+	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap) {
+		return appendCoefficientMaps(primaryMap, secondaryMap, null);
+	}
+	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap, String secondaryKeyPrefix) {
+		return appendCoefficientMaps(primaryMap, secondaryMap, secondaryKeyPrefix, false);
+	}
+	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap, String secondaryKeyPrefix, boolean invertSecondary) {
+
+		// check inputs
+		if (primaryMap.getKeysNames().length != 1 || secondaryMap.getKeysNames().length != 1)
+			throw new RuntimeException("The routine for appending coefficient maps is designed for use with single key maps.");
+
+		// create return object
+		String[] keyVector = new String[]{"REGRESSOR"};
+		String[] valueVector = new String[]{"COEFFICIENT"};
+		MultiKeyCoefficientMap appendedMap = new MultiKeyCoefficientMap(keyVector, valueVector);
+
+		// populate with primaryMap values
+		for (Object keyHere : primaryMap.keySet()) {
+
+			Double valHere;
+			if (primaryMap.getValuesNames().length == 1) {
+				valHere = ((Number)(primaryMap.getValue(keyHere))).doubleValue();
+			}
+			else {
+				String columnName = RegressionColumnNames.COEFFICIENT.toString();
+				valHere = ((Number)(primaryMap.getValue(keyHere, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+			}
+			Object[] keyValueVector = new Object[2];
+			keyValueVector[0] = keyHere;
+			keyValueVector[1] = valHere;
+			appendedMap.putValue(keyValueVector);
+		}
+
+		// populate with secondaryMap values
+		for (Object keyHere : secondaryMap.keySet()) {
+
+			Double valHere;
+			if (secondaryMap.getValuesNames().length == 1) {
+				valHere = ((Number)(secondaryMap.getValue(keyHere))).doubleValue();
+			}
+			else {
+				String columnName = RegressionColumnNames.COEFFICIENT.toString();
+				valHere = ((Number)(secondaryMap.getValue(keyHere, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+			}
+			Object[] keyValueVector = new Object[2];
+			if (secondaryKeyPrefix==null)
+				keyValueVector[0] = ((MultiKey) keyHere).getKey(0).toString();
+			else
+				keyValueVector[0] = secondaryKeyPrefix + ((MultiKey) keyHere).getKey(0).toString();
+			if (invertSecondary)
+				keyValueVector[1] = -valHere;
+			else
+				keyValueVector[1] = valHere;
+
+			if (appendedMap.containsKey(keyHere))
+				throw new RuntimeException("attempt to append coefficient maps that share some of the same keys");
+			appendedMap.putValue(keyValueVector);
+		}
+
+		return appendedMap;
 	}
 }
