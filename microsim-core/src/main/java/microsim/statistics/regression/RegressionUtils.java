@@ -707,6 +707,9 @@ public class RegressionUtils {
 		return appendCoefficientMaps(primaryMap, secondaryMap, null);
 	}
 	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap, String secondaryKeyPrefix) {
+		return appendCoefficientMaps(primaryMap, secondaryMap, secondaryKeyPrefix, false);
+	}
+	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap, String secondaryKeyPrefix, boolean invertSecondary) {
 
 		// check inputs
 		if (primaryMap.getKeysNames().length != 1 || secondaryMap.getKeysNames().length != 1)
@@ -750,7 +753,11 @@ public class RegressionUtils {
 				keyValueVector[0] = ((MultiKey) keyHere).getKey(0).toString();
 			else
 				keyValueVector[0] = secondaryKeyPrefix + ((MultiKey) keyHere).getKey(0).toString();
-			keyValueVector[1] = valHere;
+			if (invertSecondary)
+				keyValueVector[1] = -valHere;
+			else
+				keyValueVector[1] = valHere;
+
 			if (appendedMap.containsKey(keyHere))
 				throw new RuntimeException("attempt to append coefficient maps that share some of the same keys");
 			appendedMap.putValue(keyValueVector);
