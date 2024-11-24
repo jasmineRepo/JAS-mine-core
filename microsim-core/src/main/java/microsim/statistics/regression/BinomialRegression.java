@@ -55,13 +55,13 @@ public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impleme
         // probabilities are obtained for discrete alternatives of dependent variable in increasing order of the feasible set
         // P(y=1|X) = F(Xb)
 
-        Map<E, Double> probs = new HashMap<>();
+        Map<E, Double> probs = new LinkedHashMap<>();
         E event;
-        event = (E) eventList.get(1);
         double prob = calculator.getProbability(map, iDblSrc, Regressors);
-        probs.put(event, prob);
         event = (E) eventList.get(0);
         probs.put(event, 1.0-prob);
+        event = (E) eventList.get(1);
+        probs.put(event, prob);
 
         return probs;
     }

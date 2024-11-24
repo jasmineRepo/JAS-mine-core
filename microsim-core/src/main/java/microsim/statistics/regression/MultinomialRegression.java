@@ -58,32 +58,23 @@ public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impl
     public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
         // P(y_i=1|X) = exp(Xb_i) / sum(exp(Xb_1),...exp(Xb_n))
 
-        Map<E,Double> probs = new HashMap<>();
+        Map<E,Double> expScores = new HashMap<>();
+        Map<E,Double> probs = new LinkedHashMap<>();
         double denominator = 1.0;
-        for (E event : (Set<E>) maps.keySet()) {
+        int countEventProbs = 0;
+        for (E event : (Set<E>)maps.keySet()) {
             double expScore = Math.exp(calculator.getScore(maps.get(event), iDblSrc, Regressors));
-            probs.put(event, expScore);
+            expScores.put(event, expScore);
             denominator += expScore;
+            countEventProbs++;
         }
+        if (countEventProbs!=eventList.size()-1)
+            throw new RuntimeException("Multinomial regression has been supplied with the wrong number of scores to construct probability");
 
-        int countNullEventProbs = 0;
-        for (int ii = 0; ii < eventList.size(); ii++) {
-            E event = (E) eventList.get(ii);
-            Double val = probs.get(event);
-            if (val == null) {
-                // missing should be the base of the multinomial logit - with probability 1 / (1 + sum exp(xb))
-                countNullEventProbs++;
-                if (countNullEventProbs > 1)
-                    throw new RuntimeException("MultinomialRegression failed to evaluate values for sufficient events.");
-                else
-                    probs.put(event, 1.0 / denominator);
-            } else {
-                // all options other than the base have probability exp(xbi) / (1 + sum exp(xb))
-                probs.put(event, val / denominator);
-            }
+        for (E event : (List<E>)eventList) {
+            Double val = expScores.get(event);
+            probs.put(event, Objects.requireNonNullElse(val, 1.0) / denominator);
         }
-        if (countNullEventProbs != 1)
-            throw new RuntimeException("MultinomialRegression did not include a base option.");
 
         return probs;
     }

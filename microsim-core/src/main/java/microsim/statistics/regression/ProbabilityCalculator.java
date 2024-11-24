@@ -1,5 +1,7 @@
 package microsim.statistics.regression;
 
+import cern.jet.random.Normal;
+import cern.jet.random.engine.MersenneTwister;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.IDoubleSource;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -24,7 +26,8 @@ import java.util.Map;
 public class ProbabilityCalculator {
 
     RegressionType type;
-    NormalDistribution normalDistribution = new NormalDistribution();
+    //NormalDistribution normalDistribution = new NormalDistribution();
+    private Normal normalDistribution = new Normal(0.0, 1.0, new MersenneTwister(0));
 
     public ProbabilityCalculator(RegressionType type) {
         this.type = type;
@@ -47,7 +50,8 @@ public class ProbabilityCalculator {
         if (type.getValue()==0)
             probability = 1.0 / (1.0 + Math.exp(-score));
         else if (type.getValue()==1)
-            probability = normalDistribution.cumulativeProbability(score);
+            //probability = normalDistribution.cumulativeProbability(score);
+            probability = normalDistribution.cdf(score);
         else
             throw new IllegalArgumentException("Unsupported regression type for generating probability: " + type.name());
         return probability;

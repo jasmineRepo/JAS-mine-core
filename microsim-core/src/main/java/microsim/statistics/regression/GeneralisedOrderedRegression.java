@@ -47,11 +47,13 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
         // probabilities are obtained for discrete alternatives of dependent variable in increasing order of the feasible set
         // P(y_j) = P(yhat_j-1|X) - P(yhat_j|X)
 
-        Map<E, Double> probs = new HashMap<>();
+        Map<E, Double> probs = new LinkedHashMap<>();
         double probHere, probPreceding = 1.0;
         for (int ii = 0; ii < eventList.size()-1; ii++) {
 
             E event = (E) eventList.get(ii);
+            if (maps.get(event)==null)
+                throw new RuntimeException("generalised ordered logit expected but failed to find regression estimates for event " + event);
             probHere = calculator.getProbability(maps.get(event), iDblSrc, Regressors);
             if (probHere > probPreceding) {
                 probs.put(event, -1.0);
