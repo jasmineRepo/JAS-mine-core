@@ -653,8 +653,8 @@ public class RegressionUtils {
 
 		// populate return object
 		int added = 0;
-		for(E ee : clazz.getEnumConstants()) {
-			// loop over each discrete option
+		for (E ee : clazz.getEnumConstants()) {
+			// loop over discrete events
 
 			// initialise storage object
 			String[] keyVector = new String[]{"REGRESSOR"};
@@ -689,6 +689,36 @@ public class RegressionUtils {
 			}
 			if (flagAdd) {
 				multinomialCoeffMap.put(ee, coefficients);
+			}
+		}
+		if (added != regressors.size()) {
+			// check for terms common to all events (allows for coefficients that satisfy the "parallel lines assumption")
+
+			for (String key : regressors) {
+				// search for coefficients to add
+
+				if (key.endsWith("_")) {
+
+					Object[] keyValueVector = new Object[2];
+					String keyHere = key.substring(0,key.length()-1);
+					Double valHere;
+					if (multinomialCoefficients.getValuesNames().length == 1) {
+						valHere = ((Number)(multinomialCoefficients.getValue(key))).doubleValue();
+					} else {
+						String columnName = RegressionColumnNames.COEFFICIENT.toString();
+						valHere = ((Number)(multinomialCoefficients.getValue(key, columnName))).doubleValue();	//This allows the prospect of there being several value columns corresponding to not only the coefficients, but also the covariance matrix to be used with RegressionUtils.bootstrap() for example.
+					}
+					keyValueVector[0] = keyHere;
+					keyValueVector[1] = valHere;
+					for (E ee : clazz.getEnumConstants()) {
+						// add common coefficients to all event maps
+
+						MultiKeyCoefficientMap coefficients = multinomialCoeffMap.get(ee);
+						if (coefficients != null)
+							coefficients.putValue(keyValueVector);
+					}
+					added += 1;
+				}
 			}
 		}
 		if (added != regressors.size())
