@@ -210,19 +210,19 @@ public class ExportCSV {
 	        		
 	        		Field idField = obj.getClass().getDeclaredField(idFieldName);
 	        		idField.setAccessible(true);
-					bufferWriter.append(((PanelEntityKey)idField.get(obj)).getId() + delimiter);
+					bufferWriter.append((char) ((PanelEntityKey)idField.get(obj)).getId());
 					
 	        		for(String fieldName : fieldsForExport) {
-	        			Field thisField = findUnderlyingField(obj.getClass(), fieldName);	        			
+	        			Field thisField = findUnderlyingField(obj.getClass(), fieldName);
 	        			thisField.setAccessible(true);
 	        			Object value = thisField.get(obj);
+		            	bufferWriter.append(delimiter);
 	        			if(value == null) {
 	        				bufferWriter.append("null");
 	        			}
 	        			else {
-	        				bufferWriter.append(value.toString());	
+	        				bufferWriter.append(value.toString());
 	        			}
-		            	bufferWriter.append(delimiter);
 	        		}
 	        	}
 			}
