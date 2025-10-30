@@ -59,9 +59,7 @@ public class Experiment {
     @Transient
     private String outputFolder;
 
-    public Experiment() {
-        initialiseOutputFolder();
-    }
+    public Experiment() {}
 
     public Experiment(String multiRunId) {
 
@@ -85,6 +83,7 @@ public class Experiment {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             runId = sdf.format(new Date());
         }
+
         // multiRunId represents the seed of this run
         if (this.multiRunId == null) {
             outputFolder = outputRootFolder + File.separatorChar + runId;
@@ -92,10 +91,15 @@ public class Experiment {
             outputFolder = outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
         }
 
+        System.out.println("Initialising a new output folder at: " + outputFolder);
+
     }
 
 
 	public String getOutputFolder() {
+        if (outputFolder == null) {
+            initialiseOutputFolder();
+        }
 		return outputFolder;
 	}
 
