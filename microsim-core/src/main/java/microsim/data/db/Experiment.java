@@ -27,6 +27,25 @@ import org.hibernate.annotations.FetchMode;
 @Table(name="jasmine_experiment")
 public class Experiment {
 
+
+
+    public static String outputFolder;
+
+    public Experiment() {
+        if (null == outputFolder) {
+            setOutputFolder();
+        }
+    }
+
+    public Experiment(String multiRunId) {
+
+        this.multiRunId = multiRunId;
+
+        if (null == outputFolder) {
+            setOutputFolder();
+        }
+    }
+
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -51,18 +70,31 @@ public class Experiment {
 	
 	@Transient
 	public static String outputRootFolder = "./output";
-	
+
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
+    }
+
+    public void setOutputFolder() {
+
+        if (runId == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            runId = sdf.format(new Date());
+        }
+        // multiRunId represents the seed of this run
+        if (this.multiRunId == null) {
+            outputFolder = outputRootFolder + File.separatorChar + runId;
+        } else {
+            outputFolder = outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
+        }
+
+    }
+
+
 	public String getOutputFolder() {
-		if (runId == null) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			runId = sdf.format(new Date());
-		}
-		// multiRunId represents the seed of this run
-		if (multiRunId == null) {
-			return outputRootFolder + File.separatorChar + runId;
-		} else {
-			return outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
-		}
+		return outputFolder;
 	}
+
+
 	
 }
