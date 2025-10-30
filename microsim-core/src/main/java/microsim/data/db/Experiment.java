@@ -28,24 +28,6 @@ import org.hibernate.annotations.FetchMode;
 public class Experiment {
 
 
-
-    public static String outputFolder;
-
-    public Experiment() {
-        if (null == outputFolder) {
-            setOutputFolder();
-        }
-    }
-
-    public Experiment(String multiRunId) {
-
-        this.multiRunId = multiRunId;
-
-        if (null == outputFolder) {
-            setOutputFolder();
-        }
-    }
-
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -71,11 +53,33 @@ public class Experiment {
 	@Transient
 	public static String outputRootFolder = "./output";
 
+    @Transient
+    public static String testOutputFolder;
+
+    @Transient
+    private String outputFolder;
+
+    public Experiment() {
+        initialiseOutputFolder();
+    }
+
+    public Experiment(String multiRunId) {
+
+        this.multiRunId = multiRunId;
+
+        initialiseOutputFolder();
+    }
+
     public void setOutputFolder(String outputFolder) {
         this.outputFolder = outputFolder;
     }
 
-    public void setOutputFolder() {
+    public void initialiseOutputFolder() {
+
+        if (null != Experiment.testOutputFolder) {
+            outputFolder = Experiment.testOutputFolder;
+            return;
+        }
 
         if (runId == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
