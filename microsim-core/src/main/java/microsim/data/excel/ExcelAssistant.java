@@ -43,7 +43,70 @@ public class ExcelAssistant {
 		
 		return MultiKeyCoefficientMap.toStringKey(val);
 	}
-	
+
+	/**
+	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, reading from the first line of the spreadsheet, and automatically finds the last line of the spreadsheet
+	 * (blank lines within the data are not allowed and will result in a NullPointerException).
+	 * @param excelFileName: the Excel workbook (.xls or .xlsx) that stores the data
+	 * @param sheetName: the Excel worksheet name that stores the data
+	 * @param keyColumns: the number of columns (stored to the left of the worksheet) that represent keys. This will equal the number of keys of the MultiKeyCoefficientMap that is returned
+	 * @return
+	 */
+	public static MultiKeyCoefficientMap loadCoefficientMap(String excelFileName, String sheetName, int keyColumns) {
+
+		MultiKeyCoefficientMap map = null;
+
+		try {
+			FileInputStream fileInputStream = new FileInputStream(excelFileName);
+			Workbook workbook = WorkbookFactory.create(fileInputStream);
+			Sheet worksheet = workbook.getSheet(sheetName);
+			Row headerRow = worksheet.getRow(0);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
+			int noOfColumns = headerRow.getPhysicalNumberOfCells();
+			map = loadCoefficientMap(excelFileName, sheetName, keyColumns, noOfColumns-keyColumns, 1, Integer.MAX_VALUE);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (EncryptedDocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return map;
+	}
+
+	public static int loadCoefficientMapTest(String excelFileName, String sheetName, int keyColumns, int valueColumns) {
+
+		int noOfColumns = 0;
+
+		try {
+			FileInputStream fileInputStream = new FileInputStream(excelFileName);
+			Workbook workbook = WorkbookFactory.create(fileInputStream);
+			Sheet worksheet = workbook.getSheet(sheetName);
+			Row headerRow = worksheet.getRow(0);		//startLine and endLine are physical (not logical) rows, therefore need to decrement by 1.
+			noOfColumns = headerRow.getPhysicalNumberOfCells() - keyColumns;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (EncryptedDocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return noOfColumns;
+	}
+
 	/**
 	 * Load MultiKeyCoefficientMap from Excel spreadsheet data, reading from the first line of the spreadsheet, and automatically finds the last line of the spreadsheet 
 	 * (blank lines within the data are not allowed and will result in a NullPointerException).
