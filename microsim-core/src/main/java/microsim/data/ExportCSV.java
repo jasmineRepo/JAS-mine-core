@@ -36,7 +36,7 @@ public class ExportCSV {
 	//Fields for exporting tables to output .csv files 
 	final static String newLine = "\n";
 	final static String delimiter = ","; 
-	final static String directory = SimulationEngine.getInstance().getCurrentExperiment().getOutputFolder() + File.separator + "csv";
+	private String directory;
 	
 	
 	private Set<String> fieldsForExport;
@@ -109,6 +109,8 @@ public class ExportCSV {
         	else {		//Use id of object to enumerate the name of .csv output files if several of the same object are for export.
 					filename = obj.getClass().getSimpleName() + ((PanelEntityKey)idField.get(targetObject)).getId();
         	}
+
+            this.directory = SimulationEngine.getInstance().getCurrentExperiment().getOutputFolder() + File.separator + "csv";
 	
         	File f = new File(directory + File.separator + filename + ".csv");
         	//Checks whether a file with the same filename already exists - if not, then creates one.  Useful for MultiRun case.

@@ -55,8 +55,7 @@ public class ExperimentManager {
 	}
 	
 	public Experiment createExperiment(String multiRunId) {
-		Experiment experiment = new Experiment();
-		experiment.multiRunId = multiRunId;
+		Experiment experiment = new Experiment(multiRunId);
 		experiment.timestamp = new Date(System.currentTimeMillis());
 		
 		return experiment;

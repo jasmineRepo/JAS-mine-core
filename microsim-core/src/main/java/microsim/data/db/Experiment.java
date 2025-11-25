@@ -27,6 +27,7 @@ import org.hibernate.annotations.FetchMode;
 @Table(name="jasmine_experiment")
 public class Experiment {
 
+
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -51,18 +52,57 @@ public class Experiment {
 	
 	@Transient
 	public static String outputRootFolder = "./output";
-	
+
+    @Transient
+    public static String testOutputFolder;
+
+    @Transient
+    private String outputFolder;
+
+    public Experiment() {}
+
+    public Experiment(String multiRunId) {
+
+        this.multiRunId = multiRunId;
+
+        initialiseOutputFolder();
+    }
+
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
+    }
+
+    public void initialiseOutputFolder() {
+
+        if (null != Experiment.testOutputFolder) {
+            outputFolder = Experiment.testOutputFolder;
+            return;
+        }
+
+        if (runId == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            runId = sdf.format(new Date());
+        }
+
+        // multiRunId represents the seed of this run
+        if (this.multiRunId == null) {
+            outputFolder = outputRootFolder + File.separatorChar + runId;
+        } else {
+            outputFolder = outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
+        }
+
+        System.out.println("Initialising a new output folder at: " + outputFolder);
+
+    }
+
+
 	public String getOutputFolder() {
-		if (runId == null) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			runId = sdf.format(new Date());
-		}
-		// multiRunId represents the seed of this run
-		if (multiRunId == null) {
-			return outputRootFolder + File.separatorChar + runId;
-		} else {
-			return outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
-		}
+        if (outputFolder == null) {
+            initialiseOutputFolder();
+        }
+		return outputFolder;
 	}
+
+
 	
 }
