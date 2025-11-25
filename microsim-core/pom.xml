@@ -6,7 +6,7 @@
 	</properties>
 	<groupId>com.github.jasmineRepo</groupId>
 	<artifactId>JAS-mine-core</artifactId>
-	<version>4.3.16</version>
+	<version>4.3.17</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -147,12 +147,5 @@
             <version>3.18.0</version>
             <scope>compile</scope>
         </dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.18.0</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
-		
 </project>
