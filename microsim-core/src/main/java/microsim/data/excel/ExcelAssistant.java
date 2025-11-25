@@ -7,6 +7,7 @@ import java.io.IOException;
 import microsim.data.MultiKeyCoefficientMap;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 
 
