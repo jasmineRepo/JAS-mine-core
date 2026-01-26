@@ -36,7 +36,7 @@ public class ExportCSV {
 	//Fields for exporting tables to output .csv files 
 	final static String newLine = "\n";
 	final static String delimiter = ","; 
-	final static String directory = SimulationEngine.getInstance().getCurrentExperiment().getOutputFolder() + File.separator + "csv";
+	public static String directory = null;
 	
 	
 	private Set<String> fieldsForExport;
@@ -58,8 +58,12 @@ public class ExportCSV {
 	 *  
 	 */
 	public ExportCSV(Object target) {
-        try { 
-        	
+        try {
+
+			if (directory == null) {
+				directory = SimulationEngine.getInstance().getCurrentExperiment().getOutputFolder() + File.separator + "csv";
+			}
+
         	Object obj;
         	
         	//Decide which 'mode' depending on whether the target is a single object or a collection of objects

@@ -155,6 +155,8 @@ public class ExperimentManager {
 	
 	public Experiment setupExperiment(Experiment experiment, Object... models) throws Exception {
 		final String outFolder = experiment.getOutputFolder() + File.separator + "input";
+
+		ExportCSV.directory = experiment.getOutputFolder() + File.separator + "csv";
 		
 		log.debug("Setting up experiment " + experiment.runId);
 		
