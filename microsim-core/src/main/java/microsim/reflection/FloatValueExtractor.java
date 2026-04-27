@@ -65,7 +65,7 @@ public class FloatValueExtractor {
 	 * Constructor.
 	 * 
 	 * @param target
-	 *            It is the Class<?>of the target object.
+	 *            It is the {@code Class<?>} of the target object.
 	 * @param fieldName
 	 *            A string representing the name of the method to invoke.
 	 * @param isMethod

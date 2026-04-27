@@ -200,7 +200,7 @@ public abstract class AbstractSpace<E> {
 	 *            The x coordinate.
 	 * @param y
 	 *            The y coordinate.
-	 * @retrun the number of "entities" contained in the specified cell. See
+	 * @return the number of "entities" contained in the specified cell. See
 	 *         specific semantic in API of each extending class.
 	 */
 	public abstract int countObjectsAt(int x, int y);

@@ -133,7 +133,7 @@ public class RegressionUtils {
 	 * (event(T[], Double[]) and do the extracting of the map outside of the loop!
 	 * 
 	 * If you want to do sampling without replacement, then you should use the 
-	 * event(Map<T, Double> map, Random rnd, boolean checkWeightSum) method instead, setting checkWeightSum to false
+	 * {@code event(Map<T, Double> map, Random rnd, boolean checkWeightSum)} method instead, setting {@code checkWeightSum} to false
 	 * 
 	 * @param map
 	 * @param rnd
@@ -627,7 +627,7 @@ public class RegressionUtils {
 	 * @param multinomialCoefficients a standard MultiKeyCoefficientMap object used to read parameters from Excel and bootstrap
 	 *                                The method assumes that coefficients are supplied for each (or N-1) discrete alternative,
 	 *                                where "_XXX" is appended to each coefficient name to indicate association with alternative "XXX"
-	 * @return Map<E, MultiKeyCoefficientMap> multinomialCoeffMap
+	 * @return multinomialCoeffMap
 	 * @param <E> Enum object
 	 */
 	public static <E extends Enum<E> & IntegerValuedEnum> Map<E, MultiKeyCoefficientMap> populateMultinomialCoefficientMap(Class<E> clazz, MultiKeyCoefficientMap multinomialCoefficients) {

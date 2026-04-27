@@ -205,7 +205,8 @@ public class LinearRegression implements ILinearRegression {
 		
 	/**
 	 * Uses reflection to obtain information from the iDblSrc object, so it is possibly slow.  For time critical cases, use the other computeScore method that requires 
-	 * passing in an object that implements the IObjectSource interface; this has signature:- public static <T extends Enum<T>, U extends Enum<>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<> enumTypeObject)
+	 * passing in an object that implements the IObjectSource interface; this has signature:
+     * {@code public static <T extends Enum<T>, U extends Enum<>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<> enumTypeObject)}
 	 * Requires the first column entry of the MultiKeyCoefficientMap (i.e. the first entry of coeffMultiMap's multiKey) to be the name of the regressor variables.  
 	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey whose first Key is the name of the regressor variable.  The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
@@ -461,7 +462,8 @@ public class LinearRegression implements ILinearRegression {
 
 	/**
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
-	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)
+	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:
+     * {@code public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)}
 	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-      
 	 * 
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
@@ -477,7 +479,8 @@ public class LinearRegression implements ILinearRegression {
 	
 	/**
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
-	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)
+	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:
+     * {@code public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)}
 	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-     
 	 * 
 	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.  
