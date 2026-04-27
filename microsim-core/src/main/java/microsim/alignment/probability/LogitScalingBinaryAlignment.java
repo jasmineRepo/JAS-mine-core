@@ -19,7 +19,7 @@ import org.apache.commons.collections4.Predicate;
  * 
  * @author Ross Richardson
  *
- * @param <T>
+ * @param <T> agent type.
  */
 public class LogitScalingBinaryAlignment<T> extends AbstractProbabilityAlignment<T> {
 

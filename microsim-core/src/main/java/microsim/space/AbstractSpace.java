@@ -34,6 +34,8 @@ package microsim.space;
  * 
  * @author Michele Sonnessa
  *         <p>
+ *
+ * @param <E> element type.
  */
 public abstract class AbstractSpace<E> {
 	protected int xSize, ySize;

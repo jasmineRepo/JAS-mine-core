@@ -9,6 +9,8 @@ import java.util.*;
 /*****************************************************************
  * Binomial Models
  *
+ * @param <E1> event type.
+ *
  * @author Justin van de Ven
  *
  * Let y define a variable that can take one of two values {0,1}

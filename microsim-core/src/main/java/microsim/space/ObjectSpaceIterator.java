@@ -26,6 +26,8 @@ import java.util.Iterator;
  *
  * @author Michele Sonnessa
  * <p>
+ *
+ * @param <E> element type.
  */
 public interface ObjectSpaceIterator<E> extends Iterator<E>
 {

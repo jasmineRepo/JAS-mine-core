@@ -18,7 +18,7 @@ import microsim.agent.Weight;
  * 
  * @author Ross Richardson
  *
- * @param <T>
+ * @param <T> agent type.
  */
 public class LogitScalingWeightedAlignment<T extends Weight> extends AbstractMultiProbabilityAlignment<T> {
 
