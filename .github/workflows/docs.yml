@@ -1,0 +1,43 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+          cache-dependency-path: "microsim-core/pom.xml"
+      - run: mvn compile --file microsim-core/pom.xml
+      - run: mvn javadoc:javadoc --file microsim-core/pom.xml
+      - uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: "microsim-core/target/reports/apidocs/"
+
+  deploy:
+    needs: build
+    if: ${{ github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' }}
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v5.0.0
+        id: deployment
