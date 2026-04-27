@@ -29,7 +29,8 @@ import microsim.statistics.ILongSource;
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * @author Michele Sonnessa and Ross Richardson
+ * @author Michele Sonnessa
+ * @author Ross Richardson
  */
 public class MovingAverageTraceFunction extends AbstractFunction implements IDoubleSource  {
 			
@@ -97,10 +98,7 @@ public class MovingAverageTraceFunction extends AbstractFunction implements IDou
 	}
 
 	/** Collect a value from the source. 
-	 * 
-	 * @author Ross Richardson
-	 * 
-	 * */
+	 */
 	public void applyFunction() 
 	{
 		if(valueCount < len) {		//Slower calculation at startup as average is calculated directly by summing all entries in the values array

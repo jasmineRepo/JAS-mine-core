@@ -41,6 +41,7 @@ import microsim.event.SystemEventType;
  * </p>
  * 
  * @author Michele Sonnessa
+ * @author Ross Richardson
  */
 
 public abstract class MultiRun extends Thread implements EngineListener, ExperimentBuilder {
@@ -256,7 +257,6 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 	/**
 	 * Sets whether to copy the input files into a new input folder within a new output folder for each simulation run
 	 * @param copyInputFolderStructure_ - set to true if wanting a copy of the input files to be stored in the output folder for each simulation run, otherwise set to false
-	 * @author richardsonr
 	 */
 	public static void setCopyInputFolderStructure(boolean copyInputFolderStructure_) {
 		copyInputFolderStructure = copyInputFolderStructure_;

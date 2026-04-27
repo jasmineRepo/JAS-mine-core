@@ -26,7 +26,6 @@ import microsim.engine.SimulationEngine;
  * separate files for each class of object.  Note that only numbers, enums or strings are exported to .csv files. 
  *  
  * @author Ross Richardson
- *
  */
 public class ExportCSV {
 
@@ -196,9 +195,6 @@ public class ExportCSV {
 	 * Export data to the .csv files named after the class of the target object 
 	 * (or if a collection of objects, the class of the collection's members).
 	 * Note that only numbers, enums or strings are exported to .csv files. 
-	 * 
-	 * @author Ross Richardson
-	 * 
 	 */
 	public void dumpToCSV() {
  
