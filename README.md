@@ -23,3 +23,12 @@ Categories: Modeling, Simulations, ORM (Object-relational mapping)
 License: European Union Public Licence (EUPL)
 
 Features: Artificial Intelligence Simulation Social sciences
+
+## Documentation
+
+The documentation can be generated locally with the following (from the `microsim-core/` directory):
+```sh
+mvn javadoc:javadoc
+```
+
+It is generated in `microsim-core/target/reports/apidocs`.
