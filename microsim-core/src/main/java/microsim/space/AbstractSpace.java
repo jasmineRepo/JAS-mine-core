@@ -33,8 +33,6 @@ package microsim.space;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
- *
  * @param <E> element type.
  */
 public abstract class AbstractSpace<E> {

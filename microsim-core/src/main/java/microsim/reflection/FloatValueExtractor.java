@@ -35,7 +35,6 @@ import microsim.exception.SimulationRuntimeException;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
  */
 public class FloatValueExtractor {
 	protected Method method;

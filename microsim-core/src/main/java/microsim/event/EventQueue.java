@@ -38,7 +38,6 @@ import microsim.exception.SimulationRuntimeException;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa and Ross Richardson
- *         <p>
  */
 public class EventQueue {
 	/** The action type passed to step listeners. The int value is 10000. */
