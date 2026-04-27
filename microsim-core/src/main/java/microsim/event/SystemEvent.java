@@ -1,22 +1,7 @@
-package microsim.event;
-
-import microsim.engine.SimulationEngine;
-import microsim.exception.SimulationException;
-
-
-/**
- * System events are directly processed by the simulation engine.
- * There are some special events that engine is able to understand.
- * For instance, you can schedule the end of simulation using a system event.
- * <br><i> SystemEvent e = new SystemEvent(Sim.EVENT_SIMULATION_END);</i><br>
- * eventQueue.schedule(100, e);
- * <i>
- * The above code make the engine stop at 100. When this event happens
- * the simulationEnd() method of the current running models is called.
- *
- * <p>Title: JAS</p>
- * <p>Description: Java Agent-based Simulation library</p>
- * <p>Copyright (C) 2002 Michele Sonnessa</p>
+/*
+ * Title: JAS
+ * Description: Java Agent-based Simulation library
+ * Copyright (C) 2002 Michele Sonnessa
  *
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -29,9 +14,26 @@ import microsim.exception.SimulationException;
  * You should have received a copy of the GNU Lesser General Public License along with this
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
+ */
+package microsim.event;
+
+import microsim.engine.SimulationEngine;
+import microsim.exception.SimulationException;
+
+
+/**
+ * System events are directly processed by the simulation engine.
+ * There are some special events that engine is able to understand.
+ * For instance, you can schedule the end of simulation using a system event.
+ * <pre>
+ * SystemEvent e = new SystemEvent(Sim.EVENT_SIMULATION_END);
+ * eventQueue.schedule(100, e);
+ * </pre>
+ *
+ * The above code make the engine stop at 100. When this event happens
+ * the {@code simulationEnd()} method of the current running models is called.
  *
  * @author Michele Sonnessa
- * <p>
  */
 public class SystemEvent extends Event
 {
