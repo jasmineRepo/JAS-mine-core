@@ -40,7 +40,6 @@ import microsim.statistics.reflectors.LongInvoker;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public abstract class MaxTraceFunction extends AbstractFunction implements IDoubleSource  {
 					

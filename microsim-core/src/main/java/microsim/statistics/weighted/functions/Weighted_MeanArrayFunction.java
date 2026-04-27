@@ -32,7 +32,6 @@ import microsim.statistics.weighted.IWeightedLongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction implements IDoubleSource {
 

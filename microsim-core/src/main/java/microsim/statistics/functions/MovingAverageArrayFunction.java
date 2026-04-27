@@ -28,7 +28,6 @@ import microsim.statistics.ILongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public class MovingAverageArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 

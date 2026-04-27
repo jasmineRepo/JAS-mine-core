@@ -30,7 +30,6 @@ import microsim.statistics.IDoubleSource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public abstract class Weighted_SumArrayFunction extends AbstractWeightedArrayFunction implements IDoubleSource {
 

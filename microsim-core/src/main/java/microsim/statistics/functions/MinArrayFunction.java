@@ -31,7 +31,6 @@ import microsim.statistics.ILongSource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- * <p>
  */
 public abstract class MinArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 

@@ -30,7 +30,6 @@ import microsim.statistics.ILongSource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public class MovingAverageTraceFunction extends AbstractFunction implements IDoubleSource  {
 			
