@@ -69,24 +69,7 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	/**
 	 * An implementation of the MemorylessSeries class, which manages long type data sources.
 	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
 	 * @author Michele Sonnessa
-	 *
 	 */
 	public static class Long extends MinTraceFunction implements ILongSource {
 		protected long min = java.lang.Long.MAX_VALUE;
@@ -167,24 +150,7 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	/**
 	 * An implementation of the MemorylessSeries class, which manages double type data sources.
 	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
 	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
 	public static class Double extends MinTraceFunction implements IDoubleSource {
 		protected double min = java.lang.Double.MAX_VALUE;
@@ -254,24 +220,7 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	/**
 	 * An implementation of the MemorylessSeries class, which manages integer type data sources.
 	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
 	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
 	public static class Integer extends MinTraceFunction implements IIntSource {
 		protected int min = java.lang.Integer.MAX_VALUE;
@@ -349,24 +298,7 @@ public abstract class MinTraceFunction extends AbstractFunction implements IDoub
 	/**
 	 * An implementation of the MemorylessSeries class, which manages float type data sources.
 	 *
-	 * <p>Title: JAS</p>
-	 * <p>Description: Java Agent-based Simulation library</p>
-	 * <p>Copyright (C) 2002 Michele Sonnessa</p>
-	 *
-	 * This library is free software; you can redistribute it and/or modify it under the terms
-	 * of the GNU Lesser General Public License as published by the Free Software Foundation;
-	 * either version 2.1 of the License, or (at your option) any later version.
-	 *
-	 * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-	 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	 * See the GNU Lesser General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU Lesser General Public License along with this
-	 * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-	 * Boston, MA 02111-1307, USA.
-	 * 
 	 * @author Michele Sonnessa and Ross Richardson
-	 *
 	 */
 	public static class Float extends MinTraceFunction implements IFloatSource {
 		protected float min = java.lang.Float.MAX_VALUE;
