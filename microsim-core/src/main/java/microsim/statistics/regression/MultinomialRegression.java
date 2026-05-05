@@ -11,6 +11,8 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
 /*****************************************************************
  * Multinomial Discrete Variable Models
  *
+ * @param <E1> event type.
+ *
  * @author Justin van de Ven
  *
  * NOTE: Probit variant not currently supported

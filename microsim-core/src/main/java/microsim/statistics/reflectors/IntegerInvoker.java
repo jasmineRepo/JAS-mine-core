@@ -38,7 +38,6 @@ import org.apache.log4j.Logger;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
  */
 public class IntegerInvoker implements IIntSource {
 	private static Logger log = Logger.getLogger(IntegerInvoker.class);

@@ -31,7 +31,6 @@ import java.util.Map;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- * <p>
  */
 public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSpace 
 {

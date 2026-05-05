@@ -42,7 +42,7 @@ import org.apache.commons.collections4.Predicate;
  * @author Ross Richardson 
  * This version: July 2015
  * 
- * @param <T>
+ * @param <T> agent type.
  */
 public abstract class AbstractOutcomeAlignment<T> {
 

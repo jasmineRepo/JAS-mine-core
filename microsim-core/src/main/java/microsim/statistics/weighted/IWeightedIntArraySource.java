@@ -22,7 +22,6 @@ package microsim.statistics.weighted;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
- * <p>
  */
 public interface IWeightedIntArraySource {
 	/**

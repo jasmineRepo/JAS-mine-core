@@ -15,17 +15,20 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 
+/**
+ * Linear regression object.
+ *
+ * @author Michele Sonnessa
+ * @author Ross Richardson
+ */
 public class LinearRegression implements ILinearRegression {
 	
 	private MultiKeyCoefficientMap map = null;
 	
 	/**
-	 * Linear Regression object.
+	 * Construct a linear regression object.
 	 * 
 	 * @param map - needs to fulfil two criteria: 1) Map must have a key in the MultiKey that matches the name specified in the RegressionColumnNames enum called Regressor. 2) Map must have a value key that matches the name specified in the RegressionColumnNames enum called Coefficient.	 If loading from an .xls spreadsheet using the ExcelAssistant.loadCoefficientMap(), the Regressor column must be situated to the left of the Coefficient column. 
-	 * 
-	 * @author Ross Richardson and Michele Sonnessa
-	 *  
 	 */
 	public LinearRegression(MultiKeyCoefficientMap map) {
 		this.map = map;
@@ -170,7 +173,6 @@ public class LinearRegression implements ILinearRegression {
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey whose first Key is the name of the regressor variable.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface, and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the keys of coeffMultiMap's MultiKey
 	 * @param enumType specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
-	 * @author Ross Richardson  
 	 */
 	public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType, boolean singleKeyCoefficients) 
 	{
@@ -205,13 +207,13 @@ public class LinearRegression implements ILinearRegression {
 		
 	/**
 	 * Uses reflection to obtain information from the iDblSrc object, so it is possibly slow.  For time critical cases, use the other computeScore method that requires 
-	 * passing in an object that implements the IObjectSource interface; this has signature:- public static <T extends Enum<T>, U extends Enum<>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<> enumTypeObject)
+	 * passing in an object that implements the IObjectSource interface; this has signature:
+     * {@code public static <T extends Enum<T>, U extends Enum<>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<> enumTypeObject)}
 	 * Requires the first column entry of the MultiKeyCoefficientMap (i.e. the first entry of coeffMultiMap's multiKey) to be the name of the regressor variables.  
 	 * The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class. 
 	 * @param coeffMultiMap is a MultiKeyCoefficientMap that has a MultiKey whose first Key is the name of the regressor variable.  The names of the other keys of the coeffMultiMap must match the (case sensitive) name of the corresponding fields of the iDblSrc class.
 	 * @param iDblSrc is an object that implements the IDoubleSource interface, and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the keys of coeffMultiMap's MultiKey
 	 * @param enumType specifies the enum type that is used in the getDoubleValue(Enum.valueOf(enumType, String)) method of the iDblSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate double value to return
-	 * @author Ross Richardson  
 	 */
 	public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType) 
 	{				
@@ -331,7 +333,6 @@ public class LinearRegression implements ILinearRegression {
 	 * 
 	 * @param agent is the object whose fields must match by name, the regressors and 
 	 *  additional conditioning keys of the Regression map's MultiKeys.  
-	 * @author Ross Richardson  
 	 */
 	public double getScore(Object agent) {
 		return computeScore(map, agent);
@@ -345,7 +346,6 @@ public class LinearRegression implements ILinearRegression {
 	 * 
 	 * @param agent is the object whose fields must match by name, the regressors and 
 	 *  additional conditioning keys of the Regression map's MultiKeys.  
-	 * @author Ross Richardson  
 	 */
 	public static double computeScore(MultiKeyCoefficientMap coeffMultiMap, Object agent) {		
 		try {			
@@ -461,7 +461,8 @@ public class LinearRegression implements ILinearRegression {
 
 	/**
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
-	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)
+	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:
+     * {@code public static <T extends Enum<T>> double getScore(IDoubleSource iDblSrc, Class<T> enumType)}
 	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-      
 	 * 
 	 * @param iDblSrc is an object that implements the IDoubleSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getDoubleValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the first key entry of the coeffMultiMap's MultiKey
@@ -469,7 +470,6 @@ public class LinearRegression implements ILinearRegression {
 	 * @param iObjSrc is an object that implements the IObjectSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getObjectValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the conditioning regression key entries of coeffMultiMap's MultiKey (not the first key entry, which is reserved for the regressor name)
 	 * @param enumTypeObject specifies the enum type that is used in the getObjectValue(Enum.valueOf(enumType, String)) method of the iObjSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate object value to return
 
-	 * @author Ross Richardson  
 	 */
 	public <T extends Enum<T>, U extends Enum<U>> double getScore(IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<U> enumTypeObject) {
 		return computeScore(map, iDblSrc, enumTypeDouble, iObjSrc, enumTypeObject);
@@ -477,7 +477,8 @@ public class LinearRegression implements ILinearRegression {
 	
 	/**
 	 * Requires the implementation of the IObjectSource to ascertain whether any additional conditioning regression keys are used (e.g. whether the underlying agent is female, married etc., where the regression co-efficients are conditioned on additional keys of gender and civil status, for example).
-	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:- public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)
+	 * If the underlying agent does not implement IObjectSource but does have additional conditioning regression keys, use the computeScore method (that uses reflection, so is slower) with signature:
+     * {@code public static <T extends Enum<T>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumType)}
 	 * If the underlying agent does not have additional conditioning regression keys, use the computeScore method with signature:-     
 	 * 
 	 * Requires the MultiKeyCoefficientMap coeffMultiMap to have a key in its multiKey that corresponds to the name of the regressor variables.  
@@ -488,7 +489,6 @@ public class LinearRegression implements ILinearRegression {
 	 * @param iObjSrc is an object that implements the IObjectSource interface (e.g. the underlying agent whose properties are the covariates), and hence has a method getObjectValue(enum), where the enum determines the appropriate double value to return.  It must have some fields that match the (case sensitive) name of the conditioning regression key entries of coeffMultiMap's MultiKey (not the first key entry, which is reserved for the regressor name)
 	 * @param enumTypeObject specifies the enum type that is used in the getObjectValue(Enum.valueOf(enumType, String)) method of the iObjSrc object.  The String is the name of the enum case, used as a switch to determine the appropriate object value to return
 
-	 * @author Ross Richardson  
 	 */
 	public static <T extends Enum<T>, U extends Enum<U>> double computeScore(MultiKeyCoefficientMap coeffMultiMap, IDoubleSource iDblSrc, Class<T> enumTypeDouble, IObjectSource iObjSrc, Class<U> enumTypeObject) 
 	{				

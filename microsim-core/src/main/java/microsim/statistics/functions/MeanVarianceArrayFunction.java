@@ -30,7 +30,6 @@ import microsim.statistics.ILongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- * <p>
  */
 public class MeanVarianceArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 

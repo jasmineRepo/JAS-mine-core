@@ -25,6 +25,8 @@ import org.apache.commons.collections4.Predicate;
 
  * 
  * @author Ross Richardson
+ *
+ * @param <T> agent type.
  */
 public class ResamplingWeightedAlignment<T extends EventListener & Weight> extends AbstractOutcomeAlignment<T> {
 

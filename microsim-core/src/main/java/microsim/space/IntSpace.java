@@ -30,7 +30,6 @@ import microsim.engine.SimulationEngine;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
  */
 public class IntSpace extends AbstractSpace<Integer> {
 	protected int[] m;

@@ -38,7 +38,6 @@ import microsim.exception.SimulationRuntimeException;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa and Ross Richardson
- *         <p>
  */
 public class EventQueue {
 	/** The action type passed to step listeners. The int value is 10000. */
@@ -165,9 +164,9 @@ public class EventQueue {
 	 *            The time when event will be fired.
 	 * @param withOrdering
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
-	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
-	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
+	 * 			  ({@code e1.time == e2.time}), if {@code e1.ordering < e2.ordering}, then e1
+	 * 			  will be fired first.  If {@code e1.time == e2.time} AND {@code e1.ordering == e2.ordering},
+	 * 			  the first event that was scheduled (added to the {@code EventQueue}) will be fired first.
 	 */
 	public EventQueue scheduleOnce(Event event, double atTime, int withOrdering) {
 		event.setTimeOrderingAndLoopPeriod(atTime, withOrdering, 0);
@@ -183,9 +182,9 @@ public class EventQueue {
 	 *            The time when event will be fired for the first time.
 	 * @param withOrdering
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
-	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
-	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
+	 * 			  ({@code e1.time == e2.time}), if {@code e1.ordering < e2.ordering}, then e1
+	 * 			  will be fired first.  If {@code e1.time == e2.time} AND {@code e1.ordering == e2.ordering},
+	 * 			  the first event that was scheduled (added to the {@code EventQueue}) will be fired first.
 	 * @param timeBetweenEvents
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 */
@@ -258,9 +257,9 @@ public class EventQueue {
 	 *            The time when event will be fired for the first time.
 	 * @param withOrdering
 	 * 			  The order that the event will be fired: for two events e1 and e2 scheduled to occur at the same time
-	 * 			  (e1.time == e2.time), if e1.ordering < e2.ordering, then e1
-	 * 			  will be fired first.  If e1.time == e2.time AND e1.ordering == e2.ordering, 
-	 * 			  the first event that was scheduled (added to the EventQueue) will be fired first.
+	 * 			  ({@code e1.time == e2.time}), if {@code e1.ordering < e2.ordering}, then e1
+	 * 			  will be fired first.  If {@code e1.time == e2.time} AND {@code e1.ordering == e2.ordering},
+	 * 			  the first event that was scheduled (added to the {@code EventQueue}) will be fired first.
 	 * @param withLoop
 	 *            The time period between repeated firing of the event. If this parameter is set to 0, this event will not be fired more than once.
 	 * 
@@ -281,4 +280,3 @@ public class EventQueue {
 	}
 	
 }
-	

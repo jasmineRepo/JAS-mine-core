@@ -11,6 +11,8 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
 /*****************************************************************
  * Generalised Ordered Discrete Variable Models
  *
+ * @param <E1> event type.
+ *
  * @author Justin van de Ven
  *
  * Let y define a discrete valued set {y_0,y_1,..., y_n}

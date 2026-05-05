@@ -48,7 +48,6 @@ import cern.colt.list.LongArrayList;
  * 59 Temple 8Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
  */
 public class TimeSeries implements EventListener, IUpdatableSource {
 	private static Logger log = Logger.getLogger(TimeSeries.class);
@@ -299,8 +298,6 @@ public class TimeSeries implements EventListener, IUpdatableSource {
 	 *            if false.
 	 * @param separator
 	 *            The character used to separate data.
-	 * @throws IOException
-	 *             In case of IO error.
 	 */
 	public void saveToFile(String path, String fileName, boolean withTimes,
 			char separator) {

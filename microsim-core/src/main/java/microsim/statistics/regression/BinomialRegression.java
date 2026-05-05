@@ -6,16 +6,21 @@ import microsim.statistics.IDoubleSource;
 
 import java.util.*;
 
-/*****************************************************************
- * Binomial Models
+/**
+ * Binomial Models.
+ * <p>
+ * Let y define a variable that can take one of two values {0,1}
+ * <p>
+ * {@code ystar = Xb - e}
+ * <p>
+ * {@code y = 1} if {@code ystar>=0} and 0 otherwise
+ * <p>
+ * {@code P(y=1|X) = P(ystar>=0) = P(e<=Xb) = F(Xb)}
+ *
+ * @param <E1> event type.
  *
  * @author Justin van de Ven
- *
- * Let y define a variable that can take one of two values {0,1}
- * ystar = Xb - e
- * y = 1 if ystar>=0 and 0 otherwise
- * P(y=1|X) = P(ystar>=0) = P(e<=Xb) = F(Xb)
- *****************************************************************/
+ */
 public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
 
     MultiKeyCoefficientMap map;

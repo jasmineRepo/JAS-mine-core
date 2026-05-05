@@ -33,7 +33,7 @@ package microsim.space;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
+ * @param <E> element type.
  */
 public abstract class AbstractSpace<E> {
 	protected int xSize, ySize;
@@ -198,7 +198,7 @@ public abstract class AbstractSpace<E> {
 	 *            The x coordinate.
 	 * @param y
 	 *            The y coordinate.
-	 * @retrun the number of "entities" contained in the specified cell. See
+	 * @return the number of "entities" contained in the specified cell. See
 	 *         specific semantic in API of each extending class.
 	 */
 	public abstract int countObjectsAt(int x, int y);

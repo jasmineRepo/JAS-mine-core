@@ -14,6 +14,8 @@ import java.util.*;
  * Whereas the IterativeRandomMatching class matches units in collection1 to those in collection2 in order of collection1
  * the current class evaluates all potential match combinations between collection1 and collection2 and proceeds to
  * select matches from lowest to highest "score". The routine is consequently agnostic concerning the order of each collection.
+ *
+ * @param <T> agent type.
  */
 public class GlobalMatching<T> {
 

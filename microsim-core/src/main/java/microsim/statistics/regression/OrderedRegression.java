@@ -9,19 +9,27 @@ import java.util.*;
 import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
 
 
-/*****************************************************************
- * Ordered Discrete Variable Models
+/**
+ * Ordered Discrete Variable Models.
+ * <p>
+ * Let y define a discrete valued set {@code {y_0,y_1,..., y_n}}.
+ * Each {@code y_i} is an indicator variable for discrete value {@code i},
+ * where higher values of {@code i} reflect some natural ordering of the set.
+ * <p>
+ * {@code ystar = Xb + e}
+ * <p>
+ * {@code y_j = 1} if {@code cut_j-1 < ystar <= cut_j} and 0 otherwise.
+ * <p>
+ * {@code P(y_j=1|X) = P(cut_j-1<ystar).P(ystar<=cut_j) = (1 - P(ystar<=cut_j-1)).P(ystar<=cut_j)}
+ * <p>
+ * {@code = P(ystar<=cut_j) - P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j) - P(ystar<=cut_j-1) = F(cut_j-Xb) - F(cut_j-1-Xb)}
+ * <p>
+ * NB: {@code P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j-1)} because {@code cut_j-1 <= cut_j}
+ *
+ * @param <E1> event type.
  *
  * @author Justin van de Ven
- *
- * Let y define a discrete valued set {y_0,y_1,..., y_n}
- *   Each y_i is an indicator variable for discrete value i, where higher values of i reflect some natural ordering of the set
- * ystar = Xb + e
- * y_j = 1 if cut_j-1 < ystar <= cut_j and 0 otherwise
- * P(y_j=1|X) = P(cut_j-1<ystar).P(ystar<=cut_j) = (1 - P(ystar<=cut_j-1)).P(ystar<=cut_j)
- *  = P(ystar<=cut_j) - P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j) - P(ystar<=cut_j-1) = F(cut_j-Xb) - F(cut_j-1-Xb)
- *  NB: P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j-1) because cut_j-1 <= cut_j
- *****************************************************************/
+ */
 public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
 
     MultiKeyCoefficientMap map;

@@ -19,7 +19,7 @@ import org.apache.commons.collections4.Predicate;
  * 
  * @author Ross Richardson
  *
- * @param <T>
+ * @param <T> agent type.
  */
 public class LogitScalingBinaryWeightedAlignment<T extends Weight> extends AbstractProbabilityAlignment<T> {
 
@@ -32,7 +32,7 @@ public class LogitScalingBinaryWeightedAlignment<T extends Weight> extends Abstr
 	 *  to be sent to the System.out if the alignment target is not successfully reached. 
 	 *  If it is desired to use a different maximum number of iterations or allowed error precison, or to turn off warnings, 
 	 *  please use the method: 
-	 *  align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings)
+	 *  {@code align(List<T> agentList, Predicate filter, AlignmentProbabilityClosure<T> closure, double targetShare, int maxNumberIterations, double precision, boolean enableWarnings)}
 	 *  
 	 * @param agents - list of agents to potentially apply alignment to (will be filtered by the 'filter' Predicate class); 
 	 * 	the agent class must implement the Weight interface by providing a getWeight() method.  In the case of the alignment algorithm, getWeight() must return a positive value.

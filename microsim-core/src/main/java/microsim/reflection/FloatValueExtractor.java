@@ -35,7 +35,6 @@ import microsim.exception.SimulationRuntimeException;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *         <p>
  */
 public class FloatValueExtractor {
 	protected Method method;
@@ -65,7 +64,7 @@ public class FloatValueExtractor {
 	 * Constructor.
 	 * 
 	 * @param target
-	 *            It is the Class<?>of the target object.
+	 *            It is the {@code Class<?>} of the target object.
 	 * @param fieldName
 	 *            A string representing the name of the method to invoke.
 	 * @param isMethod

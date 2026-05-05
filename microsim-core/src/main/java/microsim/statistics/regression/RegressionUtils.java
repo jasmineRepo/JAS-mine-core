@@ -14,6 +14,12 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.RandomGenerator;
 
+/**
+ * Miscellaneous regression helpers.
+ *
+ * @author Ross Richardson
+ * @author Justin van de Ven
+ */
 public class RegressionUtils {
 
 	private static final double EPSILON = 1.e-15;	//Consider making larger if there are regular IllegalArgumentException throws due to an unnecessarily high requirement of precision.   
@@ -121,11 +127,6 @@ public class RegressionUtils {
 		else return rnd.nextDouble() < prob;
 	}
 	
-	/////////////////////////////////////////
-	// New methods 
-	// @author Ross Richardson
-	/////////////////////////////////////////
-	
 	/**
 	 * Although this method is easy to use with Maps with events as the keys and probabilities as 
 	 * the values, it will be very slow to call it in a loop, as the events[] and prob[] need to be 
@@ -133,13 +134,11 @@ public class RegressionUtils {
 	 * (event(T[], Double[]) and do the extracting of the map outside of the loop!
 	 * 
 	 * If you want to do sampling without replacement, then you should use the 
-	 * event(Map<T, Double> map, Random rnd, boolean checkWeightSum) method instead, setting checkWeightSum to false
+	 * {@code event(Map<T, Double> map, Random rnd, boolean checkWeightSum)} method instead, setting {@code checkWeightSum} to false
 	 * 
 	 * @param map
 	 * @param rnd
 	 * @return the event chosen
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static <T> T event(Map<T, Double> map, Random rnd) {	 
 		@SuppressWarnings("unchecked")					//Conversion from set of T to array of T, so conversion should not need checking
@@ -168,8 +167,6 @@ public class RegressionUtils {
 	 * @param map - contains events as keys and weights as values.  These weights will be normalised to derive probabilities.
 	 * @param rnd
 	 * @return the event chosen
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static <T> T event(Map<T, Double> map, Random rnd, boolean checkWeightSum) {	 
 		@SuppressWarnings("unchecked")					//Conversion from set of T to array of T, so conversion should not need checking
@@ -191,8 +188,6 @@ public class RegressionUtils {
 	 * @param events - the possible events in the sample space
 	 * @param rnd
 	 * @return the event chosen
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static <T> T event(T[] events, Random rnd) {
 		double x = 0.0;
@@ -217,8 +212,6 @@ public class RegressionUtils {
 	 * @param events - the possible events in the sample space
 	 * @param rnd
 	 * @return the event chosen
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static <T> T event(AbstractList<T> events, Random rnd) {
 		double x = 0.0;
@@ -242,8 +235,6 @@ public class RegressionUtils {
 	 * @param prob : The discrete set of probabilities characterising a piecewise constant probability distribution
 	 * @param rnd : The random number generator
 	 * @return : The value of the event drawn from a compact domain
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static double eventPiecewiseConstant(double[] events, double[] prob, Random rnd) {
 		return eventPiecewiseConstant(events, prob, rnd, true);
@@ -257,8 +248,6 @@ public class RegressionUtils {
 	 * @param rnd : The random number generator
 	 * @param checkSumWeights : If true, will check weights elements sum to 1, otherwise they will be normalised (by dividing each element by the sum of the elements). 
 	 * @return : The value of the event drawn from a compact domain
-	 * 
-	 * @author Ross Richardson
 	 */
 	public static double eventPiecewiseConstant(double[] events, double[] weights, Random rnd, boolean checkSumWeights) {
 		
@@ -311,8 +300,6 @@ public class RegressionUtils {
 	 *   in order to represent the (square, symmetric, positive semi-definite) covariance matrix. 
 	 * 
 	 * @return a MultiKeyCoefficientMap containing a new set of bootstrapped regression coefficients
-	 * 
-	 * @author richardsonr
 	 */
 	public static MultiKeyCoefficientMap bootstrap(MultiKeyCoefficientMap map) {
 		String[] keys = map.getKeysNames();
@@ -412,8 +399,6 @@ public class RegressionUtils {
 	 *  to each of the covariates, though the ordering of the values (columns) need not match the MultiKey (row) ordering. 
 	 * 
 	 * @return a MultiKeyCoefficientMap of new regression coefficients that is bootstrapped from the input estimates map.
-	 * 
-	 * @author richardsonr
 	 */
 	public static MultiKeyCoefficientMap bootstrap(MultiKeyCoefficientMap coefficients, MultiKeyCoefficientMap covarianceMatrix) {
 
@@ -466,7 +451,6 @@ public class RegressionUtils {
 	}
 
 	/**
-	 * 
 	 * Method to bootstrap multinomial regression covariates.  This method creates a new map of sets of regression 
 	 * coefficients by sampling from a multivariate normal distribution with expected values (means) equal to the 
 	 * regression coefficients contained in the 'coefficientOutcomeMap' and a covariance matrix as specified. 
@@ -495,9 +479,6 @@ public class RegressionUtils {
 	 *  
 	 * @return a Map whose keys are the possible events (outcomes) of type T of the multinomial regression and whose values 
 	 * are MultiKeyCoefficientMap with new regression coefficients (one set of coefficients for each event).
-	 * 
-	 * @author richardsonr
-	 * 
 	 */
 	public static <T> Map<T, MultiKeyCoefficientMap> bootstrapMultinomialRegression(Map<T, MultiKeyCoefficientMap> eventRegressionCoefficientMap, MultiKeyCoefficientMap covarianceMatrix, Class<T> enumType) {
 		
@@ -621,13 +602,11 @@ public class RegressionUtils {
 	/**
 	 * Method to package multinomialCoeffMap
 	 *
-	 * @author Justin van de Ven
-	 *
 	 * @param clazz an enum class defining the multinomial alternatives considered for analysis
 	 * @param multinomialCoefficients a standard MultiKeyCoefficientMap object used to read parameters from Excel and bootstrap
 	 *                                The method assumes that coefficients are supplied for each (or N-1) discrete alternative,
 	 *                                where "_XXX" is appended to each coefficient name to indicate association with alternative "XXX"
-	 * @return Map<E, MultiKeyCoefficientMap> multinomialCoeffMap
+	 * @return multinomialCoeffMap
 	 * @param <E> Enum object
 	 */
 	public static <E extends Enum<E> & IntegerValuedEnum> Map<E, MultiKeyCoefficientMap> populateMultinomialCoefficientMap(Class<E> clazz, MultiKeyCoefficientMap multinomialCoefficients) {
@@ -730,8 +709,6 @@ public class RegressionUtils {
 
 	/**
 	 * Appends @secondaryMap to @primaryMap
-	 *
-	 * @author Justin van de Ven
 	 */
 	public static MultiKeyCoefficientMap appendCoefficientMaps(MultiKeyCoefficientMap primaryMap, MultiKeyCoefficientMap secondaryMap) {
 		return appendCoefficientMaps(primaryMap, secondaryMap, null);

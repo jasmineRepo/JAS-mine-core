@@ -8,6 +8,11 @@ import org.apache.commons.collections4.map.AbstractHashedMap;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
+/**
+ * Multi key coefficient map.
+ *
+ * @author Ross Richardson
+ */
 public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable {
 
 	private static final long serialVersionUID = 5049597007431364596L;
@@ -271,7 +276,6 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 	 *  (in package microsim.statistics.regression)
 	 * 
 	 * @return a String array clone of the names of the MultiKeyCoefficientMap's keys
-	 * @author richardsonr
 	 */
 	public String[] getKeysNames() {		//The instance of a MultiKeyCoeffientMap can provide the name of the variables used as keys.
 		String[] keysClone = new String[keys.length];
@@ -289,7 +293,6 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 	 * microsim.statistics.regression)
 	 * 
 	 * @return a String array clone of the names of the MultiKeyCoefficientMap's values
-	 * @author richardsonr
 	 */
 	public String[] getValuesNames() {
 		String[] valuesClone = new String[valuesMap.size()];
@@ -301,8 +304,6 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
 	
 	/**
 	 * Returns a deep clone copy of the MultiKeyCoefficientMap object
-	 * 
-	 * @author Ross Richardson
 	 */
 	@Override
 	public MultiKeyCoefficientMap clone() {
