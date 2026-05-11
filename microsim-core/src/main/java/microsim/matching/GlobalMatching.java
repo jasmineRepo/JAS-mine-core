@@ -1,7 +1,5 @@
 package microsim.matching;
-//package microsim.matching;
 
-import microsim.statistics.regression.RegressionUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.math3.util.Pair;

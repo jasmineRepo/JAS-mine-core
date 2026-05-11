@@ -3,8 +3,6 @@ package microsim.alignment.probability;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import microsim.alignment.probability.AbstractProbabilityAlignment;
-import microsim.alignment.probability.AlignmentProbabilityClosure;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;

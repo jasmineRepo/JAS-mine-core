@@ -4,7 +4,6 @@ import java.util.*;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
-import microsim.statistics.regression.RegressionColumnNames;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
