@@ -570,7 +570,7 @@ public class SimulationEngine extends Thread {
 
 		eventQueue.step();
 		notifySimulationListeners(SystemEventType.Step);
-		this.yield();
+		Thread.yield();
 	}
 
 	protected synchronized void notifySimulationListeners(SystemEventType event) {
@@ -613,7 +613,7 @@ public class SimulationEngine extends Thread {
 				}
 			// this is now called in step() method.
 			else
-				this.yield();
+				Thread.yield();
 		}
 
 	}
