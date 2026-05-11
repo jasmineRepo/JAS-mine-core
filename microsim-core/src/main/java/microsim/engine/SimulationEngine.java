@@ -447,7 +447,7 @@ public class SimulationEngine extends Thread {
 		// Get models' class type and dispose
 		Class<?>[] cls = new Class[models.size()];
 		for (int i = 0; i < models.size(); i++) {
-			SimulationManager model = (SimulationManager) models.get(i);
+			SimulationManager model = models.get(i);
 			cls[i] = model.getClass();
 			model.dispose();
 		}

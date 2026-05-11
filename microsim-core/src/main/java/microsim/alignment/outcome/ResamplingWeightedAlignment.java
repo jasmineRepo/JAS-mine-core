@@ -277,7 +277,7 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 							+ "per object to be aligned) and has terminated.  Alignment may have "
 							+ "failed.  The difference between the population in the system with the "
 							+ "desired outcome and the target number is " + delta + " (" 
-							+ (delta*100./((double)targetNumber)) + " percent).  If this is too large, check "
+							+ (delta*100./targetNumber) + " percent).  If this is too large, check "
 							+ "the resampling method and the subset of population to understand why "
 							+ "not enough of the population are able to change their outcomes.");
 			System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
