@@ -19,8 +19,8 @@ public class SpaceEntityPersister {
 		try {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
-					final IIntSpaceEntity entity = entityClass.newInstance();
-					entity.setSimulationRun(new Long(SimulationEngine.getInstance().getCurrentRunNumber()));
+					final IIntSpaceEntity entity = entityClass.getDeclaredConstructor().newInstance();
+					entity.setSimulationRun(Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()));
 					entity.setSimulationTime(SimulationEngine.getInstance().getTime());
 					entity.setX(x);
 					entity.setY(y);
@@ -48,8 +48,8 @@ public class SpaceEntityPersister {
 		try {
 			for (int x = 0; x < space.getXSize(); x++) {
 				for (int y = 0; y < space.getYSize(); y++) {
-					final IIntSpaceEntity entity = entityClass.newInstance();
-					entity.setSimulationRun(new Long(SimulationEngine.getInstance().getCurrentRunNumber()));
+					final IIntSpaceEntity entity = entityClass.getDeclaredConstructor().newInstance();
+					entity.setSimulationRun(Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()));
 					entity.setSimulationTime(SimulationEngine.getInstance().getTime());
 					entity.setX(x);
 					entity.setY(y);

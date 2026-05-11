@@ -1,5 +1,6 @@
 package microsim.engine;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -267,10 +268,9 @@ public class SimulationEngine extends Thread {
 	public void setup() {
 		if (builderClass != null)
 			try {
-				((ExperimentBuilder) builderClass.newInstance()).buildExperiment(this);
-			} catch (InstantiationException e) {
-				log.error(e.getMessage());
-			} catch (IllegalAccessException e) {
+				((ExperimentBuilder) builderClass.getDeclaredConstructor().newInstance()).buildExperiment(this);
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                    | InvocationTargetException e) {
 				log.error(e.getMessage());
 			}
 		else if (experimentBuilder != null)
@@ -388,12 +388,12 @@ public class SimulationEngine extends Thread {
 		return simulationManager;
 	}
 
-	public SimulationManager addSimulationManager(String managerClassName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public SimulationManager addSimulationManager(String managerClassName) throws InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 		SimulationManager simulationManager = null;
 		if (classLoader != null)
-			simulationManager = (SimulationManager) classLoader.loadClass(managerClassName).newInstance();
+			simulationManager = (SimulationManager) classLoader.loadClass(managerClassName).getDeclaredConstructor().newInstance();
 		else
-			simulationManager = (SimulationManager) Class.forName(managerClassName).newInstance();
+			simulationManager = (SimulationManager) Class.forName(managerClassName).getDeclaredConstructor().newInstance();
 		return addSimulationManager(simulationManager);
 	}
 	

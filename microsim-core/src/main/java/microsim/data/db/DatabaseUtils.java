@@ -121,14 +121,14 @@ public class DatabaseUtils {
 
 	public static void snap(Object target) throws Exception {
 		snap(DatabaseUtils.getOutEntityManger(), 
-				new Long(SimulationEngine.getInstance().getCurrentRunNumber()),
+				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
 				SimulationEngine.getInstance().getTime(),
 				target);
 	}
 	
 	public static void snap(Collection<?> targetCollection) throws Exception {
 		snap(DatabaseUtils.getOutEntityManger(), 
-				new Long(SimulationEngine.getInstance().getCurrentRunNumber()),
+				Long.valueOf(SimulationEngine.getInstance().getCurrentRunNumber()),
 				SimulationEngine.getInstance().getTime(),
 				targetCollection);
 	}
