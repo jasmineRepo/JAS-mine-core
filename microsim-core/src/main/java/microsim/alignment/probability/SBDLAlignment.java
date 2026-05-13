@@ -32,7 +32,7 @@ public class SBDLAlignment<T> extends AbstractProbabilityAlignment<T> {
 			T agent = list.get(i);
 			double p = closure.getProbability(agent);
 			double r = SimulationEngine.getRnd().nextDouble();		
-			map.put(agent, new Double(Math.log(1/r-1)+Math.log(p/(1-p))));
+			map.put(agent, Math.log(1/r-1)+Math.log(p/(1-p)));
 		}
 		map = sortByComparator(map, false); // true for ascending order			//Returns a LinkedHashMap, that maintains the order of insertion.
 		int i = 0;

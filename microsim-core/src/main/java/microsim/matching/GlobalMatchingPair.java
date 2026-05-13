@@ -1,7 +1,5 @@
 package microsim.matching;
 
-import org.apache.commons.math3.util.Pair;
-
 public class GlobalMatchingPair<T> {
 
     T agent1;

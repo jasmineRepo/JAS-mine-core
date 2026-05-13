@@ -89,7 +89,7 @@ public class IntSpace extends AbstractSpace<Integer> {
 	 * @return The Integer wrapper for value stored at x,y position of the grid.
 	 */
 	public Integer get(int x, int y) {
-		return new Integer(m[at(x, y)]);
+		return m[at(x, y)];
 	}
 
 	/**

@@ -4,10 +4,6 @@ import cern.jet.random.Normal;
 import cern.jet.random.engine.MersenneTwister;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.IDoubleSource;
-import org.apache.commons.math3.distribution.NormalDistribution;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 /*****************************************************************

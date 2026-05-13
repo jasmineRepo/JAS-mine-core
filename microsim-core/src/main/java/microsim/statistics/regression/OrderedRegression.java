@@ -6,8 +6,6 @@ import org.apache.logging.log4j.util.Strings;
 
 import java.util.*;
 
-import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
-
 
 /**
  * Ordered Discrete Variable Models.

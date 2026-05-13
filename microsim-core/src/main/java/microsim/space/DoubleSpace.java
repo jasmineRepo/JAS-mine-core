@@ -59,7 +59,7 @@ public class DoubleSpace extends AbstractSpace<Double>
    *  @return The Double wrapper for value stored at x,y position of the grid. */
   public Double get(int x, int y)
   {
-    return new Double(m[at(x, y)]);
+    return m[at(x, y)];
   }
 
   /** Return the value at given position.

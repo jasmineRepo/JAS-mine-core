@@ -163,7 +163,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
 				for (MultiRunListener listener : multiRunListeners) 
 					listener.afterSimulationCompleted(engine);
 			
-			this.yield();
+			Thread.yield();
 			toBeContinued = nextModel();
 			engine.disposeModels();
 			executionActive = false;
