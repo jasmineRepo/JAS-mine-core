@@ -10,10 +10,10 @@ import org.apache.commons.collections4.IterableUtils;
 
 public class Aggregate {
 
-	public static <T> void applyToFilter(Iterable<T> collection, Predicate<T> predicate, Closure<T> closure) {
-		final List<T> filtered = new ArrayList<T>();
-		CollectionUtils.select(collection, predicate, filtered);
-		IterableUtils.forEach(filtered, closure);
-	}
-	
+    public static <T> void applyToFilter(Iterable<T> collection, Predicate<T> predicate, Closure<T> closure) {
+        final List<T> filtered = new ArrayList<T>();
+        CollectionUtils.select(collection, predicate, filtered);
+        IterableUtils.forEach(filtered, closure);
+    }
+
 }

@@ -37,134 +37,135 @@ import microsim.exception.SimulationRuntimeException;
  * @author Michele Sonnessa
  */
 public class IntegerValueExtractor {
-	protected Method method;
-	protected Field field;
-	protected Object target;
+    protected Method method;
+    protected Field field;
+    protected Object target;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param target
-	 *            It is the target object.
-	 * @param fieldName
-	 *            A string representing the name of the method to invoke.
-	 * @param isMethod
-	 *            If true the fieldName is a method, otherwise it is a property
-	 *            of the object.
-	 */
-	public IntegerValueExtractor(Object target, String fieldName,
-			boolean isMethod) {
-		this.target = target;
-		if (isMethod)
-			buildMethod(target.getClass(), fieldName);
-		else
-			buildField(target.getClass(), fieldName);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param target
+     *                  It is the target object.
+     * @param fieldName
+     *                  A string representing the name of the method to invoke.
+     * @param isMethod
+     *                  If true the fieldName is a method, otherwise it is a
+     *                  property
+     *                  of the object.
+     */
+    public IntegerValueExtractor(Object target, String fieldName,
+            boolean isMethod) {
+        this.target = target;
+        if (isMethod)
+            buildMethod(target.getClass(), fieldName);
+        else
+            buildField(target.getClass(), fieldName);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param target
-	 *            It is the class of the target object.
-	 * @param fieldName
-	 *            A string representing the name of the method to invoke.
-	 * @param isMethod
-	 *            If true the fieldName is a method, otherwise it is a property
-	 *            of the object.
-	 */
-	public IntegerValueExtractor(Class<?> target, String fieldName,
-			boolean isMethod) {
-		this.target = null;
-		if (isMethod)
-			buildMethod(target, fieldName);
-		else
-			buildField(target, fieldName);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param target
+     *                  It is the class of the target object.
+     * @param fieldName
+     *                  A string representing the name of the method to invoke.
+     * @param isMethod
+     *                  If true the fieldName is a method, otherwise it is a
+     *                  property
+     *                  of the object.
+     */
+    public IntegerValueExtractor(Class<?> target, String fieldName,
+            boolean isMethod) {
+        this.target = null;
+        if (isMethod)
+            buildMethod(target, fieldName);
+        else
+            buildField(target, fieldName);
+    }
 
-	private void buildField(Class<?> trgClass, String fieldName) {
-		method = null;
-		field = ReflectionUtils.searchField(trgClass, fieldName);
+    private void buildField(Class<?> trgClass, String fieldName) {
+        method = null;
+        field = ReflectionUtils.searchField(trgClass, fieldName);
 
-		if (field == null)
-			throw new SimulationRuntimeException("IntegerInvoker: Field "
-					+ fieldName + " of object " + target + " does not exist.");
+        if (field == null)
+            throw new SimulationRuntimeException("IntegerInvoker: Field "
+                    + fieldName + " of object " + target + " does not exist.");
 
-		if (field.getType() != Integer.TYPE)
-			throw new SimulationRuntimeException("IntegerInvoker: Field "
-					+ fieldName + " of object " + target
-					+ " must return an int value!");
-	}
+        if (field.getType() != Integer.TYPE)
+            throw new SimulationRuntimeException("IntegerInvoker: Field "
+                    + fieldName + " of object " + target
+                    + " must return an int value!");
+    }
 
-	private void buildMethod(Class<?> trgClass, String methodName) {
-		field = null;
-		method = ReflectionUtils.searchMethod(trgClass, methodName);
+    private void buildMethod(Class<?> trgClass, String methodName) {
+        field = null;
+        method = ReflectionUtils.searchMethod(trgClass, methodName);
 
-		if (method == null)
-			throw new SimulationRuntimeException("IntegerInvoker: Method "
-					+ methodName + " of object " + target + " does not exist.");
+        if (method == null)
+            throw new SimulationRuntimeException("IntegerInvoker: Method "
+                    + methodName + " of object " + target + " does not exist.");
 
-		if (method.getReturnType() != Integer.TYPE)
-			throw new SimulationRuntimeException("IntegerInvoker: Method "
-					+ methodName + " of object " + target
-					+ " must return an integer value!");
-	}
+        if (method.getReturnType() != Integer.TYPE)
+            throw new SimulationRuntimeException("IntegerInvoker: Method "
+                    + methodName + " of object " + target
+                    + " must return an integer value!");
+    }
 
-	/**
-	 * Invoke the method of the target object and return its double result.
-	 * 
-	 * @param target
-	 *            Object to be invoked.
-	 * @return The requested double value.
-	 */
-	public int getInt(Object target) {
-		if (target == null)
-			return 0;
+    /**
+     * Invoke the method of the target object and return its double result.
+     * 
+     * @param target
+     *               Object to be invoked.
+     * @return The requested double value.
+     */
+    public int getInt(Object target) {
+        if (target == null)
+            return 0;
 
-		try {
-			if (method == null)
-				return field.getInt(target);
-			else
-				return ((Integer) method.invoke(target, null)).intValue();
-		} catch (InvocationTargetException ie) {
-			StringBuffer message = new StringBuffer();
-			if (method == null)
-				message.append("IntInvoker: Field " + field + "of object "
-						+ target + " raised the following error:\n");
-			else
-				message.append("IntInvoker: Method " + method + "of object "
-						+ target + " raised the following error:\n");
-			message.append(ie.getMessage());
-			ie.printStackTrace();
-			throw new SimulationRuntimeException(message.toString());
+        try {
+            if (method == null)
+                return field.getInt(target);
+            else
+                return ((Integer) method.invoke(target, null)).intValue();
+        } catch (InvocationTargetException ie) {
+            StringBuffer message = new StringBuffer();
+            if (method == null)
+                message.append("IntInvoker: Field " + field + "of object "
+                        + target + " raised the following error:\n");
+            else
+                message.append("IntInvoker: Method " + method + "of object "
+                        + target + " raised the following error:\n");
+            message.append(ie.getMessage());
+            ie.printStackTrace();
+            throw new SimulationRuntimeException(message.toString());
 
-		} catch (IllegalAccessException iae) {
-			iae.printStackTrace();
-			throw new SimulationRuntimeException("");
-		}		
-	}
+        } catch (IllegalAccessException iae) {
+            iae.printStackTrace();
+            throw new SimulationRuntimeException("");
+        }
+    }
 
-	/**
-	 * Invoke the method of the object passed to constructor and return its
-	 * double result.
-	 * 
-	 * @return The requested double value.
-	 */
-	public int getInt() {
-		return getInt(target);
-	}
+    /**
+     * Invoke the method of the object passed to constructor and return its
+     * double result.
+     * 
+     * @return The requested double value.
+     */
+    public int getInt() {
+        return getInt(target);
+    }
 
-	/**
-	 * This is an implementation of the IDblSource interface. It calls the
-	 * getDouble() method.
-	 * 
-	 * @param valueID
-	 *            This parameter is ignored. It is put for compatibility with
-	 *            the IDblSource interface.
-	 * @return The requested double value.
-	 */
-	public int getIntValue(int valueID) {
-		return getInt(target);
-	}
+    /**
+     * This is an implementation of the IDblSource interface. It calls the
+     * getDouble() method.
+     * 
+     * @param valueID
+     *                This parameter is ignored. It is put for compatibility with
+     *                the IDblSource interface.
+     * @return The requested double value.
+     */
+    public int getIntValue(int valueID) {
+        return getInt(target);
+    }
 
-	
 }

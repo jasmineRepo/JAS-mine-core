@@ -22,34 +22,33 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity
-@Table(name="jasmine_experiment")
+@Table(name = "jasmine_experiment")
 public class Experiment {
 
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long id;
 
-	@Id
-	@Column(name="id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	public Long id;
-	
-	@Column(name="time_stamp")
-	@Temporal(value=TemporalType.TIMESTAMP)
-	public Date timestamp;
-	
-	@Column(name="run_id")
-	public String runId;
-	
-	@Column(name="multi_run_id")
-	public String multiRunId;
+    @Column(name = "time_stamp")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    public Date timestamp;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "experiment", orphanRemoval = true, cascade={CascadeType.ALL})
-	@Fetch(FetchMode.SELECT)
-	public List<ExperimentParameter> parameters;
-	
-	@Transient
-	public static String inputFolder = "./input";
-	
-	@Transient
-	public static String outputRootFolder = "./output";
+    @Column(name = "run_id")
+    public String runId;
+
+    @Column(name = "multi_run_id")
+    public String multiRunId;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "experiment", orphanRemoval = true, cascade = { CascadeType.ALL })
+    @Fetch(FetchMode.SELECT)
+    public List<ExperimentParameter> parameters;
+
+    @Transient
+    public static String inputFolder = "./input";
+
+    @Transient
+    public static String outputRootFolder = "./output";
 
     @Transient
     public static String testOutputFolder;
@@ -92,11 +91,8 @@ public class Experiment {
 
     }
 
+    public String getOutputFolder() {
+        return outputFolder;
+    }
 
-	public String getOutputFolder() {
-		return outputFolder;
-	}
-
-
-	
 }

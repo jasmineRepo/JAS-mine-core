@@ -13,8 +13,13 @@ public enum RegressionType implements IntegerValuedEnum {
 
     // set value to 0 for logit and 1 for probit
     private final int value;
-    RegressionType(int val) {value=val;}
+
+    RegressionType(int val) {
+        value = val;
+    }
 
     @Override
-    public int getValue() {return value;}
+    public int getValue() {
+        return value;
+    }
 }

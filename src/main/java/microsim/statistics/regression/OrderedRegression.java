@@ -6,7 +6,6 @@ import org.apache.logging.log4j.util.Strings;
 
 import java.util.*;
 
-
 /**
  * Ordered Discrete Variable Models.
  * <p>
@@ -22,7 +21,8 @@ import java.util.*;
  * <p>
  * {@code = P(ystar<=cut_j) - P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j) - P(ystar<=cut_j-1) = F(cut_j-Xb) - F(cut_j-1-Xb)}
  * <p>
- * NB: {@code P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j-1)} because {@code cut_j-1 <= cut_j}
+ * NB: {@code P(ystar<=cut_j).P(ystar<=cut_j-1) = P(ystar<=cut_j-1)} because
+ * {@code cut_j-1 <= cut_j}
  *
  * @param <E1> event type.
  *
@@ -34,12 +34,11 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
     private List<E1> eventList;
     ProbabilityCalculator calculator;
 
-
     public OrderedRegression(RegressionType type, Class<E1> enumType, MultiKeyCoefficientMap map) {
         this.map = map;
         eventList = Arrays.asList(enumType.getEnumConstants());
         eventList.sort(Comparator.comparingInt(IntegerValuedEnum::getValue));
-        if (eventList.size()<3)
+        if (eventList.size() < 3)
             throw new RuntimeException("OrderedRegression requires at least three events");
         calculator = new ProbabilityCalculator(type);
     }
@@ -49,33 +48,39 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
         if (map.getKeysNames().length == 1) {
 
             if (map.getValuesNames().length == 1) {
-                return ((Number)(map.getValue(regressor))).doubleValue();
+                return ((Number) (map.getValue(regressor))).doubleValue();
             } else {
                 String columnName = RegressionColumnNames.COEFFICIENT.toString();
-                return ((Number)(map.getValue(regressor, columnName))).doubleValue();
+                return ((Number) (map.getValue(regressor, columnName))).doubleValue();
             }
         } else {
-            throw new RuntimeException("attempt to access individual regression coefficients not currently supported for multinomial coefficient maps");
+            throw new RuntimeException(
+                    "attempt to access individual regression coefficients not currently supported for multinomial coefficient maps");
         }
     }
 
-    public List<E1> getEventList() {return eventList;}
+    public List<E1> getEventList() {
+        return eventList;
+    }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event,
+            IDoubleSource iDblSrc, Class<E2> Regressors) {
         return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E,Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
-        // probabilities are obtained for discrete alternatives of dependent variable in increasing order of the feasible set
+    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E, Double> getProbabilities(
+            IDoubleSource iDblSrc, Class<E2> Regressors) {
+        // probabilities are obtained for discrete alternatives of dependent variable in
+        // increasing order of the feasible set
         // P(y_j|X) = F(cut_j-Xb) - F(cut_j-1-Xb)
 
         Map<E, Double> probs = new LinkedHashMap<>();
         double score = calculator.getScore(map, iDblSrc, Regressors);
         double probHere, probPreceding = 0.0;
-        for (int ii = 0; ii < eventList.size()-1; ii++) {
+        for (int ii = 0; ii < eventList.size() - 1; ii++) {
 
             E event = (E) eventList.get(ii);
-            String key = Strings.concat("Cut", Integer.toString(ii+1));
+            String key = Strings.concat("Cut", Integer.toString(ii + 1));
             double cutVal = getCoefficient(key);
             probHere = calculator.getProbability(cutVal - score);
             if (probHere < probPreceding) {
@@ -86,7 +91,7 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
                 probPreceding = probHere;
             }
         }
-        probs.put((E) eventList.get(eventList.size()-1), 1.0 - probPreceding);
+        probs.put((E) eventList.get(eventList.size() - 1), 1.0 - probPreceding);
 
         return probs;
     }

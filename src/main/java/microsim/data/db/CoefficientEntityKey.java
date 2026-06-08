@@ -8,28 +8,28 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class CoefficientEntityKey implements Serializable {
 
-	private static final long serialVersionUID = 7602166749723270873L;
+    private static final long serialVersionUID = 7602166749723270873L;
 
-	@Column(name="id")
-	private Long id;
-		
-	@Column(name="simulation_run")
-	private Long simulationRun;
+    @Column(name = "id")
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "simulation_run")
+    private Long simulationRun;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getSimulationRun() {
-		return simulationRun;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setSimulationRun(Long simulationRun) {
-		this.simulationRun = simulationRun;
-	}
-		
+    public Long getSimulationRun() {
+        return simulationRun;
+    }
+
+    public void setSimulationRun(Long simulationRun) {
+        this.simulationRun = simulationRun;
+    }
+
 }

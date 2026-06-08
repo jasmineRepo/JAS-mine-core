@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import microsim.agent.Weight;
 
-
 record Agent(double value, double weight) implements Weight {
     @Override
     public double getWeight() {
         return this.weight;
     }
 }
-
 
 class WeightedCrossSectionTests {
     @Test
@@ -28,12 +26,12 @@ class WeightedCrossSectionTests {
         wcs.setCheckingTime(false);
 
         wcs.updateSource();
-        assertArrayEquals(wcs.getDoubleArray(), new double[]{1.5, 0.2});
-        assertArrayEquals(wcs.getWeights(), new double[]{1.0, 1.3});
+        assertArrayEquals(wcs.getDoubleArray(), new double[] { 1.5, 0.2 });
+        assertArrayEquals(wcs.getWeights(), new double[] { 1.0, 1.3 });
 
         agents.add(new Agent(3.5, 2.6));
         wcs.updateSource();
-        assertArrayEquals(wcs.getDoubleArray(), new double[]{1.5, 0.2, 3.5});
-        assertArrayEquals(wcs.getWeights(), new double[]{1.0, 1.3, 2.6});
+        assertArrayEquals(wcs.getDoubleArray(), new double[] { 1.5, 0.2, 3.5 });
+        assertArrayEquals(wcs.getWeights(), new double[] { 1.0, 1.3, 2.6 });
     }
 }

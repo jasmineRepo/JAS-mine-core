@@ -5,24 +5,24 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public interface IIntSpaceEntity {
 
-	Double getSimulationTime();
-	
-	void setSimulationTime(Double time);
-	
-	Long getSimulationRun();
-	
-	void setSimulationRun(Long run);
-	
-	Integer getX();
-	
-	void setX(Integer x);
-	
-	Integer getY();
-	
-	void setY(Integer y);
-	
-	Integer getValue();
-	
-	void setValue(Integer value);
-	
+    Double getSimulationTime();
+
+    void setSimulationTime(Double time);
+
+    Long getSimulationRun();
+
+    void setSimulationRun(Long run);
+
+    Integer getX();
+
+    void setX(Integer x);
+
+    Integer getY();
+
+    void setY(Integer y);
+
+    Integer getValue();
+
+    void setValue(Integer value);
+
 }

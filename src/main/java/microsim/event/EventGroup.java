@@ -40,112 +40,112 @@ import microsim.exception.SimulationException;
  * @author Michele Sonnessa
  */
 public class EventGroup extends Event {
-	private List<Event> actions;
+    private List<Event> actions;
 
-	/** Build a new group event. */
-	public EventGroup() {
-		actions = new ArrayList<Event>();
-	}
+    /** Build a new group event. */
+    public EventGroup() {
+        actions = new ArrayList<Event>();
+    }
 
-	/** Empty the event list. */
-	public void clear() {
-		actions.clear();
-	}
+    /** Empty the event list. */
+    public void clear() {
+        actions.clear();
+    }
 
-	/** Add an event to the list. */
-	public EventGroup addEvent(Event newEvent) {
-		actions.add(newEvent);
-		return this;
-	}
+    /** Add an event to the list. */
+    public EventGroup addEvent(Event newEvent) {
+        actions.add(newEvent);
+        return this;
+    }
 
-	/**
-	 * Create a new SimSimpleEvent and add an event to the list, using late
-	 * binding method.
-	 * 
-	 * @throws SimulationException
-	 */
-	public EventGroup addEvent(Object object, String method)
-			throws SimulationException {
-		actions.add(new SingleTargetEvent(object, method));
-		return this;
-	}
+    /**
+     * Create a new SimSimpleEvent and add an event to the list, using late
+     * binding method.
+     * 
+     * @throws SimulationException
+     */
+    public EventGroup addEvent(Object object, String method)
+            throws SimulationException {
+        actions.add(new SingleTargetEvent(object, method));
+        return this;
+    }
 
-	/**
-	 * Create a new SimSimpleEvent and add an event to the list, using early
-	 * binding method.
-	 */
-	public EventGroup addEvent(Object object, Enum<?> actionType) {
-		actions.add(new SingleTargetEvent(object, actionType));
-		return this;
-	}
+    /**
+     * Create a new SimSimpleEvent and add an event to the list, using early
+     * binding method.
+     */
+    public EventGroup addEvent(Object object, Enum<?> actionType) {
+        actions.add(new SingleTargetEvent(object, actionType));
+        return this;
+    }
 
-	/** Create a new SimSystemEvent and add an event to the list. */
-	public EventGroup addSystemEvent(SimulationEngine engine, SystemEventType actionType) {
-		actions.add(new SystemEvent(engine, actionType));
-		return this;
-	}
+    /** Create a new SimSystemEvent and add an event to the list. */
+    public EventGroup addSystemEvent(SimulationEngine engine, SystemEventType actionType) {
+        actions.add(new SystemEvent(engine, actionType));
+        return this;
+    }
 
-	public EventGroup addCollectionEvent(Collection<?> elements,
-			Class<?> objectType, String method) throws SimulationException {
-		return addCollectionEvent(elements, objectType, method, true);
-	}
-	
-	/**
-	 * Create a new SimCollectionEvent and add an event to the list, using late
-	 * binding method.
-	 * 
-	 * @throws SimulationException
-	 */
-	public EventGroup addCollectionEvent(Collection<?> elements,
-			Class<?> objectType, String method, boolean readOnly) throws SimulationException {
-		actions.add(new CollectionTargetEvent(elements, objectType, method, readOnly));
-		return this;
-	}
+    public EventGroup addCollectionEvent(Collection<?> elements,
+            Class<?> objectType, String method) throws SimulationException {
+        return addCollectionEvent(elements, objectType, method, true);
+    }
 
-	public EventGroup addCollectionEvent(Collection<?> elements,
-			Enum<?> actionType) {
-		return addCollectionEvent(elements, actionType, true);
-	}
-	
-	/**
-	 * Create a new SimCollectionEvent and add an event to the list, using early
-	 * binding method.
-	 */
-	public EventGroup addCollectionEvent(Collection<?> elements,
-			Enum<?> actionType, boolean readOnly) {
-		actions.add(new CollectionTargetEvent(elements, actionType, readOnly));
-		return this;
-	}
+    /**
+     * Create a new SimCollectionEvent and add an event to the list, using late
+     * binding method.
+     * 
+     * @throws SimulationException
+     */
+    public EventGroup addCollectionEvent(Collection<?> elements,
+            Class<?> objectType, String method, boolean readOnly) throws SimulationException {
+        actions.add(new CollectionTargetEvent(elements, objectType, method, readOnly));
+        return this;
+    }
 
-	/** Remove the given event from the list. */
-	public void removeEvent(Event event) {
-		actions.remove(event);
-	}
+    public EventGroup addCollectionEvent(Collection<?> elements,
+            Enum<?> actionType) {
+        return addCollectionEvent(elements, actionType, true);
+    }
 
-	/**
-	 * Fire each event into the list.
-	 * 
-	 * @throws SimulationException
-	 */
-	public void fireEvent() throws SimulationException {
-		for (Event event : actions)
-			event.fireEvent();
-	}
+    /**
+     * Create a new SimCollectionEvent and add an event to the list, using early
+     * binding method.
+     */
+    public EventGroup addCollectionEvent(Collection<?> elements,
+            Enum<?> actionType, boolean readOnly) {
+        actions.add(new CollectionTargetEvent(elements, actionType, readOnly));
+        return this;
+    }
 
-	/**
-	 * Return an sorted array of the added events.
-	 * 
-	 * @return An array of SimEvent objects.
-	 */
-	public Event[] eventsToArray() {
-		Event[] events = new Event[actions.size()];
-		for (int i = 0; i < events.length; i++)
-			events[i] = actions.get(i);
-		return events;
-	}
+    /** Remove the given event from the list. */
+    public void removeEvent(Event event) {
+        actions.remove(event);
+    }
 
-	public List<Event> getActions() {
-		return actions;
-	}
+    /**
+     * Fire each event into the list.
+     * 
+     * @throws SimulationException
+     */
+    public void fireEvent() throws SimulationException {
+        for (Event event : actions)
+            event.fireEvent();
+    }
+
+    /**
+     * Return an sorted array of the added events.
+     * 
+     * @return An array of SimEvent objects.
+     */
+    public Event[] eventsToArray() {
+        Event[] events = new Event[actions.size()];
+        for (int i = 0; i < events.length; i++)
+            events[i] = actions.get(i);
+        return events;
+    }
+
+    public List<Event> getActions() {
+        return actions;
+    }
 
 }

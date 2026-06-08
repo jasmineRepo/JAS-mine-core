@@ -8,7 +8,7 @@ import org.apache.commons.collections4.Predicate;
  * Abstract class for BINARY OUTCOME alignment methods (for Binary
  * probability alignment, see microsim.alignment.probability package;
  * for Multiple choice probability alignment, see microsim.alignment.multi
- * package). 
+ * package).
  * 
  * Acknowledgements: Partly based on
  * "Evaluating Binary Alignment Methods in Microsimulation Models", by Jinjing
@@ -39,15 +39,17 @@ import org.apache.commons.collections4.Predicate;
  * method to be used.
  * 
  * @author Matteo Richiardi
- * @author Ross Richardson 
- * This version: July 2015
+ * @author Ross Richardson
+ *         This version: July 2015
  * 
  * @param <T> agent type.
  */
 public abstract class AbstractOutcomeAlignment<T> {
 
-	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, double targetShare, int maxResamplingAttempts);
-	
-	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure, int targetNumber, int maxResamplingAttempts);
-	
+    public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure,
+            double targetShare, int maxResamplingAttempts);
+
+    public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentOutcomeClosure<T> closure,
+            int targetNumber, int maxResamplingAttempts);
+
 }

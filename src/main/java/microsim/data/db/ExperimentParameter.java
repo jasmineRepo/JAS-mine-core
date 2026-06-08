@@ -11,27 +11,27 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="jasmine_experiment_parameter")
+@Table(name = "jasmine_experiment_parameter")
 public class ExperimentParameter {
 
-	@Id
-	@Column(name="id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	public Long id;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "experiment_id")
-	public Experiment experiment;
-	
-	@Column(name="name", length=255)
-	public String name;
-	
-	@Column(name="`value`", length=255)
-	public String value;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long id;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "experiment_id")
+    public Experiment experiment;
 
-	/**
-	 * CONSTRUCTOR
-	 */
-	public ExperimentParameter(){}
+    @Column(name = "name", length = 255)
+    public String name;
+
+    @Column(name = "`value`", length = 255)
+    public String value;
+
+    /**
+     * CONSTRUCTOR
+     */
+    public ExperimentParameter() {
+    }
 }

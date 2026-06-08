@@ -2,6 +2,6 @@ package microsim.engine;
 
 public interface ExperimentBuilder {
 
-	public void buildExperiment(SimulationEngine engine);
-	
+    public void buildExperiment(SimulationEngine engine);
+
 }

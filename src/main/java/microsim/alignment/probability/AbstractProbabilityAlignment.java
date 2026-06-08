@@ -31,7 +31,7 @@ import org.apache.commons.collections4.Predicate;
  * that computes individual probabilities of the occurrence of a given event.
  * Alignment is then called to modify those probabilities. A second process is
  * specified to determine the occurrence of the event given the (modified)
- * probabilities. 
+ * probabilities.
  *
  * 
  * @author Matteo Richiardi This version: July 2014
@@ -41,57 +41,62 @@ import org.apache.commons.collections4.Predicate;
  */
 public abstract class AbstractProbabilityAlignment<T> {
 
-	/**
-	 * Method to implement alignment.
-	 * 
-	 * @param agents - a collection of agents to potentially be aligned
-	 * @param filter - filters the agentList so that only the relevant sub-population 
-	 * 	of agents is aligned
-	 * @param closure - specifies the method returning the unaligned probability 
-	 * 	of the positive outcome for the agent and the method that samples the aligned 
-	 *  probabilities to specify the outcome.
-	 * @param targetShare - a target share of the relevant sub-population 
-	 *  (specified as a proportion of the filtered population) for which the outcome 
-	 *  (defined by the AlignmentProbabilityClosure) must be true.
-	 */
-	public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure, double targetShare);
+    /**
+     * Method to implement alignment.
+     * 
+     * @param agents      - a collection of agents to potentially be aligned
+     * @param filter      - filters the agentList so that only the relevant
+     *                    sub-population
+     *                    of agents is aligned
+     * @param closure     - specifies the method returning the unaligned probability
+     *                    of the positive outcome for the agent and the method that
+     *                    samples the aligned
+     *                    probabilities to specify the outcome.
+     * @param targetShare - a target share of the relevant sub-population
+     *                    (specified as a proportion of the filtered population) for
+     *                    which the outcome
+     *                    (defined by the AlignmentProbabilityClosure) must be true.
+     */
+    public abstract void align(Collection<T> agents, Predicate<T> filter, AlignmentProbabilityClosure<T> closure,
+            double targetShare);
 
-	/**
-	 * 
-	 * Sorting of objects of type T (usually the agents)
-	 * by an associated Double number. This method is used in 
-	 * the SBD and SBDL alignment algorithms.
-	 * 
-	 * @param unsortedMap
-	 * @param ascendingOrder - if true, the method returns a map ordered 
-	 * 	by the Double value increasing, otherwise the map will be ordered
-	 * 	by the Double value decreasing. 
-	 * @return - the map of type T objects sorted by the Double numbers. 
-	 */
-	protected Map<T, Double> sortByComparator(Map<T, Double> unsortedMap,
-			final boolean ascendingOrder) {
+    /**
+     * 
+     * Sorting of objects of type T (usually the agents)
+     * by an associated Double number. This method is used in
+     * the SBD and SBDL alignment algorithms.
+     * 
+     * @param unsortedMap
+     * @param ascendingOrder - if true, the method returns a map ordered
+     *                       by the Double value increasing, otherwise the map will
+     *                       be ordered
+     *                       by the Double value decreasing.
+     * @return - the map of type T objects sorted by the Double numbers.
+     */
+    protected Map<T, Double> sortByComparator(Map<T, Double> unsortedMap,
+            final boolean ascendingOrder) {
 
-		List<Entry<T, Double>> list = new LinkedList<Entry<T, Double>>(
-				unsortedMap.entrySet());
+        List<Entry<T, Double>> list = new LinkedList<Entry<T, Double>>(
+                unsortedMap.entrySet());
 
-		// Sorting the list based on values
-		Collections.sort(list, new Comparator<Entry<T, Double>>() {
-			public int compare(Entry<T, Double> o1, Entry<T, Double> o2) {
-				if (ascendingOrder) {
-					return o1.getValue().compareTo(o2.getValue());
-				} else {
-					return o2.getValue().compareTo(o1.getValue());
+        // Sorting the list based on values
+        Collections.sort(list, new Comparator<Entry<T, Double>>() {
+            public int compare(Entry<T, Double> o1, Entry<T, Double> o2) {
+                if (ascendingOrder) {
+                    return o1.getValue().compareTo(o2.getValue());
+                } else {
+                    return o2.getValue().compareTo(o1.getValue());
 
-				}
-			}
-		});
+                }
+            }
+        });
 
-		// Maintaining insertion order with the help of LinkedList
-		Map<T, Double> sortedMap = new LinkedHashMap<T, Double>();
-		for (Entry<T, Double> entry : list) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
+        // Maintaining insertion order with the help of LinkedList
+        Map<T, Double> sortedMap = new LinkedHashMap<T, Double>();
+        for (Entry<T, Double> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
 
-		return sortedMap;
-	}
+        return sortedMap;
+    }
 }

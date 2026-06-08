@@ -8,55 +8,58 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class PanelEntityKey implements Serializable {
 
-	private static final long serialVersionUID = -1264771886420608859L;
+    private static final long serialVersionUID = -1264771886420608859L;
 
-	@Column(name="id")
-	private long id = 1L;
-	
-	@Column(name="simulation_time")
-	private double simulationTime;
-	
-	@Column(name="simulation_run")
-	private long simulationRun;
+    @Column(name = "id")
+    private long id = 1L;
 
-	@Column(name="working_id")
-	private long workingId = 0L;
+    @Column(name = "simulation_time")
+    private double simulationTime;
 
+    @Column(name = "simulation_run")
+    private long simulationRun;
 
-	public PanelEntityKey() {
-		super();
-	}
-	
-	public PanelEntityKey(long id) {
-		super();
-		this.id = id;
-	}
-	
-	public long getId() {
-		return id;
-	}
+    @Column(name = "working_id")
+    private long workingId = 0L;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public PanelEntityKey() {
+        super();
+    }
 
-	public double getSimulationTime() {
-		return simulationTime;
-	}
+    public PanelEntityKey(long id) {
+        super();
+        this.id = id;
+    }
 
-	public void setSimulationTime(Double simulationTime) {
-		this.simulationTime = simulationTime;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public long getSimulationRun() {
-		return simulationRun;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setSimulationRun(Long simulationRun) {
-		this.simulationRun = simulationRun;
-	}
+    public double getSimulationTime() {
+        return simulationTime;
+    }
 
-	public long getWorkingId() { return workingId; }
+    public void setSimulationTime(Double simulationTime) {
+        this.simulationTime = simulationTime;
+    }
 
-	public void setWorkingId(long workingId) { this.workingId = workingId; }
+    public long getSimulationRun() {
+        return simulationRun;
+    }
+
+    public void setSimulationRun(Long simulationRun) {
+        this.simulationRun = simulationRun;
+    }
+
+    public long getWorkingId() {
+        return workingId;
+    }
+
+    public void setWorkingId(long workingId) {
+        this.workingId = workingId;
+    }
 }

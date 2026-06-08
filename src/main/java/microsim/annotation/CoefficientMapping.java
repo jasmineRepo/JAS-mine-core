@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CoefficientMapping {
 
-	public String[] keys();
-	
-	public String[] values();
+    public String[] keys();
+
+    public String[] values();
 }

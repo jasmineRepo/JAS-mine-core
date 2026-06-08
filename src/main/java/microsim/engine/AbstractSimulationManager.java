@@ -1,29 +1,27 @@
 package microsim.engine;
 
-
-
 public abstract class AbstractSimulationManager implements SimulationManager {
 
-	private SimulationEngine engine;
-		
-	public void setEngine(SimulationEngine engine) {
-		this.engine = engine;
-	}
+    private SimulationEngine engine;
 
-	public SimulationEngine getEngine() {
-		return engine;
-	}
+    public void setEngine(SimulationEngine engine) {
+        this.engine = engine;
+    }
 
-	public abstract void buildObjects();
-	
-	public abstract void buildSchedule();
+    public SimulationEngine getEngine() {
+        return engine;
+    }
 
-	public void dispose() {
-		this.engine = null;
-	}
+    public abstract void buildObjects();
 
-	public String getId() {
-		return this.getClass().getCanonicalName();
-	}
+    public abstract void buildSchedule();
+
+    public void dispose() {
+        this.engine = null;
+    }
+
+    public String getId() {
+        return this.getClass().getCanonicalName();
+    }
 
 }

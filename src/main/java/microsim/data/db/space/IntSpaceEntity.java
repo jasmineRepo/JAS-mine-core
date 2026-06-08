@@ -5,54 +5,54 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public class IntSpaceEntity implements IIntSpaceEntity {
 
-	private Double simulationTime;
-	
-	private Long simulationRun;
-	
-	private Integer x;
-	
-	private Integer y;
-	
-	private Integer value;
+    private Double simulationTime;
 
-	public Double getSimulationTime() {
-		return simulationTime;
-	}
+    private Long simulationRun;
 
-	public void setSimulationTime(Double simulationTime) {
-		this.simulationTime = simulationTime;
-	}
+    private Integer x;
 
-	public Long getSimulationRun() {
-		return simulationRun;
-	}
+    private Integer y;
 
-	public void setSimulationRun(Long simulationRun) {
-		this.simulationRun = simulationRun;
-	}
+    private Integer value;
 
-	public Integer getX() {
-		return x;
-	}
+    public Double getSimulationTime() {
+        return simulationTime;
+    }
 
-	public void setX(Integer x) {
-		this.x = x;
-	}
+    public void setSimulationTime(Double simulationTime) {
+        this.simulationTime = simulationTime;
+    }
 
-	public Integer getY() {
-		return y;
-	}
+    public Long getSimulationRun() {
+        return simulationRun;
+    }
 
-	public void setY(Integer y) {
-		this.y = y;
-	}
+    public void setSimulationRun(Long simulationRun) {
+        this.simulationRun = simulationRun;
+    }
 
-	public Integer getValue() {
-		return value;
-	}
+    public Integer getX() {
+        return x;
+    }
 
-	public void setValue(Integer value) {
-		this.value = value;
-	}
+    public void setX(Integer x) {
+        this.x = x;
+    }
+
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
 
 }

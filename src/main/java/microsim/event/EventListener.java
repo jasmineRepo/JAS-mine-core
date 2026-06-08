@@ -1,8 +1,7 @@
 package microsim.event;
 
-
 public interface EventListener {
 
-	public void onEvent(Enum<?> type);
-	
+    public void onEvent(Enum<?> type);
+
 }

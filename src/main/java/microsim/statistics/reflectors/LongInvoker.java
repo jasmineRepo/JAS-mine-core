@@ -40,136 +40,138 @@ import org.apache.log4j.Logger;
  * @author Michele Sonnessa
  */
 public class LongInvoker implements ILongSource {
-	private static Logger log = Logger.getLogger(LongInvoker.class);
-	
-	protected Method method;
-	protected Field field;
-	protected Object target;
+    private static Logger log = Logger.getLogger(LongInvoker.class);
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param target
-	 *            It is the target object.
-	 * @param fieldName
-	 *            A string representing the name of the method to invoke.
-	 * @param isMethod
-	 *            If true the fieldName is a method, otherwise it is a property
-	 *            of the object.
-	 */
-	public LongInvoker(Object target, String fieldName, boolean isMethod) {
-		this.target = target;
-		if (isMethod)
-			buildMethod(target.getClass(), fieldName);
-		else
-			buildField(target.getClass(), fieldName);
-	}
+    protected Method method;
+    protected Field field;
+    protected Object target;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param target
-	 *            It is the class of the target object.
-	 * @param fieldName
-	 *            A string representing the name of the method to invoke.
-	 * @param isMethod
-	 *            If true the fieldName is a method, otherwise it is a property
-	 *            of the object.
-	 */
-	public LongInvoker(Class<?> target, String fieldName, boolean isMethod) {
-		this.target = null;
-		if (isMethod)
-			buildMethod(target, fieldName);
-		else
-			buildField(target, fieldName);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param target
+     *                  It is the target object.
+     * @param fieldName
+     *                  A string representing the name of the method to invoke.
+     * @param isMethod
+     *                  If true the fieldName is a method, otherwise it is a
+     *                  property
+     *                  of the object.
+     */
+    public LongInvoker(Object target, String fieldName, boolean isMethod) {
+        this.target = target;
+        if (isMethod)
+            buildMethod(target.getClass(), fieldName);
+        else
+            buildField(target.getClass(), fieldName);
+    }
 
-	private void buildField(Class<?> trgClass, String fieldName) {
-		method = null;
-		field = ReflectionUtils.searchField(trgClass, fieldName);
+    /**
+     * Constructor.
+     * 
+     * @param target
+     *                  It is the class of the target object.
+     * @param fieldName
+     *                  A string representing the name of the method to invoke.
+     * @param isMethod
+     *                  If true the fieldName is a method, otherwise it is a
+     *                  property
+     *                  of the object.
+     */
+    public LongInvoker(Class<?> target, String fieldName, boolean isMethod) {
+        this.target = null;
+        if (isMethod)
+            buildMethod(target, fieldName);
+        else
+            buildField(target, fieldName);
+    }
 
-		if (field == null)
-			log.error("LongInvoker: Field " + fieldName
-					+ " of object " + target + " does not exist.");
+    private void buildField(Class<?> trgClass, String fieldName) {
+        method = null;
+        field = ReflectionUtils.searchField(trgClass, fieldName);
 
-		if (field.getType() != Long.TYPE)
-			log.error("LongInvoker: Field " + fieldName
-					+ " of object " + target + " must return a long value!");
-	}
+        if (field == null)
+            log.error("LongInvoker: Field " + fieldName
+                    + " of object " + target + " does not exist.");
 
-	private void buildMethod(Class<?> trgClass, String methodName) {
-		field = null;
-		method = ReflectionUtils.searchMethod(trgClass, methodName);
+        if (field.getType() != Long.TYPE)
+            log.error("LongInvoker: Field " + fieldName
+                    + " of object " + target + " must return a long value!");
+    }
 
-		if (method == null)
-			log.error("LongInvoker: Method " + methodName
-					+ " of object " + target + " does not exist.");
+    private void buildMethod(Class<?> trgClass, String methodName) {
+        field = null;
+        method = ReflectionUtils.searchMethod(trgClass, methodName);
 
-		if (method.getReturnType() != Long.TYPE)
-			log.error("LongInvoker: Method " + methodName
-					+ " of object " + target + " must return a long value!");
-	}
+        if (method == null)
+            log.error("LongInvoker: Method " + methodName
+                    + " of object " + target + " does not exist.");
 
-	/**
-	 * Invoke the method of the target object and return its double result.
-	 * 
-	 * @param target
-	 *            Object to be invoked.
-	 * @return The requested double value.
-	 */
-	public long getLong(Object target) {
-		if (target == null)
-			return 0L;
+        if (method.getReturnType() != Long.TYPE)
+            log.error("LongInvoker: Method " + methodName
+                    + " of object " + target + " must return a long value!");
+    }
 
-		try {
-			if (method == null) {
-				try {
-					return field.getLong(target);
-				} catch (IllegalArgumentException e) {
-					return ((Long) field.get(target)).longValue();
-				}
-			} else
-				return ((Long) method.invoke(target, null)).longValue();
-		} catch (InvocationTargetException ie) {
-			StringBuffer message = new StringBuffer();
-			if (method == null)
-				message.append("LngInvoker: Field " + field + "of object "
-						+ target + " raised the following error:\n");
-			else
-				message.append("LngInvoker: Method " + method + "of object "
-						+ target + " raised the following error:\n");
-			message.append(ie.getMessage());
-			ie.printStackTrace();
-			log.error(message.toString());
+    /**
+     * Invoke the method of the target object and return its double result.
+     * 
+     * @param target
+     *               Object to be invoked.
+     * @return The requested double value.
+     */
+    public long getLong(Object target) {
+        if (target == null)
+            return 0L;
 
-		} catch (IllegalAccessException iae) {
-			iae.printStackTrace();
-			log.error("");
-		}
-		return 0L;
-	}
+        try {
+            if (method == null) {
+                try {
+                    return field.getLong(target);
+                } catch (IllegalArgumentException e) {
+                    return ((Long) field.get(target)).longValue();
+                }
+            } else
+                return ((Long) method.invoke(target, null)).longValue();
+        } catch (InvocationTargetException ie) {
+            StringBuffer message = new StringBuffer();
+            if (method == null)
+                message.append("LngInvoker: Field " + field + "of object "
+                        + target + " raised the following error:\n");
+            else
+                message.append("LngInvoker: Method " + method + "of object "
+                        + target + " raised the following error:\n");
+            message.append(ie.getMessage());
+            ie.printStackTrace();
+            log.error(message.toString());
 
-	/**
-	 * Invoke the method of the object passed to constructor and return its
-	 * double result.
-	 * 
-	 * @return The requested double value.
-	 */
-	public long getLong() {
-		return getLong(target);
-	}
+        } catch (IllegalAccessException iae) {
+            iae.printStackTrace();
+            log.error("");
+        }
+        return 0L;
+    }
 
-	/**
-	 * This is an implementation of the IDblSource interface. It calls the
-	 * getDouble() method.
-	 * 
-	 * @param valueID
-	 *            This parameter is ignored. It is put for compatibility with
-	 *            the IDblSource interface.
-	 * @return The requested double value.
-	 */
-	public long getLongValue(Enum<?> valueID) {
-		return getLong(target);
-	}
+    /**
+     * Invoke the method of the object passed to constructor and return its
+     * double result.
+     * 
+     * @return The requested double value.
+     */
+    public long getLong() {
+        return getLong(target);
+    }
+
+    /**
+     * This is an implementation of the IDblSource interface. It calls the
+     * getDouble() method.
+     * 
+     * @param valueID
+     *                This parameter is ignored. It is put for compatibility with
+     *                the IDblSource interface.
+     * @return The requested double value.
+     */
+    public long getLongValue(Enum<?> valueID) {
+        return getLong(target);
+    }
 
 }
