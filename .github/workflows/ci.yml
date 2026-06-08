@@ -22,5 +22,5 @@ jobs:
           java-version: "17"
           cache: "maven"
           cache-dependency-path: "microsim-core/pom.xml"
-      - run: mvn compile --file microsim-core/pom.xml
-      - run: mvn test --file microsim-core/pom.xml
+      - run: mvn compile
+      - run: mvn test

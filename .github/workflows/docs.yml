@@ -22,8 +22,8 @@ jobs:
           java-version: "17"
           cache: "maven"
           cache-dependency-path: "microsim-core/pom.xml"
-      - run: mvn compile --file microsim-core/pom.xml
-      - run: mvn javadoc:javadoc --file microsim-core/pom.xml
+      - run: mvn compile
+      - run: mvn javadoc:javadoc
       - uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: "microsim-core/target/reports/apidocs/"
