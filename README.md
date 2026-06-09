@@ -26,9 +26,9 @@ Features: Artificial Intelligence Simulation Social sciences
 
 ## Documentation
 
-The documentation can be generated locally with the following (from the `microsim-core/` directory):
+The documentation can be generated locally with the following:
 ```sh
 mvn javadoc:javadoc
 ```
 
-It is generated in `microsim-core/target/reports/apidocs`.
+It is generated in `target/reports/apidocs`.
