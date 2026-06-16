@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import jakarta.persistence.*;
 
 import microsim.annotation.GUIparameter;
@@ -14,12 +17,10 @@ import microsim.data.MultiKeyCoefficientMap;
 import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 
-import org.apache.log4j.Logger;
-
 @SuppressWarnings("deprecation")
 public class DatabaseUtils {
 
-    private static Logger log = Logger.getLogger(DatabaseUtils.class);
+    private static Logger log = LogManager.getLogger(DatabaseUtils.class);
 
     private static EntityManagerFactory entityManagerFactory = null;
     private static EntityManagerFactory outEntityManagerFactory = null;

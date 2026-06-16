@@ -6,10 +6,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.IDoubleSource;
-
-import org.apache.log4j.Logger;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
  * @author Michele Sonnessa
  */
 public class DoubleInvoker implements IDoubleSource {
-    private static Logger log = Logger.getLogger(DoubleInvoker.class);
+    private static Logger log = LogManager.getLogger(DoubleInvoker.class);
 
     protected Method method;
     protected Field field;

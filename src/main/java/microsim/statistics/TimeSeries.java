@@ -7,12 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import microsim.engine.SimulationEngine;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.reflection.ReflectionUtils;
-
-import org.apache.log4j.Logger;
 
 import cern.colt.list.DoubleArrayList;
 import cern.colt.list.FloatArrayList;
@@ -50,7 +51,7 @@ import cern.colt.list.LongArrayList;
  * @author Michele Sonnessa
  */
 public class TimeSeries implements EventListener, IUpdatableSource {
-    private static Logger log = Logger.getLogger(TimeSeries.class);
+    private static Logger log = LogManager.getLogger(TimeSeries.class);
 
     /** A custom event identifier for perfomAction method. Save to disk. */
     public static final int EVENT_SAVE = 1;

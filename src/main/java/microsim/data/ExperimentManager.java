@@ -10,7 +10,8 @@ import microsim.data.db.DatabaseUtils;
 import microsim.data.db.Experiment;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Singleton. Utility used to create ana manage experiment setup.
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class ExperimentManager {
 
-    private static final Logger log = Logger.getLogger(ExperimentManager.class);
+    private static final Logger log = LogManager.getLogger(ExperimentManager.class);
 
     /**
      * The flag determines if the tool must copy input resources into output folder.

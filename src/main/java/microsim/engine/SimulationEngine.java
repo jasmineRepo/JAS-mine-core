@@ -18,7 +18,8 @@ import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
 
 import org.apache.commons.math3.random.RandomGenerator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The simulation engine. The engine keeps a reference to an EventQueue object
@@ -59,7 +60,7 @@ import org.apache.log4j.Logger;
  */
 public class SimulationEngine extends Thread {
 
-    private static Logger log = Logger.getLogger(SimulationEngine.class);
+    private static Logger log = LogManager.getLogger(SimulationEngine.class);
 
     private int eventThresold = 0;
 
