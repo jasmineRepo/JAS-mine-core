@@ -17,7 +17,6 @@ import jakarta.persistence.Transient;
 
 import org.apache.log4j.Logger;
 
-import microsim.data.db.DatabaseUtils;
 import microsim.data.db.PanelEntityKey;
 import microsim.engine.SimulationEngine;
 
