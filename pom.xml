@@ -21,6 +21,14 @@
     </dependencies>
   </dependencyManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/jasmineRepo/JAS-mine-core</url>
+    </repository>
+  </distributionManagement>
+
   <build>
     <plugins>
       <plugin>
