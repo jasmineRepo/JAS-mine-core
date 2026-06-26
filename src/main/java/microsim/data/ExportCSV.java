@@ -15,9 +15,6 @@ import java.util.TreeSet;
 
 import jakarta.persistence.Transient;
 
-import org.apache.log4j.Logger;
-
-import microsim.data.db.DatabaseUtils;
 import microsim.data.db.PanelEntityKey;
 import microsim.engine.SimulationEngine;
 
@@ -31,7 +28,6 @@ import microsim.engine.SimulationEngine;
  */
 public class ExportCSV {
 
-    private static Logger log = Logger.getLogger(DatabaseUtils.class);
     public static Long autoincrementSeed = 1000000L;
 
     // Fields for exporting tables to output .csv files

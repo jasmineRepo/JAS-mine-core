@@ -4,10 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.IFloatSource;
-
-import org.apache.log4j.Logger;
 
 /**
  * Not of interest for users. It uses java reflection to call objects' methods
@@ -40,7 +41,7 @@ import org.apache.log4j.Logger;
  * @author Michele Sonnessa
  */
 public class FloatInvoker implements IFloatSource {
-    private static Logger log = Logger.getLogger(FloatInvoker.class);
+    private static Logger log = LogManager.getLogger(FloatInvoker.class);
 
     protected Method method;
     protected Field field;
