@@ -8,6 +8,7 @@
   <groupId>com.github.jasmineRepo</groupId>
   <artifactId>JAS-mine-core</artifactId>
   <version>4.3.25</version>
+  <packaging>jar</packaging>
 
   <dependencyManagement>
     <dependencies>
@@ -57,30 +58,6 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-            <mainClass>Start</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-          <id>make-assembly</id>
-                                        <!-- bind to the packaging phase -->
-          <phase>package</phase> 
-          <goals>
-            <goal>single</goal>
-          </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
