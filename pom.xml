@@ -139,5 +139,42 @@
       <artifactId>h2</artifactId>
       <version>2.4.240</version>
     </dependency>
+
+    <!-- gui deps -->
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-dom</artifactId>
+      <version>1.19</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-svggen</artifactId>
+      <version>1.19</version>
+    </dependency>
+    <dependency>
+      <groupId>org.metawidget.modules</groupId>
+      <artifactId>metawidget-all</artifactId>
+      <version>4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <version>1.0.24</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.5.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdesktop</groupId>
+      <artifactId>beansbinding</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>3.7.1</version>
+    </dependency>
   </dependencies>
 </project>
