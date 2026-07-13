@@ -601,15 +601,15 @@ public class MicrosimShell extends JFrame {
         // }
 
         public void navigateWebSite() {
-            // String command, path = "http://jaslibrary.sourceforge.net";
-            String command, path = "http://www.jas-mine.net";
+            var path = "http://www.jas-mine.net";
+            ProcessBuilder cmd;
             if (System.getProperty("file.separator").equals("/"))
-                command = "netscape " + path;
+                cmd = new ProcessBuilder("netscape", path);
             else
-                command = "cmd /C start " + path;
+                cmd = new ProcessBuilder("cmd", "/C", "start", "path");
 
             try {
-                Runtime.getRuntime().exec(command);
+                cmd.start();
             } catch (Exception ex) {
             }
         }
