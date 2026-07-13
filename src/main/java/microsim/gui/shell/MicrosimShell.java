@@ -214,8 +214,8 @@ public class MicrosimShell extends JFrame {
         });
         try {
             UIManager// .setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-                    // .setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
-                    // .setLookAndFeel("net.infonode.gui.laf.InfoNodeLookAndFeel");
+                     // .setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
+                     // .setLookAndFeel("net.infonode.gui.laf.InfoNodeLookAndFeel");
                     .setLookAndFeel(new FlatLightLaf());
             SwingUtilities.updateComponentTreeUI(this);
         } catch (Exception e) {
