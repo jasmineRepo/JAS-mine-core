@@ -21,7 +21,6 @@ import org.metawidget.swing.widgetprocessor.binding.beansbinding.BeansBindingPro
 import org.metawidget.swing.widgetprocessor.binding.beansbinding.BeansBindingProcessorConfig;
 import org.metawidget.util.CollectionUtils;
 
-@SuppressWarnings("deprecation")
 public class ParameterFrame extends JInternalFrame {
 
     private static final long serialVersionUID = 1L;

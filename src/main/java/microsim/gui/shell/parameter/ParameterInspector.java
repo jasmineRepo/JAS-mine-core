@@ -10,7 +10,6 @@ import microsim.annotation.ModelParameter;
 
 import org.metawidget.inspector.iface.Inspector;
 
-@SuppressWarnings("deprecation")
 public class ParameterInspector implements Inspector {
 
     // @Override

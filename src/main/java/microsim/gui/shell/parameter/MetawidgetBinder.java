@@ -275,7 +275,6 @@ public class MetawidgetBinder
      *                       the raw value from the <code>JComponent</code>
      */
 
-    @SuppressWarnings("unchecked")
     protected void saveValueToObject(SwingMetawidget metawidget, String names, Object componentValue)
             throws Exception {
 
@@ -287,7 +286,6 @@ public class MetawidgetBinder
         if (field.getType().isEnum()) {
             if (componentValue != null) {
                 Class<?> c = field.getType();
-                @SuppressWarnings("rawtypes")
                 Class<? extends Enum> ce = (Class<? extends Enum>) c;
                 Enum<?> value1 = Enum.valueOf(ce, componentValue.toString());
                 BeanUtils.setProperty(source, names, value1);
