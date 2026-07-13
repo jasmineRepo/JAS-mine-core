@@ -434,7 +434,7 @@ public class SimulationEngine extends Thread {
 
         try {
             currentExperiment = ExperimentManager.getInstance().setupExperiment(currentExperiment,
-                    models.toArray(new SimulationManager[models.size()]));
+                    models.toArray());
         } catch (Exception e) {
             e.printStackTrace();
         }

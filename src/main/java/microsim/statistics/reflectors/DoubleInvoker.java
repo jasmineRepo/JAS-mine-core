@@ -135,7 +135,7 @@ public class DoubleInvoker implements IDoubleSource {
                     return ((Double) field.get(target)).doubleValue();
                 }
             } else
-                return ((Double) method.invoke(target, null)).doubleValue();
+                return ((Double) method.invoke(target)).doubleValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

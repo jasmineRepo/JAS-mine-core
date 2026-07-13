@@ -145,7 +145,7 @@ public class MethodsDataModel implements ListModel {
         }
 
         try {
-            Object o = m.invoke(targetObj, null);
+            Object o = m.invoke(targetObj);
 
             if (o == null)
                 return;
