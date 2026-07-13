@@ -3,7 +3,7 @@ package microsim.gui.shell;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.BufferedInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -16,8 +16,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
-
-import org.apache.commons.io.IOUtils;
 
 /**
  * The about frame of the JAS application.
@@ -130,10 +128,8 @@ public class AboutFrame extends JFrame {
 
     private String getLicence() {
         try {
-            final BufferedInputStream bis = new BufferedInputStream(
-                    AboutFrame.class.getResourceAsStream("/jasmine_license.txt"));
-            return IOUtils.toString(bis);
-
+            var bytes = AboutFrame.class.getResourceAsStream("/jasmine_license.txt").readAllBytes();
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             return "WARNING: No licence file found!";
         }
