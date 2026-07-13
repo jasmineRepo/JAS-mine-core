@@ -601,7 +601,7 @@ public class MicrosimShell extends JFrame {
         // }
 
         public void navigateWebSite() {
-            var path = "http://www.jas-mine.net";
+            var path = "https://www.microsimulation.ac.uk/jas-mine/";
             ProcessBuilder cmd;
             if (System.getProperty("file.separator").equals("/"))
                 cmd = new ProcessBuilder("netscape", path);
