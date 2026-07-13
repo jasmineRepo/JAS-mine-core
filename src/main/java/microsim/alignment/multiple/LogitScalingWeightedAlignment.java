@@ -2,10 +2,7 @@ package microsim.alignment.multiple;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 import microsim.agent.Weight;
 
@@ -150,9 +147,9 @@ public class LogitScalingWeightedAlignment<T extends Weight> extends AbstractMul
                     "precision in LogitScalingAlignment.align() method must be greater than 0");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 

@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.function.Predicate;
 
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 /**
  * Align the population by resampling. This involves picking an agent from the
@@ -111,9 +108,9 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
             throw new IllegalArgumentException("ResamplingAlignment targetShare is negative!  This is impossible.");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 
@@ -290,9 +287,9 @@ public class ResamplingAlignment<T extends EventListener> extends AbstractOutcom
                     "ResamplingAlignment targetNumber is negative!  This is impossible to reach.");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 
