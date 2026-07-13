@@ -13,7 +13,6 @@ import microsim.engine.SimulationEngine;
 
 public class SimpleMatching<T> implements MatchingAlgorithm<T> {
 
-    // @SuppressWarnings({ "rawtypes", "unchecked" })
     public void matching(Collection<T> collection1, Predicate<T> filter1, Comparator<T> comparator1,
             Collection<T> collection2, Predicate<T> filter2, MatchingScoreClosure<T> doubleClosure,
             MatchingClosure<T> matching) {

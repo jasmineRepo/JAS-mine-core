@@ -17,7 +17,6 @@ import microsim.data.MultiKeyCoefficientMap;
 import microsim.data.MultiKeyCoefficientMapFactory;
 import microsim.engine.SimulationEngine;
 
-@SuppressWarnings("deprecation")
 public class DatabaseUtils {
 
     private static Logger log = LogManager.getLogger(DatabaseUtils.class);

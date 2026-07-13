@@ -60,7 +60,6 @@ public class ExperimentManager {
         return experiment;
     }
 
-    @SuppressWarnings("resource")
     public void copy(String fileName, String outFolder) throws Exception {
         File sourceFile = new File(fileName);
         File outDir = new File(outFolder);

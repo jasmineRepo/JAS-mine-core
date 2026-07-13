@@ -159,8 +159,6 @@ public class RegressionUtils {
      * @return the event chosen
      */
     public static <T> T event(Map<T, Double> map, Random rnd) {
-        @SuppressWarnings("unchecked") // Conversion from set of T to array of T, so conversion should not need
-                                       // checking
         T[] events = (T[]) map.keySet().toArray();
 
         double[] prob = new double[events.length];
@@ -193,8 +191,6 @@ public class RegressionUtils {
      * @return the event chosen
      */
     public static <T> T event(Map<T, Double> map, Random rnd, boolean checkWeightSum) {
-        @SuppressWarnings("unchecked") // Conversion from set of T to array of T, so conversion should not need
-                                       // checking
         T[] events = (T[]) map.keySet().toArray();
 
         double[] prob = new double[events.length];

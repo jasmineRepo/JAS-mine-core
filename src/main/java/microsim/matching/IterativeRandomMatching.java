@@ -20,7 +20,6 @@ import microsim.statistics.regression.RegressionUtils;
 
 public class IterativeRandomMatching<T> implements IterativeMatchingAlgorithm<T> {
 
-    // @SuppressWarnings({ "rawtypes", "unchecked" })
     public Pair<Set<T>, Set<T>> matching(Collection<T> collection1, Predicate<T> filter1, Comparator<T> comparator1,
             Collection<T> collection2, Predicate<T> filter2, MatchingScoreClosure<T> doubleClosure,
             MatchingClosure<T> matching) {

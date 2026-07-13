@@ -9,7 +9,6 @@ public abstract class Agent<T> implements EventListener {
 
     private T t;
 
-    @SuppressWarnings("unchecked")
     @Transient
     public T getModel() {
         t = null;
