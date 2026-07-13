@@ -130,7 +130,7 @@ public class ProbeReflectionUtils {
 
                 f = o.getClass().getDeclaredField("count");
                 f.setAccessible(true);
-                f.set(o, new Integer(ch.length));
+                f.set(o, ch.length);
 
                 return;
             }

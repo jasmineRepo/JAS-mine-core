@@ -153,21 +153,21 @@ public class MethodParameterDataModel extends AbstractTableModel {
 
     private Object getWrapper(String s, String o) {
         if (s.equals(Integer.TYPE.getName()))
-            return new Integer(Integer.parseInt(o));
+            return Integer.parseInt(o);
         if (s.equals(Double.TYPE.getName()))
-            return new Double(Double.parseDouble(o));
+            return Double.parseDouble(o);
         if (s.equals(Boolean.TYPE.getName()))
-            return new Boolean(Boolean.valueOf(o).booleanValue());
+            return Boolean.valueOf(o);
         if (s.equals(Byte.TYPE.getName()))
-            return new Byte(Byte.parseByte(o));
+            return Byte.parseByte(o);
         if (s.equals(Character.TYPE.getName()))
-            return new Character(o.charAt(0));
+            return o.charAt(0);
         if (s.equals(Float.TYPE.getName()))
-            return new Float(Float.parseFloat(o));
+            return Float.parseFloat(o);
         if (s.equals(Long.TYPE.getName()))
-            return new Long(Long.parseLong(o));
+            return Long.parseLong(o);
         if (s.equals(Short.TYPE.getName()))
-            return new Short(Short.parseShort(o));
+            return Short.parseShort(o);
 
         return null;
     }
