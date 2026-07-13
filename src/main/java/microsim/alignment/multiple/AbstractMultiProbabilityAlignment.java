@@ -1,7 +1,7 @@
 package microsim.alignment.multiple;
 
 import java.util.Collection;
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 /**
  * Multiple choice alignment methods, where there are in general many

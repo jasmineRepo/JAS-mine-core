@@ -1,19 +1,16 @@
 package microsim.collection;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections4.Closure;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class Aggregate {
 
-    public static <T> void applyToFilter(Iterable<T> collection, Predicate<T> predicate, Closure<T> closure) {
-        final List<T> filtered = new ArrayList<T>();
-        CollectionUtils.select(collection, predicate, filtered);
-        IterableUtils.forEach(filtered, closure);
+    public static <T> void applyToFilter(Iterable<T> collection, Predicate<T> predicate, Consumer<T> closure) {
+        collection.forEach(item -> {
+            if (predicate.test(item)) {
+                closure.accept(item);
+            }
+        });
     }
 
 }

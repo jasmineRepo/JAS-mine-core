@@ -6,14 +6,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 
 import microsim.agent.Weight;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 import microsim.statistics.regression.RegressionUtils;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 /**
  * Align the population by weighted resampling. This involves picking an agent
@@ -123,9 +121,9 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
                     "ResamplingWeightedAlignment targetShare is negative!  This is impossible to reach.");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 
@@ -223,9 +221,9 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
                     "ResamplingWeightedAlignment targetNumber is negative!  This is impossible to reach.");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 

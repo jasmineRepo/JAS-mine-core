@@ -3,13 +3,10 @@ package microsim.alignment.probability;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import microsim.engine.SimulationEngine;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
 
@@ -20,9 +17,9 @@ public class SBDAlignment<T> extends AbstractProbabilityAlignment<T> {
             throw new IllegalArgumentException("target probability must lie in [0,1]");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 

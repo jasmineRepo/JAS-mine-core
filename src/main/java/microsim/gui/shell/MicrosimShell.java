@@ -214,8 +214,8 @@ public class MicrosimShell extends JFrame {
         });
         try {
             UIManager// .setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-                    // .setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
-                    // .setLookAndFeel("net.infonode.gui.laf.InfoNodeLookAndFeel");
+                     // .setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
+                     // .setLookAndFeel("net.infonode.gui.laf.InfoNodeLookAndFeel");
                     .setLookAndFeel(new FlatLightLaf());
             SwingUtilities.updateComponentTreeUI(this);
         } catch (Exception e) {
@@ -601,15 +601,12 @@ public class MicrosimShell extends JFrame {
         // }
 
         public void navigateWebSite() {
-            // String command, path = "http://jaslibrary.sourceforge.net";
-            String command, path = "http://www.jas-mine.net";
-            if (System.getProperty("file.separator").equals("/"))
-                command = "netscape " + path;
-            else
-                command = "cmd /C start " + path;
-
+            var path = "https://www.microsimulation.ac.uk/jas-mine/";
+            var os = System.getProperty("os.name").toLowerCase();
+            var cmd = os.contains("win") ? new ProcessBuilder("cmd", "/C", "start", "path")
+                    : new ProcessBuilder("netscape", path);
             try {
-                Runtime.getRuntime().exec(command);
+                cmd.start();
             } catch (Exception ex) {
             }
         }

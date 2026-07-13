@@ -1,8 +1,8 @@
 package microsim.collection;
 
-import org.apache.commons.collections4.Closure;
+import java.util.function.Consumer;
 
-public abstract class AverageClosure<T> implements Closure<T> {
+public abstract class AverageClosure<T> implements Consumer<T> {
 
     protected double sum = 0.0;
 

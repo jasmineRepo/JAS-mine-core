@@ -8,8 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 /**
  * Abstract class for BINARY PROBABILITY alignment methods (for Binary

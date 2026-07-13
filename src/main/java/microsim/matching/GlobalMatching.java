@@ -1,10 +1,10 @@
 package microsim.matching;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * MATCHING CLASS BASED ON THE ITERATIVE RANDOM MATCHING CLASS
@@ -27,15 +27,15 @@ public class GlobalMatching<T> {
         LinkedHashSet<T> unmatchedCollection2 = new LinkedHashSet<T>();
         Pair<Set<T>, Set<T>> unmatched = new Pair<>(unmatchedCollection1, unmatchedCollection2);
 
-        Set<T> c1 = new HashSet<T>();
+        var c1 = new HashSet<T>();
         if (filter1 != null)
-            CollectionUtils.select(collection1, filter1, c1);
+            collection1.stream().filter(filter1).forEachOrdered(c1::add);
         else
             c1.addAll(collection1);
 
-        Set<T> c2 = new HashSet<T>();
+        var c2 = new HashSet<T>();
         if (filter2 != null)
-            CollectionUtils.select(collection2, filter2, c2);
+            collection2.stream().filter(filter2).forEachOrdered(c2::add);
         else
             c2.addAll(collection2);
 

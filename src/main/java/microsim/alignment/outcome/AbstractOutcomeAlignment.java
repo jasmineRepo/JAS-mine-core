@@ -1,7 +1,7 @@
 package microsim.alignment.outcome;
 
 import java.util.Collection;
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 /**
  * 

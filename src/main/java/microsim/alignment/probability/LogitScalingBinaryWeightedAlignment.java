@@ -2,12 +2,9 @@ package microsim.alignment.probability;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.function.Predicate;
 
 import microsim.agent.Weight;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International
@@ -139,9 +136,9 @@ public class LogitScalingBinaryWeightedAlignment<T extends Weight> extends Abstr
                     "precision in LogitScalingBinaryWeightedAlignment.align() method must be greater than 0");
         }
 
-        List<T> list = new ArrayList<T>();
+        var list = new ArrayList<T>();
         if (filter != null)
-            CollectionUtils.select(agents, filter, list);
+            agents.stream().filter(filter).forEachOrdered(list::add);
         else
             list.addAll(agents);
 
