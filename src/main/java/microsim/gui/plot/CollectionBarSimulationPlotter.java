@@ -236,7 +236,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
 
     public void update() {
         for (int i = 0; i < sources.size(); i++) {
-            ArraySource cs = (ArraySource) sources.get(i);
+            var cs = sources.get(i);
             final String category = categories.get(i);
 
             double[] vals = cs.getDoubleArray();

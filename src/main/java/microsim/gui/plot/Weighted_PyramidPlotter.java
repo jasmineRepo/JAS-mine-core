@@ -389,8 +389,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         double[][] groupRanges = null;
 
         // Get the source data
-        WeightedArraySource leftData = (WeightedArraySource) sources[0];
-        WeightedArraySource rightData = (WeightedArraySource) sources[1];
+        var leftData = sources[0];
+        var rightData = sources[1];
         final double[][] vals = new double[][] { leftData.getDoubleArray(), rightData.getDoubleArray() };
         final double[][] weights = new double[][] { leftData.getWeights(), rightData.getWeights() };
 

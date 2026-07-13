@@ -296,7 +296,7 @@ public class SparseObjectSpace extends AbstractSpace<Object> implements ObjectSp
 
         public Object next() {
             Map.Entry<SparseObjectSpace.HashKey, Object> entry = it.next();
-            currentKey = (HashKey) entry.getKey();
+            currentKey = entry.getKey();
             return entry.getValue();
         }
 

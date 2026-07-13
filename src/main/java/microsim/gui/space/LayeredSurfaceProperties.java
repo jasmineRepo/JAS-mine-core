@@ -83,9 +83,7 @@ public class LayeredSurfaceProperties extends JDialog {
             jCmbSize.addItem("" + i);
         jCmbSize.setSelectedIndex(cellSize - 1);
 
-        java.util.Iterator<ILayerDrawer> it = displayLayers.iterator();
-        while (it.hasNext()) {
-            ILayerDrawer lay = (ILayerDrawer) it.next();
+        for (var lay : displayLayers) {
             JCheckBox jc = new JCheckBox(lay.getDescription());
             jc.setSelected(lay.isDisplayed());
             jMainPanel.add(jc);
@@ -143,9 +141,7 @@ public class LayeredSurfaceProperties extends JDialog {
     }
 
     void jBtnOK_actionPerformed(ActionEvent e) {
-        ILayerDrawer lay;
-        for (int i = 0; i < displayLayers.size(); i++) {
-            lay = (ILayerDrawer) displayLayers.get(i);
+        for (var lay : displayLayers) {
             lay.setDisplay(getStatusCheck(lay.getDescription()));
         }
 

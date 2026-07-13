@@ -247,7 +247,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         // chart.getXYPlot().getRenderer().setSeriesPaint(s, new Color(r, g, b, 130));
 
         for (int i = 0; i < sources.size(); i++) {
-            WeightedArraySource cs = (WeightedArraySource) sources.get(i);
+            var cs = sources.get(i);
             double[] vals = cs.getDoubleArray();
             double[] weights = cs.getWeights();
             if (minimum != null && maximum != null) {

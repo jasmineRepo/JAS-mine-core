@@ -198,7 +198,7 @@ public class LayeredSurfacePanel extends JPanel {
 
         ILayerDrawer lay;
         for (int i = 0; i < m_layers.size(); i++) {
-            lay = (ILayerDrawer) m_layers.get(i);
+            lay = m_layers.get(i);
             if (lay.isDisplayed())
                 lay.paint(g, cellLen);
         }
@@ -211,11 +211,11 @@ public class LayeredSurfacePanel extends JPanel {
         if (e.getClickCount() != 2)
             return;
 
-        int x = (int) (e.getX() / cellLen);
-        int y = (int) (e.getY() / cellLen);
+        int x = e.getX() / cellLen;
+        int y = e.getY() / cellLen;
 
         for (int i = m_layers.size() - 1; i >= 0; i--) {
-            lay = (ILayerDrawer) m_layers.get(i);
+            lay = m_layers.get(i);
             if (lay.isDisplayed())
                 if (lay.performDblClickActionAt(x, y))
                     return;
@@ -224,8 +224,8 @@ public class LayeredSurfacePanel extends JPanel {
     }
 
     private void this_mousePressed(MouseEvent e) {
-        lastX = (int) (e.getX() / cellLen);
-        lastY = (int) (e.getY() / cellLen);
+        lastX = e.getX() / cellLen;
+        lastY = e.getY() / cellLen;
     }
 
     private void this_mouseDragged(MouseEvent e) {
@@ -237,11 +237,11 @@ public class LayeredSurfacePanel extends JPanel {
                 lastY < 0 || lastY > virtualHeigth)
             return;
 
-        int x = (int) (e.getX() / cellLen);
-        int y = (int) (e.getY() / cellLen);
+        int x = e.getX() / cellLen;
+        int y = e.getY() / cellLen;
 
         for (int i = m_layers.size() - 1; i >= 0; i--) {
-            lay = (ILayerDrawer) m_layers.get(i);
+            lay = m_layers.get(i);
             if (lay.isDisplayed())
                 if (lay.performMouseMovedFromTo(lastX, lastY, x, y))
                     return;

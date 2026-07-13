@@ -291,10 +291,7 @@ public class ProbeFrame extends JFrame {
         jTableVariables.updateUI();
         methods.update();
         jListMethods.updateUI();
-
-        for (int i = 0; i < openedPanels.size(); i++)
-            ((PanelObjectCollection) openedPanels.get(i)).updateList();
-
+        openedPanels.forEach(PanelObjectCollection::updateList);
     }
 
     void jBtnNewProbe_actionPerformed(ActionEvent e) {
