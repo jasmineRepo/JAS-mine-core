@@ -2,8 +2,7 @@ package microsim.matching;
 
 import java.util.Collection;
 import java.util.Comparator;
-
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 public interface MatchingAlgorithm<T> {
 

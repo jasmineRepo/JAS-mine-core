@@ -5,8 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
+
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.math3.util.Pair;
 
 import microsim.engine.SimulationEngine;
@@ -19,9 +20,9 @@ public class SimpleMatching<T> implements MatchingAlgorithm<T> {
 
         long numberMatchesMade = 0l;
 
-        List<T> c1 = new ArrayList<T>();
+        var c1 = new ArrayList<T>();
         if (filter1 != null)
-            CollectionUtils.select(collection1, filter1, c1);
+            collection1.stream().filter(filter1).forEachOrdered(c1::add);
         else
             c1.addAll(collection1);
 
@@ -37,9 +38,9 @@ public class SimpleMatching<T> implements MatchingAlgorithm<T> {
             }
         }
 
-        List<T> c2 = new ArrayList<T>();
+        var c2 = new ArrayList<T>();
         if (filter2 != null)
-            CollectionUtils.select(collection2, filter2, c2);
+            collection2.stream().filter(filter2).forEachOrdered(c2::add);
         else
             c2.addAll(collection2);
 

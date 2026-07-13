@@ -4,8 +4,8 @@ package microsim.matching;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.math3.util.Pair;
 
 public interface IterativeMatchingAlgorithm<T> {
