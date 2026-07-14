@@ -60,7 +60,7 @@ public class LayeredSurfaceProperties extends JDialog {
     JPanel jButtonPanel = new JPanel();
     JButton jBtnCancel = new JButton();
     JButton jBtnOK = new JButton();
-    JComboBox jCmbSize = new JComboBox();
+    JComboBox<String> jCmbSize = new JComboBox<>();
     JLabel jLabel1 = new JLabel();
     JLabel jLabel2 = new JLabel();
     TitledBorder titledBorder1;

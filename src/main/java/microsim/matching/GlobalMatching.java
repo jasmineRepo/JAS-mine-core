@@ -43,7 +43,7 @@ public class GlobalMatching<T> {
             throw new IllegalArgumentException("Matching algorithm cannot match not disjuctable collections");
 
         // evaluate list of global candidate pairs
-        List<GlobalMatchingPair> candidates = new ArrayList<>();
+        var candidates = new ArrayList<GlobalMatchingPair<T>>();
         for (T agent1 : c1) {
 
             for (T agent2 : c2) {
@@ -51,7 +51,7 @@ public class GlobalMatching<T> {
                 Double score = doubleClosure.getValue(agent1, agent2);
                 if (Double.isFinite(score)) {
 
-                    GlobalMatchingPair pair = new GlobalMatchingPair(agent1, agent2, score);
+                    var pair = new GlobalMatchingPair<T>(agent1, agent2, score);
                     candidates.add(pair);
                 }
             }
@@ -62,7 +62,7 @@ public class GlobalMatching<T> {
 
         // allocate matches
         for (int ii = 0; ii < candidates.size(); ii++) {
-            GlobalMatchingPair pair = candidates.get(ii);
+            var pair = candidates.get(ii);
             T agent1 = (T) pair.getAgent1();
             T agent2 = (T) pair.getAgent2();
             if (c1.contains(agent1) && c2.contains(agent2)) {
@@ -82,11 +82,13 @@ public class GlobalMatching<T> {
 
     }
 
-    private static GlobalMatching globalMatching;
+    // FIXME: remove static instance
+    private static GlobalMatching<?> globalMatching;
 
+    @SuppressWarnings("rawtypes")
     public static GlobalMatching getInstance() {
         if (globalMatching == null)
-            globalMatching = new GlobalMatching();
+            globalMatching = new GlobalMatching<>();
 
         return globalMatching;
     }
