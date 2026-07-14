@@ -58,7 +58,7 @@ public class GlobalMatching<T> {
         }
 
         // sort candidate pairs from best to worst candidate matches
-        Collections.sort(candidates, new GlobalMatchingPairComparator());
+        Collections.sort(candidates, new GlobalMatchingPairComparator<T>());
 
         // allocate matches
         for (int ii = 0; ii < candidates.size(); ii++) {

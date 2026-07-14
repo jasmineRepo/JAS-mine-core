@@ -105,11 +105,13 @@ public class IterativeRandomMatching<T> implements IterativeMatchingAlgorithm<T>
 
     }
 
-    private static IterativeRandomMatching iterativeRandomMatching;
+    // FIXME: remove static instance
+    private static IterativeRandomMatching<?> iterativeRandomMatching;
 
+    @SuppressWarnings("rawtypes")
     public static IterativeRandomMatching getInstance() {
         if (iterativeRandomMatching == null)
-            iterativeRandomMatching = new IterativeRandomMatching();
+            iterativeRandomMatching = new IterativeRandomMatching<>();
 
         return iterativeRandomMatching;
     }
