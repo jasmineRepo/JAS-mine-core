@@ -467,13 +467,14 @@ public class SimulationEngine extends Thread {
      * 
      * @return The list of disposed models.
      */
+    // FIXME: this should return a List<Class<SimulationManager>>
     public synchronized Class<?>[] disposeModels() {
         eventQueue.clear();
 
         modelBuild = false;
 
         // Get models' class type and dispose
-        Class<?>[] cls = new Class[models.size()];
+        var cls = new Class<?>[models.size()];
         for (int i = 0; i < models.size(); i++) {
             SimulationManager model = models.get(i);
             cls[i] = model.getClass();

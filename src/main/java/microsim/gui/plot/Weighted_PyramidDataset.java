@@ -233,13 +233,13 @@ public class Weighted_PyramidDataset extends AbstractSeriesDataset
     }
 
     @Override
-    public List getColumnKeys() {
+    public List<Weighted_PyramidPlotter.GroupName> getColumnKeys() {
         // TODO Auto-generated method stub
         return Arrays.asList(this.groupNames);
     }
 
     @Override
-    public Comparable getColumnKey(int column) {
+    public Weighted_PyramidPlotter.GroupName getColumnKey(int column) {
         return this.groupNames[column];
     }
 

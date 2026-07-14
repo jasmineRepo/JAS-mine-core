@@ -51,7 +51,7 @@ import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.AbstractIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 
-record HistEntry(Comparable key, List<Weighted_HistogramBin> bins, int numValues, double binWidth) {
+record HistEntry(Comparable<?> key, List<Weighted_HistogramBin> bins, int numValues, double binWidth) {
 }
 
 /**
@@ -117,7 +117,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      *                   (<code>null</code> not permitted).
      * @param bins       the number of bins (must be at least 1).
      */
-    public void addSeries(Comparable key, double[] values, double[] weightings, int bins) {
+    public void addSeries(Comparable<?> key, double[] values, double[] weightings, int bins) {
         // defer argument checking...
         double minimum = getMinimum(values);
         double maximum = getMaximum(values);
@@ -139,7 +139,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * @param minimum    the lower bound of the bin range.
      * @param maximum    the upper bound of the bin range.
      */
-    public void addSeries(Comparable key, double[] values, double[] weightings, int bins,
+    public void addSeries(Comparable<?> key, double[] values, double[] weightings, int bins,
             double minimum, double maximum) {
 
         Args.nullNotPermitted(key, "key");
@@ -301,7 +301,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      *                                   specified range.
      */
     @Override
-    public Comparable getSeriesKey(int series) {
+    public Comparable<?> getSeriesKey(int series) {
         return this.entries.get(series).key();
     }
 
