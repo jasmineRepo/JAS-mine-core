@@ -61,15 +61,6 @@ public class LayeredSurfacePanel extends JPanel {
     private int lastX, lastY;
 
     /**
-     * @link dependency
-     * @stereotype use
-     */
-    /* #ILayerDrawer lnkILayerDrawer; */
-
-    /** @link dependency */
-    /* #CellObjectChooser lnkCellObjectChooser; */
-
-    /**
      * Create a panel with dimensions of (100, 100) and a cell length of 4 pixels.
      */
     public LayeredSurfacePanel() {

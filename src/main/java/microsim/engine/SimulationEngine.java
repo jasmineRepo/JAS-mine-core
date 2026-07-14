@@ -140,13 +140,6 @@ public class SimulationEngine extends Thread {
     private ExperimentBuilder experimentBuilder = null;
 
     /**
-     * @link dependency
-     * @stereotype use
-     * @supplierRole 1..
-     **/
-    /* #SimModel lnkSimModel; */
-
-    /**
      * Build a new SimEngine with the given time unit.
      */
     protected SimulationEngine() {
