@@ -773,10 +773,8 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
 
     public void refresh() {
 
-        List data = dataset.getSeries();
-        for (int i = 0; i < data.size(); i++) {
-            XYSeries series = (XYSeries) data.get(i);
-            series.clear();
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            dataset.getSeries(i).clear();
         }
 
     }
