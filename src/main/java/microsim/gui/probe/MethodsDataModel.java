@@ -48,7 +48,7 @@ import java.lang.reflect.*;
  * @author Michele Sonnessa
  *         <p>
  */
-public class MethodsDataModel implements ListModel {
+public class MethodsDataModel implements ListModel<Method> {
 
     private static final Logger log = LogManager.getLogger(MethodsDataModel.class);
 
@@ -131,7 +131,7 @@ public class MethodsDataModel implements ListModel {
         return methods.size();
     }
 
-    public Object getElementAt(int index) {
+    public Method getElementAt(int index) {
         return methods.get(index);
     }
 

@@ -80,7 +80,7 @@ public class ProbeFrame extends JFrame {
     // Second tab
     BorderLayout borderLayout2 = new BorderLayout();
     JPanel jPaneMethods = new JPanel();
-    JList jListMethods = new JList();
+    JList<Method> jListMethods = new JList<>();
     JScrollPane jScrollMethods = new JScrollPane(jListMethods);
     JButton jBtnInvoke = new JButton();
 
@@ -92,7 +92,7 @@ public class ProbeFrame extends JFrame {
     JPanel jNorthPanel = new JPanel();
     JLabel jObjectName = new JLabel("");
     BorderLayout borderLayout3 = new BorderLayout();
-    JComboBox jCmbSuperclass = new JComboBox();
+    JComboBox<String> jCmbSuperclass = new JComboBox<>();
 
     /**
      * This constructor checks if the given object implements the IProbeFields
