@@ -666,7 +666,7 @@ public class RegressionUtils {
         int count = 0;
         String[] multiKeyMapKeyNames = null; // The name of the MultiKey in the MultiKeyCoefficientMaps
         String[] multiKeyMapValueNames = null; // The name of the values in the MultiKeyCoefficientMaps
-        Set<MultiKey> covariateMultiKeys = null;
+        Set<MultiKey<?>> covariateMultiKeys = null;
         T baseT = null;
         for (T t : possibleEvents) {
             if (specifiedEvents.contains(t)) {
@@ -681,7 +681,7 @@ public class RegressionUtils {
                 } else {
                     String[] otherKeyNames = map.getKeysNames();
                     String[] otherValueNames = map.getValuesNames();
-                    Set<MultiKey> otherMultiKeys = map.keySet();
+                    var otherMultiKeys = map.keySet();
                     // Check dimensions match
                     if (multiKeyMapKeyNames.length != otherKeyNames.length) {
                         throw new IllegalArgumentException(
@@ -783,16 +783,14 @@ public class RegressionUtils {
         //// regression "
         // + "covariate name.");
         // }
-        //// for(int i = 0; i < tNames.length; i++) {
-        //// if(subStrings[0].equals(tNames[i])) {
-        //// covarianceEvents.add(subStrings[0]); //Only check that first substring of
-        //// key before the 'regular expression' "_" character is an event name. Thus if
-        //// LowEdu and HighEdu are events, and the covariance matrix contains keys
-        //// LowEdu_age and HighEdu_age, this will be satisfied, but not if the keys are
-        //// age_LowEdu and age_HighEdu. This is to prevent confusion over what is the
-        //// event name and the covariate name.
-        //// }
-        //// }
+        //// for(int i = 0; i < tNames.length; i++) { /
+        /// if(subStrings[0].equals(tNames[i])) { / covarianceEvents.add(subStrings[0]);
+        /// //Only check that first substring of / key before the 'regular expression'
+        /// "_" character is an event name. Thus if / LowEdu and HighEdu are events, and
+        /// the covariance matrix contains keys / LowEdu_age and HighEdu_age, this will
+        /// be satisfied, but not if the keys are / age_LowEdu and age_HighEdu. This is
+        /// to prevent confusion over what is the / event name and the covariate name. /
+        /// } / }
         // }
 
         return newMap;
