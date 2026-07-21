@@ -1,7 +1,5 @@
 package microsim.statistics.weighted;
 
-//package microsim.statistics.weighted;
-
 /**
  * Used by statistical object to access array of long values.
  * 

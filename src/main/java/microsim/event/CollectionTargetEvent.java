@@ -75,7 +75,7 @@ public class CollectionTargetEvent extends Event {
         Class<?> cl = objectType;
         while (cl != null)
             try {
-                methodInvoker = cl.getDeclaredMethod(method, null);
+                methodInvoker = cl.getDeclaredMethod(method);
                 return;
             } catch (NoSuchMethodException e) {
                 cl = cl.getSuperclass();
@@ -112,7 +112,7 @@ public class CollectionTargetEvent extends Event {
         if (methodInvoker != null) {
             while (itr.hasNext()) {
                 try {
-                    methodInvoker.invoke(itr.next(), null);
+                    methodInvoker.invoke(itr.next());
                 } catch (InvocationTargetException e) {
                     System.out.println("Object " + methodInvoker + " Method: "
                             + methodInvoker.getName());

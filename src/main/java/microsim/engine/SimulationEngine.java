@@ -140,13 +140,6 @@ public class SimulationEngine extends Thread {
     private ExperimentBuilder experimentBuilder = null;
 
     /**
-     * @link dependency
-     * @stereotype use
-     * @supplierRole 1..
-     **/
-    /* #SimModel lnkSimModel; */
-
-    /**
      * Build a new SimEngine with the given time unit.
      */
     protected SimulationEngine() {
@@ -434,7 +427,7 @@ public class SimulationEngine extends Thread {
 
         try {
             currentExperiment = ExperimentManager.getInstance().setupExperiment(currentExperiment,
-                    models.toArray(new SimulationManager[models.size()]));
+                    models.toArray());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -467,13 +460,14 @@ public class SimulationEngine extends Thread {
      * 
      * @return The list of disposed models.
      */
+    // FIXME: this should return a List<Class<SimulationManager>>
     public synchronized Class<?>[] disposeModels() {
         eventQueue.clear();
 
         modelBuild = false;
 
         // Get models' class type and dispose
-        Class<?>[] cls = new Class[models.size()];
+        var cls = new Class<?>[models.size()];
         for (int i = 0; i < models.size(); i++) {
             SimulationManager model = models.get(i);
             cls[i] = model.getClass();

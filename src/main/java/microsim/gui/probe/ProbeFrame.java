@@ -80,7 +80,7 @@ public class ProbeFrame extends JFrame {
     // Second tab
     BorderLayout borderLayout2 = new BorderLayout();
     JPanel jPaneMethods = new JPanel();
-    JList jListMethods = new JList();
+    JList<Method> jListMethods = new JList<>();
     JScrollPane jScrollMethods = new JScrollPane(jListMethods);
     JButton jBtnInvoke = new JButton();
 
@@ -92,7 +92,7 @@ public class ProbeFrame extends JFrame {
     JPanel jNorthPanel = new JPanel();
     JLabel jObjectName = new JLabel("");
     BorderLayout borderLayout3 = new BorderLayout();
-    JComboBox jCmbSuperclass = new JComboBox();
+    JComboBox<String> jCmbSuperclass = new JComboBox<>();
 
     /**
      * This constructor checks if the given object implements the IProbeFields
@@ -291,10 +291,7 @@ public class ProbeFrame extends JFrame {
         jTableVariables.updateUI();
         methods.update();
         jListMethods.updateUI();
-
-        for (int i = 0; i < openedPanels.size(); i++)
-            ((PanelObjectCollection) openedPanels.get(i)).updateList();
-
+        openedPanels.forEach(PanelObjectCollection::updateList);
     }
 
     void jBtnNewProbe_actionPerformed(ActionEvent e) {
@@ -381,7 +378,7 @@ public class ProbeFrame extends JFrame {
         if (jListMethods.getSelectedIndex() == -1)
             return;
 
-        Method m = (Method) methods.getElementAt(jListMethods.getSelectedIndex());
+        var m = methods.getElementAt(jListMethods.getSelectedIndex());
         if (!ProbeReflectionUtils.isAnExecutableMethod(m)) {
             JOptionPane.showMessageDialog(null,
                     "Sorry but this method requires complex arguments.\nThis function is not yet implemented.",

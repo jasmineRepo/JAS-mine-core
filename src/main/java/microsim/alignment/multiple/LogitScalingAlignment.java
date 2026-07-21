@@ -2,10 +2,7 @@ package microsim.alignment.multiple;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Predicate;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * Logit Scaling alignment (as introduced by P. Stephensen in International

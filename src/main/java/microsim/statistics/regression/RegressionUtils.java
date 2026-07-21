@@ -5,7 +5,6 @@ import java.util.*;
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.engine.SimulationEngine;
 
-import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -442,9 +441,9 @@ public class RegressionUtils {
 
         double means[] = new double[numRowsInCovarianceMatrix];
         double[][] covarianceMatrix = new double[numRowsInCovarianceMatrix][numRowsInCovarianceMatrix];
-        for (MapIterator iterator = map.mapIterator(); iterator.hasNext();) {
+        for (var iterator = map.mapIterator(); iterator.hasNext();) {
             iterator.next();
-            MultiKey multiKey = (MultiKey) iterator.getKey();
+            var multiKey = iterator.getKey();
             String regressor = (String) multiKey.getKey(regressorColumnIndex);
             int rowIndex = indexOfValuesNameMap.get(regressor);
             Object[] mapValuesRow = ((Object[]) map.getValue(multiKey));
@@ -472,10 +471,10 @@ public class RegressionUtils {
         valueNames[0] = RegressionColumnNames.COEFFICIENT.toString();
         MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(keys, valueNames);
 
-        for (MapIterator iterator = map.mapIterator(); iterator.hasNext();) {
+        for (var iterator = map.mapIterator(); iterator.hasNext();) {
             iterator.next();
 
-            MultiKey multiKey = (MultiKey) iterator.getKey();
+            var multiKey = iterator.getKey();
             String regressor = (String) multiKey.getKey(regressorColumnIndex);
             int rowIndex = indexOfValuesNameMap.get(regressor);
             bootstrapMap.put(multiKey, means[rowIndex]);
@@ -539,13 +538,11 @@ public class RegressionUtils {
         int numCovariates = coefficients.size();
         String[] covariates = new String[numCovariates];
         int n = 0;
-        for (Object o : coefficients.keySet()) { // Order of iteration not guaranteed???
-            if (o instanceof MultiKey) {
-                covariates[n] = ((MultiKey) o).getKey(0).toString(); // The order in which covariates and their
-                                                                     // corresponding covariances are handled within
-                                                                     // this method is fixed by this ordering.
-                n++;
-            }
+        for (var mk : coefficients.keySet()) { // Order of iteration not guaranteed???
+            covariates[n] = mk.getKey(0).toString(); // The order in which covariates and their
+                                                     // corresponding covariances are handled within
+                                                     // this method is fixed by this ordering.
+            n++;
         }
 
         double[][] covarianceMatrixOrdered;
@@ -666,7 +663,7 @@ public class RegressionUtils {
         int count = 0;
         String[] multiKeyMapKeyNames = null; // The name of the MultiKey in the MultiKeyCoefficientMaps
         String[] multiKeyMapValueNames = null; // The name of the values in the MultiKeyCoefficientMaps
-        Set<MultiKey> covariateMultiKeys = null;
+        Set<MultiKey<?>> covariateMultiKeys = null;
         T baseT = null;
         for (T t : possibleEvents) {
             if (specifiedEvents.contains(t)) {
@@ -681,7 +678,7 @@ public class RegressionUtils {
                 } else {
                     String[] otherKeyNames = map.getKeysNames();
                     String[] otherValueNames = map.getValuesNames();
-                    Set<MultiKey> otherMultiKeys = map.keySet();
+                    var otherMultiKeys = map.keySet();
                     // Check dimensions match
                     if (multiKeyMapKeyNames.length != otherKeyNames.length) {
                         throw new IllegalArgumentException(
@@ -715,7 +712,7 @@ public class RegressionUtils {
                         }
                     }
                     // Check that all events have the same MultiKeys (regression covariates)
-                    for (MultiKey mk : otherMultiKeys) {
+                    for (var mk : otherMultiKeys) {
                         if (!covariateMultiKeys.contains(mk)) {
                             throw new IllegalArgumentException("The covariate " + mk.getKey(0)
                                     + " specified in the regression coefficient MultiKeyCofficientMap for event " + t
@@ -745,8 +742,7 @@ public class RegressionUtils {
                                         // (one of) the entries of the Map<T, MultiKeyCoefficientMap>.
         for (T event : specifiedEvents) {
             MultiKeyCoefficientMap regCoefficientsMap = eventRegressionCoefficientMap.get(event);
-            for (Object o : regCoefficientsMap.keySet()) {
-                MultiKey mk = (MultiKey) o;
+            for (var mk : regCoefficientsMap.keySet()) {
                 String combinedName = event.toString() + "_" + mk.getKey(0).toString();
                 enlargedCoefficientMap.putValue(combinedName, regCoefficientsMap.getValue(mk));
             }
@@ -758,7 +754,7 @@ public class RegressionUtils {
         for (T event : specifiedEvents) {
             MultiKeyCoefficientMap newCoefficientMap = new MultiKeyCoefficientMap(multiKeyMapKeyNames,
                     multiKeyMapValueNames);
-            for (MultiKey mk : covariateMultiKeys) {
+            for (var mk : covariateMultiKeys) {
                 String combinedName = event.toString() + "_" + mk.getKey(0).toString();
                 // System.out.println("combinedName " + combinedName);
                 double regCoefficient = ((Number) enlargedCoefficientMap.getValue(combinedName)).doubleValue();
@@ -783,16 +779,14 @@ public class RegressionUtils {
         //// regression "
         // + "covariate name.");
         // }
-        //// for(int i = 0; i < tNames.length; i++) {
-        //// if(subStrings[0].equals(tNames[i])) {
-        //// covarianceEvents.add(subStrings[0]); //Only check that first substring of
-        //// key before the 'regular expression' "_" character is an event name. Thus if
-        //// LowEdu and HighEdu are events, and the covariance matrix contains keys
-        //// LowEdu_age and HighEdu_age, this will be satisfied, but not if the keys are
-        //// age_LowEdu and age_HighEdu. This is to prevent confusion over what is the
-        //// event name and the covariate name.
-        //// }
-        //// }
+        //// for(int i = 0; i < tNames.length; i++) { /
+        /// if(subStrings[0].equals(tNames[i])) { / covarianceEvents.add(subStrings[0]);
+        /// //Only check that first substring of / key before the 'regular expression'
+        /// "_" character is an event name. Thus if / LowEdu and HighEdu are events, and
+        /// the covariance matrix contains keys / LowEdu_age and HighEdu_age, this will
+        /// be satisfied, but not if the keys are / age_LowEdu and age_HighEdu. This is
+        /// to prevent confusion over what is the / event name and the covariate name. /
+        /// } / }
         // }
 
         return newMap;
@@ -832,8 +826,8 @@ public class RegressionUtils {
 
         // construct regressors key list
         HashSet<String> regressors = new HashSet<String>();
-        for (Object multiKey : multinomialCoefficients.keySet()) {
-            final String key = ((MultiKey) multiKey).getKey(0).toString();
+        for (var multiKey : multinomialCoefficients.keySet()) {
+            final String key = multiKey.getKey(0).toString();
             if (!regressors.add(key))
                 throw new RuntimeException("Regressor key " + key + " in multinomial remapping is not unique.");
         }
@@ -1018,7 +1012,7 @@ public class RegressionUtils {
         }
 
         // populate with secondaryMap values
-        for (Object keyHere : secondaryMap.keySet()) {
+        for (var keyHere : secondaryMap.keySet()) {
 
             Double valHere;
             if (secondaryMap.getValuesNames().length == 1) {
@@ -1040,9 +1034,9 @@ public class RegressionUtils {
             }
             Object[] keyValueVector = new Object[2];
             if (secondaryKeyPrefix == null)
-                keyValueVector[0] = ((MultiKey) keyHere).getKey(0).toString();
+                keyValueVector[0] = keyHere.getKey(0).toString();
             else
-                keyValueVector[0] = secondaryKeyPrefix + ((MultiKey) keyHere).getKey(0).toString();
+                keyValueVector[0] = secondaryKeyPrefix + keyHere.getKey(0).toString();
             if (invertSecondary)
                 keyValueVector[1] = -valHere;
             else

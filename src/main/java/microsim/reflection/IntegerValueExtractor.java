@@ -126,7 +126,7 @@ public class IntegerValueExtractor {
             if (method == null)
                 return field.getInt(target);
             else
-                return ((Integer) method.invoke(target, null)).intValue();
+                return ((Integer) method.invoke(target)).intValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

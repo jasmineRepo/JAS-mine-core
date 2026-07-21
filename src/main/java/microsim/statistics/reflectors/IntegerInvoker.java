@@ -132,7 +132,7 @@ public class IntegerInvoker implements IIntSource {
                     return ((Integer) field.get(target)).intValue();
                 }
             } else
-                return ((Integer) method.invoke(target, null)).intValue();
+                return ((Integer) method.invoke(target)).intValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

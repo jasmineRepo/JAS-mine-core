@@ -40,9 +40,8 @@ package microsim.gui.plot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.jfree.chart.util.Args;
@@ -51,6 +50,9 @@ import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.AbstractIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
+
+record HistEntry(Comparable<?> key, List<Weighted_HistogramBin> bins, int numValues, double binWidth) {
+}
 
 /**
  * A weighted dataset that can be used for creating weighted histograms.
@@ -62,7 +64,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
     private static final long serialVersionUID = -6341668077370231153L;
 
     /** A list of maps. */
-    private List list;
+    private List<HistEntry> entries;
 
     /** The histogram type. */
     private HistogramType type;
@@ -78,7 +80,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * {@link HistogramType}.FREQUENCY.
      */
     public Weighted_HistogramDataset() {
-        this.list = new ArrayList();
+        this.entries = new ArrayList<HistEntry>();
         this.type = HistogramType.FREQUENCY;
         totalWeight = 0.;
     }
@@ -115,7 +117,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      *                   (<code>null</code> not permitted).
      * @param bins       the number of bins (must be at least 1).
      */
-    public void addSeries(Comparable key, double[] values, double[] weightings, int bins) {
+    public void addSeries(Comparable<?> key, double[] values, double[] weightings, int bins) {
         // defer argument checking...
         double minimum = getMinimum(values);
         double maximum = getMaximum(values);
@@ -137,7 +139,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * @param minimum    the lower bound of the bin range.
      * @param maximum    the upper bound of the bin range.
      */
-    public void addSeries(Comparable key, double[] values, double[] weightings, int bins,
+    public void addSeries(Comparable<?> key, double[] values, double[] weightings, int bins,
             double minimum, double maximum) {
 
         Args.nullNotPermitted(key, "key");
@@ -156,7 +158,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
 
         double lower = minimum;
         double upper;
-        List binList = new ArrayList(bins);
+        var binList = new ArrayList<Weighted_HistogramBin>(bins);
         for (int i = 0; i < bins; i++) {
             Weighted_HistogramBin bin;
             // make sure bins[bins.length]'s upper boundary ends at maximum
@@ -187,17 +189,12 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
                     binIndex = bins - 1;
                 }
             }
-            Weighted_HistogramBin bin = (Weighted_HistogramBin) binList.get(binIndex);
+            var bin = binList.get(binIndex);
             bin.incrementCount(weightings[i]);
             totalWeight += weightings[i];
         }
-        // generic map for each series
-        Map map = new LinkedHashMap();
-        map.put("key", key);
-        map.put("bins", binList);
-        map.put("values.length", values.length);
-        map.put("bin width", binWidth);
-        this.list.add(map);
+
+        this.entries.add(new HistEntry(key, Collections.unmodifiableList(binList), values.length, binWidth));
         fireDatasetChanged();
     }
 
@@ -256,9 +253,8 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * @throws IndexOutOfBoundsException if <code>series</code> is outside the
      *                                   specified range.
      */
-    List getBins(int series) {
-        Map map = (Map) this.list.get(series);
-        return (List) map.get("bins");
+    List<Weighted_HistogramBin> getBins(int series) {
+        return this.entries.get(series).bins();
     }
 
     /**
@@ -269,8 +265,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * @return The total.
      */
     private int getTotal(int series) {
-        Map map = (Map) this.list.get(series);
-        return ((Integer) map.get("values.length")).intValue();
+        return this.entries.get(series).numValues();
     }
 
     /**
@@ -281,8 +276,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      * @return The bin width.
      */
     private double getBinWidth(int series) {
-        Map map = (Map) this.list.get(series);
-        return ((Double) map.get("bin width")).doubleValue();
+        return this.entries.get(series).binWidth();
     }
 
     /**
@@ -292,7 +286,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      */
     @Override
     public int getSeriesCount() {
-        return this.list.size();
+        return this.entries.size();
     }
 
     /**
@@ -307,9 +301,8 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      *                                   specified range.
      */
     @Override
-    public Comparable getSeriesKey(int series) {
-        Map map = (Map) this.list.get(series);
-        return (Comparable) map.get("key");
+    public Comparable<?> getSeriesKey(int series) {
+        return this.entries.get(series).key();
     }
 
     /**
@@ -345,8 +338,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      */
     @Override
     public Number getX(int series, int item) {
-        List bins = getBins(series);
-        Weighted_HistogramBin bin = (Weighted_HistogramBin) bins.get(item);
+        var bin = this.getBins(series).get(item);
         double x = (bin.getStartBoundary() + bin.getEndBoundary()) / 2.;
         return x;
     }
@@ -366,8 +358,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      */
     @Override
     public Number getY(int series, int item) {
-        List bins = getBins(series);
-        Weighted_HistogramBin bin = (Weighted_HistogramBin) bins.get(item);
+        var bin = this.getBins(series).get(item);
         double total = getTotal(series);
         double binWidth = getBinWidth(series);
 
@@ -396,8 +387,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      */
     @Override
     public Number getStartX(int series, int item) {
-        List bins = getBins(series);
-        Weighted_HistogramBin bin = (Weighted_HistogramBin) bins.get(item);
+        var bin = this.getBins(series).get(item);
         return bin.getStartBoundary();
     }
 
@@ -415,8 +405,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
      */
     @Override
     public Number getEndX(int series, int item) {
-        List bins = getBins(series);
-        Weighted_HistogramBin bin = (Weighted_HistogramBin) bins.get(item);
+        var bin = this.getBins(series).get(item);
         return bin.getEndBoundary();
     }
 
@@ -477,7 +466,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
         if (!Objects.equals(this.type, that.type)) {
             return false;
         }
-        if (!Objects.equals(this.list, that.list)) {
+        if (!Objects.equals(this.entries, that.entries)) {
             return false;
         }
         return true;
@@ -493,11 +482,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
     @Override
     public Object clone() throws CloneNotSupportedException {
         Weighted_HistogramDataset clone = (Weighted_HistogramDataset) super.clone();
-        int seriesCount = getSeriesCount();
-        clone.list = new java.util.ArrayList(seriesCount);
-        for (int i = 0; i < seriesCount; i++) {
-            clone.list.add(new LinkedHashMap((Map) this.list.get(i)));
-        }
+        clone.entries = new ArrayList<HistEntry>(this.entries);
         return clone;
     }
 

@@ -72,12 +72,6 @@ public class LayeredSurfaceFrame extends JInternalFrame implements
     JPopupMenu popupMenu = new JPopupMenu();
 
     /**
-     * @link dependency
-     * @label open window
-     */
-    /* #LayeredSurfaceProperties lnkLayeredSurfaceProperties; */
-
-    /**
      * Create a new frame with given dimensions and a cell length of 4 pixels.
      * 
      * @param width

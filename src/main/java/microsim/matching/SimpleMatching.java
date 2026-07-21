@@ -93,11 +93,13 @@ public class SimpleMatching<T> implements MatchingAlgorithm<T> {
 
     }
 
-    private static SimpleMatching simpleMatching;
+    // FIXME: remove static instance
+    private static SimpleMatching<?> simpleMatching;
 
+    @SuppressWarnings("rawtypes")
     public static SimpleMatching getInstance() {
         if (simpleMatching == null)
-            simpleMatching = new SimpleMatching();
+            simpleMatching = new SimpleMatching<>();
 
         return simpleMatching;
     }

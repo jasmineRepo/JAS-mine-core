@@ -132,7 +132,7 @@ public class LongInvoker implements ILongSource {
                     return ((Long) field.get(target)).longValue();
                 }
             } else
-                return ((Long) method.invoke(target, null)).longValue();
+                return ((Long) method.invoke(target)).longValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

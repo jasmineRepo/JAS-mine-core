@@ -28,7 +28,7 @@ import java.util.*;
  *
  * @author Justin van de Ven
  */
-public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
+public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     MultiKeyCoefficientMap map;
     private List<E1> eventList;
@@ -63,23 +63,21 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
         return eventList;
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event,
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> double getProbability(E1 event, IDoubleSource iDblSrc, Class<E2> Regressors) {
         return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E, Double> getProbabilities(
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> Map<E1, Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
         // probabilities are obtained for discrete alternatives of dependent variable in
         // increasing order of the feasible set
         // P(y_j|X) = F(cut_j-Xb) - F(cut_j-1-Xb)
 
-        Map<E, Double> probs = new LinkedHashMap<>();
+        var probs = new LinkedHashMap<E1, Double>();
         double score = calculator.getScore(map, iDblSrc, Regressors);
         double probHere, probPreceding = 0.0;
         for (int ii = 0; ii < eventList.size() - 1; ii++) {
 
-            E event = (E) eventList.get(ii);
+            var event = eventList.get(ii);
             String key = Strings.concat("Cut", Integer.toString(ii + 1));
             double cutVal = getCoefficient(key);
             probHere = calculator.getProbability(cutVal - score);
@@ -91,7 +89,7 @@ public class OrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implemen
                 probPreceding = probHere;
             }
         }
-        probs.put((E) eventList.get(eventList.size() - 1), 1.0 - probPreceding);
+        probs.put(eventList.get(eventList.size() - 1), 1.0 - probPreceding);
 
         return probs;
     }

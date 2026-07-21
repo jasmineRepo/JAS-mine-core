@@ -136,24 +136,6 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
     /**
      * Constructor for pyramid objects, showing only the latest data as time moves
      * forward.
-     * Default values are used for the following parameters: category names, age
-     * group names/ranges, reverseOrder
-     * It generates one age group per unique age, whose title is that age.
-     * 
-     * @param title - title of the chart
-     * @param xaxis - name of the x-axis
-     * @param yaxis - name of the y-axis
-     * 
-     *
-     *              public PopulationPyramidPlotter(String title, String xaxis,
-     *              String yaxis) {
-     *              this(title, xaxis, yaxis, DEFAULT_LEFT_CAT, DEFAULT_RIGHT_CAT);
-     *              }
-     */
-
-    /**
-     * Constructor for pyramid objects, showing only the latest data as time moves
-     * forward.
      * Default values are used for the following parameters: age group names/ranges,
      * reverseOrder
      * It generates one age group per unique age, whose title is that age.
@@ -389,8 +371,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         double[][] groupRanges = null;
 
         // Get the source data
-        WeightedArraySource leftData = (WeightedArraySource) sources[0];
-        WeightedArraySource rightData = (WeightedArraySource) sources[1];
+        var leftData = sources[0];
+        var rightData = sources[1];
         final double[][] vals = new double[][] { leftData.getDoubleArray(), rightData.getDoubleArray() };
         final double[][] weights = new double[][] { leftData.getWeights(), rightData.getWeights() };
 
