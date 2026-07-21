@@ -63,8 +63,8 @@ public class GlobalMatching<T> {
         // allocate matches
         for (int ii = 0; ii < candidates.size(); ii++) {
             var pair = candidates.get(ii);
-            T agent1 = (T) pair.getAgent1();
-            T agent2 = (T) pair.getAgent2();
+            var agent1 = pair.getAgent1();
+            var agent2 = pair.getAgent2();
             if (c1.contains(agent1) && c2.contains(agent2)) {
                 matching.match(agent1, agent2);
                 c1.remove(agent1);

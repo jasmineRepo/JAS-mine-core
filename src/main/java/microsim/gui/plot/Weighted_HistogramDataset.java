@@ -189,7 +189,7 @@ public class Weighted_HistogramDataset extends AbstractIntervalXYDataset
                     binIndex = bins - 1;
                 }
             }
-            Weighted_HistogramBin bin = (Weighted_HistogramBin) binList.get(binIndex);
+            var bin = binList.get(binIndex);
             bin.incrementCount(weightings[i]);
             totalWeight += weightings[i];
         }

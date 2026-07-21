@@ -378,7 +378,7 @@ public class ProbeFrame extends JFrame {
         if (jListMethods.getSelectedIndex() == -1)
             return;
 
-        Method m = (Method) methods.getElementAt(jListMethods.getSelectedIndex());
+        var m = methods.getElementAt(jListMethods.getSelectedIndex());
         if (!ProbeReflectionUtils.isAnExecutableMethod(m)) {
             JOptionPane.showMessageDialog(null,
                     "Sorry but this method requires complex arguments.\nThis function is not yet implemented.",
