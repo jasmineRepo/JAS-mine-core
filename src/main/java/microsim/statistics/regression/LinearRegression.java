@@ -12,7 +12,6 @@ import microsim.statistics.IDoubleSource;
 import microsim.statistics.IObjectSource;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.keyvalue.MultiKey;
 
 /**
  * Linear regression object.

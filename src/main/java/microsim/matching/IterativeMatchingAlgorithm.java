@@ -1,5 +1,4 @@
 package microsim.matching;
-//package microsim.matching;
 
 import java.util.Collection;
 import java.util.Comparator;

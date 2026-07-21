@@ -1,7 +1,5 @@
 package microsim.gui.plot;
 
-//package microsim.gui.plot;
-
 import java.awt.Color;
 import java.util.ArrayList;
 
