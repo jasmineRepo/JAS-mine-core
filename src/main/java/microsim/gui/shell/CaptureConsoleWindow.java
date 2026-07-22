@@ -18,7 +18,6 @@ import javax.swing.filechooser.FileFilter;
  * is launched with <i>javaw.exe</i> command, without terminal console.
  * <p>
  * It is possible to save the output in a file.
- * <p>
  *
  * <p>
  * Title: JAS
@@ -49,7 +48,6 @@ import javax.swing.filechooser.FileFilter;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- *         <p>
  */
 public class CaptureConsoleWindow extends JInternalFrame {
     /**

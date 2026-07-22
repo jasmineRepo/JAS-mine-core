@@ -35,7 +35,6 @@ import java.awt.Graphics;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- *         <p>
  */
 public interface ILayerDrawer extends ILayerMouseListener {
     /**

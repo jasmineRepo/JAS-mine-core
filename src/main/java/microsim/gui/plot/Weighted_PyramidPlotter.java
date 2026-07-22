@@ -63,8 +63,6 @@ import org.jfree.data.general.DatasetUtils;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Kostas Manios
- * 
- *         <p>
  */
 public class Weighted_PyramidPlotter extends JInternalFrame implements EventListener {
 

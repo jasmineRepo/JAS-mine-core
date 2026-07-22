@@ -31,7 +31,6 @@ import javax.swing.*;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa (taken from an example of Byte review).
- *         <p>
  */
 public class ConsoleTextArea extends JTextArea {
     /**
