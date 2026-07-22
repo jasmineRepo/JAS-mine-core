@@ -109,14 +109,11 @@ public class IterativeSimpleMatching<T> implements IterativeMatchingAlgorithm<T>
         return unmatched;
     }
 
-    private IterativeSimpleMatching() {
-
-    }
-
-    // FIXME: remove static instance
     private static IterativeSimpleMatching<?> iterativeMatching;
 
+    /// @deprecated use constructor to obtain an instance
     @SuppressWarnings("rawtypes")
+    @Deprecated(forRemoval = true)
     public static IterativeSimpleMatching getInstance() {
         if (iterativeMatching == null)
             iterativeMatching = new IterativeSimpleMatching<>();

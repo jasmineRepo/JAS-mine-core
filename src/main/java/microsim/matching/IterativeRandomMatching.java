@@ -99,14 +99,11 @@ public class IterativeRandomMatching<T> implements IterativeMatchingAlgorithm<T>
         return unmatched;
     }
 
-    private IterativeRandomMatching() {
-
-    }
-
-    // FIXME: remove static instance
     private static IterativeRandomMatching<?> iterativeRandomMatching;
 
+    /// @deprecated use constructor to obtain an instance
     @SuppressWarnings("rawtypes")
+    @Deprecated(forRemoval = true)
     public static IterativeRandomMatching getInstance() {
         if (iterativeRandomMatching == null)
             iterativeRandomMatching = new IterativeRandomMatching<>();

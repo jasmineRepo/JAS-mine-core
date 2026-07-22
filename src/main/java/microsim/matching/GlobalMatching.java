@@ -78,14 +78,11 @@ public class GlobalMatching<T> {
         return unmatched;
     }
 
-    private GlobalMatching() {
-
-    }
-
-    // FIXME: remove static instance
     private static GlobalMatching<?> globalMatching;
 
+    /// @deprecated use constructor to obtain an instance
     @SuppressWarnings("rawtypes")
+    @Deprecated(forRemoval = true)
     public static GlobalMatching getInstance() {
         if (globalMatching == null)
             globalMatching = new GlobalMatching<>();
