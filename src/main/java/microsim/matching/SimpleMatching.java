@@ -89,14 +89,11 @@ public class SimpleMatching<T> implements MatchingAlgorithm<T> {
         // return numberMatchesMade;
     }
 
-    private SimpleMatching() {
-
-    }
-
-    // FIXME: remove static instance
     private static SimpleMatching<?> simpleMatching;
 
+    /// @deprecated use constructor to obtain an instance
     @SuppressWarnings("rawtypes")
+    @Deprecated(forRemoval = true)
     public static SimpleMatching getInstance() {
         if (simpleMatching == null)
             simpleMatching = new SimpleMatching<>();
