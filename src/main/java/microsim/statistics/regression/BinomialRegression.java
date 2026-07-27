@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Justin van de Ven
  */
-public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
+public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     MultiKeyCoefficientMap map;
     private List<E1> eventList;
@@ -52,23 +52,21 @@ public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impleme
         return getProbability(eventList.get(1), iDblSrc, Regressors);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event,
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> double getProbability(E1 event, IDoubleSource iDblSrc, Class<E2> Regressors) {
         return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E, Double> getProbabilities(
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> Map<E1, Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
         // probabilities are obtained for discrete alternatives of dependent variable in
         // increasing order of the feasible set
         // P(y=1|X) = F(Xb)
 
-        Map<E, Double> probs = new LinkedHashMap<>();
-        E event;
+        var probs = new LinkedHashMap<E1, Double>();
+        E1 event;
         double prob = calculator.getProbability(map, iDblSrc, Regressors);
-        event = (E) eventList.get(0);
+        event = eventList.get(0);
         probs.put(event, 1.0 - prob);
-        event = (E) eventList.get(1);
+        event = eventList.get(1);
         probs.put(event, prob);
 
         return probs;

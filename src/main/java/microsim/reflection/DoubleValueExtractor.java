@@ -126,7 +126,7 @@ public class DoubleValueExtractor {
             if (method == null)
                 return field.getDouble(target);
             else
-                return ((Double) method.invoke(target, null)).doubleValue();
+                return ((Double) method.invoke(target)).doubleValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

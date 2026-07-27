@@ -5,13 +5,11 @@ import microsim.statistics.IDoubleSource;
 import java.util.List;
 import java.util.Map;
 
-public interface IDiscreteChoiceModel {
+public interface IDiscreteChoiceModel<E extends Enum<E> & IntegerValuedEnum> {
 
-    <T extends Enum<T> & IntegerValuedEnum> List<T> getEventList();
+    List<E> getEventList();
 
-    <T extends Enum<T> & IntegerValuedEnum, E extends Enum<E>> double getProbability(T event, IDoubleSource iDblSrc,
-            Class<E> Regressors);
+    <E2 extends Enum<E2>> double getProbability(E event, IDoubleSource iDblSrc, Class<E2> Regressors);
 
-    <T extends Enum<T> & IntegerValuedEnum, E extends Enum<E>> Map<T, Double> getProbabilities(IDoubleSource iDblSrc,
-            Class<E> Regressors);
+    <E2 extends Enum<E2>> Map<E, Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors);
 }

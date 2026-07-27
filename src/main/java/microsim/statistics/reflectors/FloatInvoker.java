@@ -132,7 +132,7 @@ public class FloatInvoker implements IFloatSource {
                     return ((Float) field.get(target)).floatValue();
                 }
             } else
-                return ((Float) method.invoke(target, null)).floatValue();
+                return ((Float) method.invoke(target)).floatValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

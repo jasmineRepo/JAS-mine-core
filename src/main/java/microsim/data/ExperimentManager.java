@@ -166,7 +166,7 @@ public class ExperimentManager {
             // expandODB(experiment.inputFolder + File.separator + inputDatabaseName,
             // outFolder);
 
-            File inputDir = new File(experiment.inputFolder);
+            File inputDir = new File(Experiment.inputFolder);
             if (inputDir.exists()) {
                 String[] files = inputDir.list();
                 for (String file : files) {
@@ -181,7 +181,7 @@ public class ExperimentManager {
         } else if (isMultiRun) {
             log.info("Persisting database connection at: " + DatabaseUtils.databaseInputUrl);
         } else {
-            DatabaseUtils.databaseInputUrl = experiment.inputFolder + File.separator + "input";
+            DatabaseUtils.databaseInputUrl = Experiment.inputFolder + File.separator + "input";
         }
 
         if (saveExperimentOnDatabase) {

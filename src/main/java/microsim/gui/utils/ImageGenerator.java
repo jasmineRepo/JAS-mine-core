@@ -62,7 +62,7 @@ public class ImageGenerator {
 
         panel.paint(svgGenerator);
 
-        return getOutput((SVGGraphics2D) svgGenerator);
+        return getOutput(svgGenerator);
     }
 
     public static String generate(JFrame frame) {

@@ -5,10 +5,10 @@ import java.util.Comparator;
 /**
  * HELPER CLASS TO ASSIST SORTING OF GlobalMatchingPairs
  */
-public class GlobalMatchingPairComparator implements Comparator<GlobalMatchingPair> {
+public class GlobalMatchingPairComparator<T> implements Comparator<GlobalMatchingPair<T>> {
 
     @Override
-    public int compare(GlobalMatchingPair o1, GlobalMatchingPair o2) {
+    public int compare(GlobalMatchingPair<T> o1, GlobalMatchingPair<T> o2) {
         return Double.compare(o1.getScore(), o2.getScore());
     }
 }

@@ -129,7 +129,7 @@ public class StringValueExtractor {
             if (method == null)
                 return (String) field.get(target);
             else
-                return (String) method.invoke(target, null);
+                return (String) method.invoke(target);
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

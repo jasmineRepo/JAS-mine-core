@@ -58,7 +58,7 @@ public class CellObjectChooser extends JDialog {
     private static final long serialVersionUID = 1L;
     JPanel panel1 = new JPanel();
     BorderLayout borderLayout1 = new BorderLayout();
-    JList jListObjects = new JList();
+    JList<Object> jListObjects = new JList<>();
     JPanel jPanel1 = new JPanel();
     JButton jBtnCancel = new JButton();
     JButton jBtnOK = new JButton();

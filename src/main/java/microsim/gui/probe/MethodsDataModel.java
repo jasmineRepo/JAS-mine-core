@@ -48,7 +48,7 @@ import java.lang.reflect.*;
  * @author Michele Sonnessa
  *         <p>
  */
-public class MethodsDataModel implements ListModel {
+public class MethodsDataModel implements ListModel<Method> {
 
     private static final Logger log = LogManager.getLogger(MethodsDataModel.class);
 
@@ -131,12 +131,12 @@ public class MethodsDataModel implements ListModel {
         return methods.size();
     }
 
-    public Object getElementAt(int index) {
+    public Method getElementAt(int index) {
         return methods.get(index);
     }
 
     public void invokeMethodAt(int index) {
-        Method m = (Method) methods.get(index);
+        var m = methods.get(index);
 
         if (m.getParameterTypes().length > 0) {
             JOptionPane.showMessageDialog(null, "Method requires parameters",
@@ -145,7 +145,7 @@ public class MethodsDataModel implements ListModel {
         }
 
         try {
-            Object o = m.invoke(targetObj, null);
+            Object o = m.invoke(targetObj);
 
             if (o == null)
                 return;
@@ -159,7 +159,7 @@ public class MethodsDataModel implements ListModel {
     }
 
     public void invokeMethodAt(int index, Object[] params) {
-        Method m = (Method) methods.get(index);
+        var m = methods.get(index);
 
         try {
             Object o = m.invoke(targetObj, params);

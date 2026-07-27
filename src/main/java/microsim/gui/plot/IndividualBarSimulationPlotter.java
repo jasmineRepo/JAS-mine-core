@@ -8,7 +8,6 @@ import javax.swing.JInternalFrame;
 
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
-import microsim.gui.colormap.ColorMap;
 import microsim.gui.colormap.FixedColorMap;
 import microsim.reflection.ReflectionUtils;
 import microsim.statistics.IDoubleSource;

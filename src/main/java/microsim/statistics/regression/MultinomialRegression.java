@@ -23,7 +23,7 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
  *         Identification is permitted by normalising one category, k, such that
  *         exp(Xb_k) = 1.0
  *****************************************************************/
-public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
+public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     Map<E1, MultiKeyCoefficientMap> maps;
     private List<E1> eventList;
@@ -56,20 +56,18 @@ public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impl
         return eventList;
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event,
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> double getProbability(E1 event, IDoubleSource iDblSrc, Class<E2> Regressors) {
         return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E, Double> getProbabilities(
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> Map<E1, Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
         // P(y_i=1|X) = exp(Xb_i) / sum(exp(Xb_1),...exp(Xb_n))
 
-        Map<E, Double> expScores = new HashMap<>();
-        Map<E, Double> probs = new LinkedHashMap<>();
+        var expScores = new HashMap<E1, Double>();
+        var probs = new LinkedHashMap<E1, Double>();
         double denominator = 1.0;
         int countEventProbs = 0;
-        for (E event : (Set<E>) maps.keySet()) {
+        for (var event : maps.keySet()) {
             double expScore = Math.exp(calculator.getScore(maps.get(event), iDblSrc, Regressors));
             expScores.put(event, expScore);
             denominator += expScore;
@@ -79,7 +77,7 @@ public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impl
             throw new RuntimeException(
                     "Multinomial regression has been supplied with the wrong number of scores to construct probability");
 
-        for (E event : (List<E>) eventList) {
+        for (var event : eventList) {
             Double val = expScores.get(event);
             probs.put(event, Objects.requireNonNullElse(val, 1.0) / denominator);
         }

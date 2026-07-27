@@ -59,12 +59,6 @@ public class EventQueue {
     double time = 0;
     // protected List<ISimEventListener> stepListeners;
 
-    /**
-     * @link dependency
-     * @supplierRole 1..
-     **/
-    /* #SimEvent lnkSimEvent; */
-
     /** Build new event queue with TIME_TICKS time unit. */
     public EventQueue() {
         eventQueue = new PriorityQueue<Event>(10);

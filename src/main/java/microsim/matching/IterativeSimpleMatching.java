@@ -1,5 +1,4 @@
 package microsim.matching;
-//package microsim.matching;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,11 +113,13 @@ public class IterativeSimpleMatching<T> implements IterativeMatchingAlgorithm<T>
 
     }
 
-    private static IterativeSimpleMatching iterativeMatching;
+    // FIXME: remove static instance
+    private static IterativeSimpleMatching<?> iterativeMatching;
 
+    @SuppressWarnings("rawtypes")
     public static IterativeSimpleMatching getInstance() {
         if (iterativeMatching == null)
-            iterativeMatching = new IterativeSimpleMatching();
+            iterativeMatching = new IterativeSimpleMatching<>();
 
         return iterativeMatching;
     }

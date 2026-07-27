@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -253,7 +252,7 @@ public class DatabaseUtils {
             try {
                 // Create the EntityManagerFactory
 
-                Map propertyMap = new HashMap();
+                var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + databaseInputUrl);
                 entityManagerFactory = Persistence.createEntityManagerFactory("sim-model", propertyMap);
 
@@ -273,7 +272,7 @@ public class DatabaseUtils {
             try {
 
                 // Create the EntityManagerFactory
-                Map propertyMap = new HashMap();
+                var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseInputUrl);
                 EntityManager em = Persistence.createEntityManagerFactory("sim-model", propertyMap)
                         .createEntityManager();
@@ -309,7 +308,7 @@ public class DatabaseUtils {
             try {
 
                 // Create the EntityManagerFactory
-                Map propertyMap = new HashMap();
+                var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseOutputUrl);
                 outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, propertyMap);
 

@@ -125,7 +125,7 @@ public class FloatValueExtractor {
             if (method == null)
                 return field.getFloat(target);
             else
-                return ((Float) method.invoke(target, null)).floatValue();
+                return ((Float) method.invoke(target)).floatValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

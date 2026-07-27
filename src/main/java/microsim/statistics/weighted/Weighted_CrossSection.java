@@ -1,5 +1,4 @@
 package microsim.statistics.weighted;
-//package microsim.statistics.weighted;
 
 import microsim.statistics.ICollectionFilter;
 import microsim.statistics.IDoubleSource;

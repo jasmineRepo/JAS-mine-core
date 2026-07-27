@@ -235,7 +235,7 @@ public class TimeSeries implements EventListener, IUpdatableSource {
             throw new IndexOutOfBoundsException(seriesIndex
                     + " is out of max bound " + series.size());
 
-        return (Series) series.get(seriesIndex);
+        return series.get(seriesIndex);
     }
 
     /**

@@ -43,9 +43,9 @@ public class DoubleRangeColorMap extends FixedColorMap {
         for (int i = 0; i < gradients; i++) {
             // int[] c = getComponents(getBoundedCol(i * gap));
             int[] c = new int[] { 0, 0, 0 };
-            c[0] = redStart + (int) ((redEnd - redStart) * i / gradients);
-            c[1] = greenStart + (int) ((greenEnd - redStart) * i / gradients);
-            c[2] = blueStart + (int) ((blueEnd - redStart) * i / gradients);
+            c[0] = redStart + ((redEnd - redStart) * i / gradients);
+            c[1] = greenStart + ((greenEnd - redStart) * i / gradients);
+            c[2] = blueStart + ((blueEnd - redStart) * i / gradients);
 
             addColor(i, new Color(c[0], c[1], c[2]));
         }

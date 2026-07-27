@@ -13,7 +13,8 @@ import org.apache.commons.collections4.map.MultiKeyMap;
  *
  * @author Ross Richardson
  */
-public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable {
+// FIXME: this should be generic over <K, V> and leverage composition
+public class MultiKeyCoefficientMap extends MultiKeyMap<Object, Object> {
 
     private static final long serialVersionUID = 5049597007431364596L;
 
@@ -50,7 +51,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
      * @param keys   - a String array listing the names of the categories of keys
      * @param values - a String array listing the names of the categories of values
      */
-    public MultiKeyCoefficientMap(AbstractHashedMap map, String[] keys, String[] values) {
+    public MultiKeyCoefficientMap(AbstractHashedMap<MultiKey<?>, Object> map, String[] keys, String[] values) {
         super(map);
         this.keys = keys;
         if (values != null) {
@@ -107,7 +108,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
                     if (key[0] instanceof MultiKey)
                         return super.get(key[0]);
                     else
-                        return super.get(new MultiKey(new Object[] { key[0] }));
+                        return super.get(new MultiKey<>(new Object[] { key[0] }));
                 case 2:
                     return super.get(key[0], key[1]);
                 case 3:
@@ -131,7 +132,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
                                                     // of the type MultiKey(MultiKey()).
                         value = (Object[]) super.get(key[0]);
                     else
-                        value = (Object[]) super.get(new MultiKey(new Object[] { key[0] }));
+                        value = (Object[]) super.get(new MultiKey<>(new Object[] { key[0] }));
                     return extractValueFromVector(toStringKey(key[1]), value);
                 case 3:
                     value = (Object[]) super.get(key[0], key[1]);
@@ -184,9 +185,9 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
                                                           // MultiKey is created unnecessarily, which then leads to a
                                                           // null pointer exception as the MultKeyCoefficientMap does
                                                           // not have a key entry of the type MultiKey(MultiKey()).
-                        super.put((MultiKey) keyValues[0], keyValues[1]);
+                        super.put((MultiKey<?>) keyValues[0], keyValues[1]);
                     else {
-                        super.put(new MultiKey(new Object[] { keyValues[0] }), keyValues[1]);
+                        super.put(new MultiKey<>(new Object[] { keyValues[0] }), keyValues[1]);
                     }
                     break;
                 case 3:
@@ -215,7 +216,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
                     if (value == null)
                         value = new Object[valuesMap.size()];
                     putValueToVector((String) keyValues[1], value, keyValues[2]);
-                    super.put(new MultiKey(new Object[] { keyValues[0] }), value);
+                    super.put(new MultiKey<>(new Object[] { keyValues[0] }), value);
                     break;
                 case 4:
                     value = (Object[]) super.get(keyValues[0], keyValues[1]);
@@ -259,14 +260,14 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
             case 1:
                 throw new IllegalArgumentException("Wrong number of key parameters");
             case 2:
-                MultiKey key0;
+                MultiKey<?> key0;
                 if (keyValues[0] instanceof MultiKey) { // Ross: If we don't do this check, a new MultiKey of a MultiKey
                                                         // is created unnecessarily, which then leads to a null pointer
                                                         // exception as the MultKeyCoefficientMap does not have a key
                                                         // entry of the type MultiKey(MultiKey()).
-                    key0 = (MultiKey) keyValues[0];
+                    key0 = (MultiKey<?>) keyValues[0];
                 } else {
-                    key0 = new MultiKey(new Object[] { keyValues[0] });
+                    key0 = new MultiKey<>(new Object[] { keyValues[0] });
                 }
                 if (super.containsKey(key0))
                     super.remove(key0);
@@ -325,7 +326,7 @@ public class MultiKeyCoefficientMap extends MultiKeyMap {// implements Cloneable
      */
     @Override
     public MultiKeyCoefficientMap clone() {
-        HashedMap mapClone = new HashedMap(this.decorated());
+        var mapClone = new HashedMap<>(this.decorated());
         return new MultiKeyCoefficientMap(mapClone, this.getKeysNames(), this.getValuesNames());
     }
 }

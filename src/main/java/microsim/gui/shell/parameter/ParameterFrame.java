@@ -1,9 +1,6 @@
 package microsim.gui.shell.parameter;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +14,6 @@ import org.metawidget.inspector.composite.CompositeInspectorConfig;
 import org.metawidget.inspector.impl.BaseObjectInspector;
 import org.metawidget.inspector.impl.propertystyle.Property;
 import org.metawidget.swing.SwingMetawidget;
-import org.metawidget.swing.widgetprocessor.binding.beansbinding.BeansBindingProcessor;
-import org.metawidget.swing.widgetprocessor.binding.beansbinding.BeansBindingProcessorConfig;
 import org.metawidget.util.CollectionUtils;
 
 public class ParameterFrame extends JInternalFrame {

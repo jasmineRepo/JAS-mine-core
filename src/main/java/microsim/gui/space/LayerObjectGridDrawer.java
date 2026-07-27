@@ -124,7 +124,7 @@ public class LayerObjectGridDrawer implements ILayerDrawer {
         if (invoker instanceof DoubleInvoker)
             level = (int) ((DoubleInvoker) invoker).getDouble(agent);
         else
-            level = (int) ((IntegerInvoker) invoker).getInt(agent);
+            level = ((IntegerInvoker) invoker).getInt(agent);
 
         int index = colorMap.getColorIndex(level);
 

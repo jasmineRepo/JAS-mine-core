@@ -125,7 +125,7 @@ public class LongValueExtractor {
             if (method == null)
                 return field.getLong(target);
             else
-                return ((Long) method.invoke(target, null)).longValue();
+                return ((Long) method.invoke(target)).longValue();
         } catch (InvocationTargetException ie) {
             StringBuffer message = new StringBuffer();
             if (method == null)

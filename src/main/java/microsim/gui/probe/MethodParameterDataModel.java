@@ -138,7 +138,7 @@ public class MethodParameterDataModel extends AbstractTableModel {
                 o = getWrapper(data[i][COL_TYPE].toString(), data[i][COL_VALUE].toString());
                 if (o == null) {
                     Class<?> cc = Class.forName(data[i][COL_TYPE].toString());
-                    Constructor<?> c = cc.getDeclaredConstructor(new Class[] { (new String()).getClass() });
+                    Constructor<?> c = cc.getDeclaredConstructor(new Class<?>[] { (new String()).getClass() });
                     o = c.newInstance(new Object[] { data[i][COL_VALUE].toString() });
                 }
                 obs[i] = o;

@@ -12,8 +12,6 @@ import microsim.statistics.IDoubleSource;
 import microsim.statistics.IObjectSource;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.MapIterator;
-import org.apache.commons.collections4.keyvalue.MultiKey;
 
 /**
  * Linear regression object.
@@ -156,8 +154,8 @@ public class LinearRegression implements ILinearRegression {
         double sum = 0.0;
         HashSet<String> regressors = new HashSet<String>();
 
-        for (Object multiKey : amap.keySet()) {
-            final String key = (String) ((MultiKey) multiKey).getKey(0);
+        for (var multiKey : amap.keySet()) {
+            final String key = (String) multiKey.getKey(0);
             if (!regressors.add(key)) {
                 throw new IllegalArgumentException("Regressor key " + key
                         + " is not unique!  It is possible that the LinearRegression MultiKeyCoefficientMap containins a MultiKey with more than one key.  The LinearRegression will not return the correct value when LinearRegression.computeScore(MultiKeyCoefficientMap amap, Map<String,Double>) is used with a LinearRegression instance containing a MultiKeyCoefficientMap with more than one key!  Consider using one of the other LinearRegression.getScore() methods instead.");
@@ -241,10 +239,10 @@ public class LinearRegression implements ILinearRegression {
         if (coeffMultiMap.getKeysNames().length == 1) { // (double) check that there is only one key entry in the
                                                         // MultiKey of coeffMultiMap
             double sum = 0.;
-            for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
+            for (var iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
                 iterator.next();
 
-                MultiKey coeffMK = (MultiKey) iterator.getKey();
+                var coeffMK = iterator.getKey();
                 String regressor = coeffMK.getKey(0).toString(); // coeffMK is assumed to only have a single key here
                 double covariate = iDblSrc.getDoubleValue(Enum.valueOf(enumType, regressor)); // Gets value of variable
                                                                                               // with key that matches
@@ -374,10 +372,10 @@ public class LinearRegression implements ILinearRegression {
 
             double sum = 0.;
             int regressorColumnIndex = -1;
-            for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
+            for (var iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
                 iterator.next();
 
-                MultiKey coeffMK = (MultiKey) iterator.getKey();
+                var coeffMK = iterator.getKey();
                 boolean coeffMKapplicableForIDblSrc = true;
                 int i = 0;
                 while (i < coeffMultiMapKeysNames.length) {
@@ -504,9 +502,9 @@ public class LinearRegression implements ILinearRegression {
             }
 
             double score = 0.;
-            for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
+            for (var iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
                 iterator.next();
-                MultiKey coeffMK = (MultiKey) iterator.getKey();
+                var coeffMK = iterator.getKey();
                 boolean coeffMKapplicable = true;
                 int i = 0;
                 while (i < iMax) {
@@ -695,10 +693,10 @@ public class LinearRegression implements ILinearRegression {
         double sum = 0.;
         int regressorColumnIndex = -1;
         String[] coeffMultiMapKeysNames = coeffMultiMap.getKeysNames();
-        for (MapIterator iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
+        for (var iterator = coeffMultiMap.mapIterator(); iterator.hasNext();) {
             iterator.next();
 
-            MultiKey coeffMK = (MultiKey) iterator.getKey();
+            var coeffMK = iterator.getKey();
             boolean coeffMKapplicableForIDblSrc = true;
             int i = 0;
             while (i < coeffMultiMapKeysNames.length) {

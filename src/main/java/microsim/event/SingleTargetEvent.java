@@ -70,7 +70,7 @@ public class SingleTargetEvent extends Event {
         Class<?> cl = o.getClass();
         while (cl != null)
             try {
-                methodInvoker = cl.getDeclaredMethod(method, null);
+                methodInvoker = cl.getDeclaredMethod(method);
                 return;
             } catch (NoSuchMethodException e) {
                 cl = cl.getSuperclass();
@@ -105,7 +105,7 @@ public class SingleTargetEvent extends Event {
     public void fireEvent() {
         if (methodInvoker != null) {
             try {
-                methodInvoker.invoke(object, null);
+                methodInvoker.invoke(object);
             } catch (InvocationTargetException e) {
                 System.out.println("Object " + methodInvoker + " Method: "
                         + methodInvoker.getName());

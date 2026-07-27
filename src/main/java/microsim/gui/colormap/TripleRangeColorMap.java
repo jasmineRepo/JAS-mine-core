@@ -71,9 +71,9 @@ public class TripleRangeColorMap extends FixedColorMap {
         for (int i = 0; i < lowGradients; i++) {
             // int[] c = getComponents(getBoundedCol(i * gap));
             int[] c = new int[] { 0, 0, 0 };
-            c[0] = redStart + (int) ((redMiddle - redStart) * i / gradients);
-            c[1] = greenStart + (int) ((greenMiddle - greenStart) * i / gradients);
-            c[2] = blueStart + (int) ((blueMiddle - blueStart) * i / gradients);
+            c[0] = redStart + ((redMiddle - redStart) * i / gradients);
+            c[1] = greenStart + ((greenMiddle - greenStart) * i / gradients);
+            c[2] = blueStart + ((blueMiddle - blueStart) * i / gradients);
 
             addColor(i, new Color(c[0], c[1], c[2]));
         }
@@ -81,9 +81,9 @@ public class TripleRangeColorMap extends FixedColorMap {
         for (int i = lowGradients; i < gradients; i++) {
             // int[] c = getComponents(getBoundedCol(i * gap));
             int[] c = new int[] { 0, 0, 0 };
-            c[0] = redMiddle + (int) ((redEnd - redMiddle) * i / gradients);
-            c[1] = greenMiddle + (int) ((greenEnd - greenMiddle) * i / gradients);
-            c[2] = blueMiddle + (int) ((blueEnd - blueMiddle) * i / gradients);
+            c[0] = redMiddle + ((redEnd - redMiddle) * i / gradients);
+            c[1] = greenMiddle + ((greenEnd - greenMiddle) * i / gradients);
+            c[2] = blueMiddle + ((blueEnd - blueMiddle) * i / gradients);
 
             addColor(i, new Color(c[0], c[1], c[2]));
         }

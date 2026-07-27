@@ -22,7 +22,7 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
  *         yhat_j = 1 if yhatstar_j>=0 and 0 otherwise
  *         P(yhat_j=1|X) = P(yhatstar_j>=0|X) = P(Xb_j-e_j>=0) = F(Xb_j)
  *****************************************************************/
-public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel {
+public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     Map<E1, MultiKeyCoefficientMap> maps;
     private List<E1> eventList;
@@ -42,22 +42,20 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
         return eventList;
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> double getProbability(E event,
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> double getProbability(E1 event, IDoubleSource iDblSrc, Class<E2> Regressors) {
         return getProbabilities(iDblSrc, Regressors).get(event);
     }
 
-    public <E extends Enum<E> & IntegerValuedEnum, E2 extends Enum<E2>> Map<E, Double> getProbabilities(
-            IDoubleSource iDblSrc, Class<E2> Regressors) {
+    public <E2 extends Enum<E2>> Map<E1, Double> getProbabilities(IDoubleSource iDblSrc, Class<E2> Regressors) {
         // probabilities are obtained for discrete alternatives of dependent variable in
         // increasing order of the feasible set
         // P(y_j) = P(yhat_j-1|X) - P(yhat_j|X)
 
-        Map<E, Double> probs = new LinkedHashMap<>();
+        var probs = new LinkedHashMap<E1, Double>();
         double probHere, probPreceding = 1.0;
         for (int ii = 0; ii < eventList.size() - 1; ii++) {
 
-            E event = (E) eventList.get(ii);
+            var event = eventList.get(ii);
             if (maps.get(event) == null)
                 throw new RuntimeException(
                         "generalised ordered logit expected but failed to find regression estimates for event "
@@ -71,7 +69,7 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
                 probPreceding = probHere;
             }
         }
-        probs.put((E) eventList.get(eventList.size() - 1), probPreceding);
+        probs.put(eventList.get(eventList.size() - 1), probPreceding);
 
         return probs;
     }
