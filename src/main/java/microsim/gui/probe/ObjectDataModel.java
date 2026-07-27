@@ -45,7 +45,6 @@ import java.lang.reflect.*;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
- *         <p>
  */
 public class ObjectDataModel extends AbstractTableModel {
 

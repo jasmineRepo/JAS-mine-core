@@ -46,7 +46,6 @@ import org.metawidget.widgetprocessor.iface.WidgetProcessorException;
  * This implementation recognizes the following
  * <code>SwingMetawidget.setParameter</code>
  * parameters:
- * <p>
  * <ul>
  * <li><code>propertyStyle</code> - either <code>PROPERTYSTYLE_JAVABEAN</code>
  * (default) or
