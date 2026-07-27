@@ -51,7 +51,9 @@ import org.jfree.data.statistics.HistogramType;
 import org.jfree.data.xy.AbstractIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 
-record HistEntry(Comparable<?> key, List<Weighted_HistogramBin> bins, int numValues, double binWidth) {
+record HistEntry(Comparable<?> key, List<Weighted_HistogramBin> bins, int numValues, double binWidth)
+        implements Serializable {
+    private static final long serialVersionUID = 1L;
 }
 
 /**
