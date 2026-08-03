@@ -10,6 +10,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 
+import microsim.SideEffect;
 import microsim.data.ExperimentManager;
 import microsim.data.db.Experiment;
 import microsim.event.EventQueue;
@@ -82,6 +83,7 @@ public class SimulationEngine extends Thread {
     private long randomSeed;
 
     protected ArrayList<EngineListener> engineListeners;
+    private ArrayList<SideEffect> atStepEnd;
 
     private boolean runningStatus = false;
 
@@ -150,6 +152,7 @@ public class SimulationEngine extends Thread {
         // rnd = new Random(randomSeed);
         rnd = new RandomNumberGenerator(randomSeed);
         engineListeners = new ArrayList<EngineListener>();
+        this.atStepEnd = new ArrayList<>();
 
         instance = this;
     }
@@ -276,6 +279,10 @@ public class SimulationEngine extends Thread {
 
     public void removeEngineListener(EngineListener engineListener) {
         engineListeners.remove(engineListener);
+    }
+
+    public void hookStepEnd(SideEffect se) {
+        this.atStepEnd.add(se);
     }
 
     public ArrayList<EngineListener> getEngineListeners() {
@@ -592,6 +599,7 @@ public class SimulationEngine extends Thread {
 
         eventQueue.step();
         notifySimulationListeners(SystemEventType.Step);
+        this.atStepEnd.forEach(SideEffect::call);
         Thread.yield();
     }
 
