@@ -44,8 +44,10 @@ import cern.colt.list.LongArrayList;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa, Ross Richardson
- *
+ * @deprecated unnecessary with {@link microsim.dev.statistics.TimeSeries}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class Series implements EventListener, IUpdatableSource {
     protected TimeChecker timeChecker = new TimeChecker();
 

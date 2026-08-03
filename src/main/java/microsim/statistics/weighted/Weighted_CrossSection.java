@@ -54,8 +54,11 @@ import microsim.statistics.reflectors.LongInvoker;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *
+ * @deprecated use two {@link microsim.dev.statistics.TimeSeries} for values and
+ *             weight, and {@link microsim.dev.statistics.WeightedStats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class Weighted_CrossSection implements EventListener, IUpdatableSource, ISourceObjectArray {
     protected Object[] sourceList;
 

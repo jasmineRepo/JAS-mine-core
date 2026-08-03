@@ -1,5 +1,7 @@
 package microsim.statistics;
 
+import java.util.function.Predicate;
+
 /**
  * A collection filter is used by the CrossSection class to filter elements of
  * the source collection.
@@ -49,7 +51,9 @@ package microsim.statistics;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
+ * @deprecated use {@link Predicate} instead
  */
+@Deprecated(forRemoval = true)
 public interface ICollectionFilter {
     /**
      * Return if the passed object must be considered by the CrossSection iterator.

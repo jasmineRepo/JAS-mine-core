@@ -44,7 +44,10 @@ import microsim.statistics.ILongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
+ * @deprecated use {@link microsim.dev.statistics.Stats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class MeanVarianceArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 
     public enum Variables {

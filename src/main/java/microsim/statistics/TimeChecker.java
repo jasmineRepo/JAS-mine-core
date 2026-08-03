@@ -41,8 +41,9 @@ import microsim.engine.SimulationEngine;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- * 
+ * @deprecated use {@link microsim.caching.OncePerSimTime} instead
  */
+@Deprecated(forRemoval = true)
 public class TimeChecker {
     private double lastUpdateTime = -1.;
     private boolean disabled = false;

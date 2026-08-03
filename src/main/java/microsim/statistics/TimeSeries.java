@@ -49,7 +49,10 @@ import cern.colt.list.LongArrayList;
  * 59 Temple 8Place, Suite 330, Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
+ * @deprecated use {@link microsim.dev.statistics.TimeSeries} instead
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class TimeSeries implements EventListener, IUpdatableSource {
     private static Logger log = LogManager.getLogger(TimeSeries.class);
 

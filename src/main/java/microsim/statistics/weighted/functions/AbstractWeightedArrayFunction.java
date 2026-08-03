@@ -46,8 +46,10 @@ import microsim.statistics.functions.AbstractFunction;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa and Ross Richardson
- * 
+ * @deprecated unnecessary with {@link microsim.dev.statistics}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class AbstractWeightedArrayFunction extends AbstractFunction {
 
     protected static final int TYPE_DBL = 0;

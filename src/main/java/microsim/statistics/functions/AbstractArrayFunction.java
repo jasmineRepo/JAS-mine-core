@@ -42,8 +42,10 @@ import microsim.statistics.IUpdatableSource;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- * 
+ * @deprecated unnecessary with {@link microsim.dev.statistics.Stats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class AbstractArrayFunction extends AbstractFunction {
 
     protected static final int TYPE_DBL = 0;

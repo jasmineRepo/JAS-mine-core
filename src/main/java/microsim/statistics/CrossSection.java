@@ -44,8 +44,10 @@ import microsim.statistics.reflectors.LongInvoker;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- *
+ * @deprecated use {@link microsim.dev.statistics.CrossSection} instead
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class CrossSection implements EventListener, IUpdatableSource, ISourceObjectArray {
     protected Object[] sourceList;
 

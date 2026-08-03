@@ -47,7 +47,10 @@ import microsim.statistics.weighted.IWeightedLongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
+ * @deprecated use {@link microsim.dev.statistics.WeightedStats} instead
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class Weighted_MeanArrayFunction extends AbstractWeightedArrayFunction implements IDoubleSource {
 
     /**

@@ -42,7 +42,10 @@ import microsim.statistics.ILongArraySource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
+ * @deprecated use {@link microsim.dev.statistics.Stats#count}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class CountArrayFunction extends AbstractArrayFunction implements IDoubleSource, IIntSource {
 
     /**
