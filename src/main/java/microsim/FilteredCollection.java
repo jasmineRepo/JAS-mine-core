@@ -6,6 +6,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import microsim.caching.Once;
+import microsim.caching.OncePerSimTime;
+import microsim.engine.SimulationEngine;
+
 /// Lazy collection filtering.
 ///
 /// This lazily applies a [Predicate] as filter to a collection, acting as a
@@ -45,5 +49,15 @@ public class FilteredCollection<A> implements Supplier<List<A>> {
     @Override
     public List<A> get() {
         return this.source.get().stream().filter(this.predicate).collect(Collectors.toUnmodifiableList());
+    }
+
+    /// Wrap the [FilteredCollection] in a [Once] cache.
+    public Once<List<A>> once() {
+        return new Once<>(this);
+    }
+
+    /// Wrap the [FilteredCollection] in a [OncePerSimTime] cache.
+    public OncePerSimTime<List<A>> oncePerSimTime(SimulationEngine engine) {
+        return new OncePerSimTime<>(engine, this);
     }
 }

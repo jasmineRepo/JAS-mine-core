@@ -6,6 +6,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import microsim.caching.Once;
+import microsim.caching.OncePerSimTime;
+import microsim.engine.SimulationEngine;
+
 /// A cross section is a collection of values; each of them representing the
 /// status of a given variable of an element of a collection of agents.
 public class CrossSection<A, T> implements Supplier<List<T>> {
@@ -20,5 +24,15 @@ public class CrossSection<A, T> implements Supplier<List<T>> {
 
     public List<T> get() {
         return this.source.get().stream().map(this.getObservable).collect(Collectors.toUnmodifiableList());
+    }
+
+    /// Wrap the [CrossSection] in a [Once] cache.
+    public Once<List<T>> once() {
+        return new Once<>(this);
+    }
+
+    /// Wrap the [CrossSection] in a [OncePerSimTime] cache.
+    public OncePerSimTime<List<T>> oncePerSimTime(SimulationEngine engine) {
+        return new OncePerSimTime<>(engine, this);
     }
 }
