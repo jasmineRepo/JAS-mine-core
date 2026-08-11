@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import javax.swing.JInternalFrame;
 
@@ -67,7 +68,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Source> sources;
+    private ArrayList<Supplier<? extends Number>> sources;
 
     private XYSeriesCollection dataset;
 
@@ -92,7 +93,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         this.setTitle(title);
         this.maxSamples = maxSamples;
 
-        sources = new ArrayList<Source>();
+        sources = new ArrayList<>();
 
         dataset = new XYSeriesCollection();
 
@@ -149,9 +150,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             double d = 0.0;
             for (int i = 0; i < sources.size(); i++) {
-                Source source = sources.get(i);
+                var source = sources.get(i);
                 XYSeries series = dataset.getSeries(i);
-                d = source.getDouble();
+                d = source.get().doubleValue();
                 series.add(SimulationEngine.getInstance().getTime(), d);
                 // if (maxSamples > 0 && series.getItemCount() > maxSamples ) {
                 // series.remove(0);
@@ -160,21 +161,16 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         }
     }
 
-    private abstract class Source {
-        // public String label;
+    private abstract class Source implements Supplier<Double> {
         public Enum<?> vId;
         protected boolean isUpdatable;
 
         public abstract double getDouble();
 
-        // public String getLabel() {
-        // return label;
-        // }
-        //
-        // public void setLabel(String string) {
-        // label = string;
-        // }
-
+        @Override
+        public Double get() {
+            return this.getDouble();
+        }
     }
 
     private class DSource extends Source {

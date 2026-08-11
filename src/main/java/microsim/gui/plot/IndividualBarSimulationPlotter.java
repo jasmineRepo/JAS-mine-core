@@ -3,6 +3,7 @@ package microsim.gui.plot;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import javax.swing.JInternalFrame;
 
@@ -65,7 +66,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Source> sources;
+    private ArrayList<Supplier<? extends Number>> sources;
     private ArrayList<String> categories;
 
     private DefaultCategoryDataset dataset;
@@ -83,7 +84,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         this.yaxis = yaxis;
         colorMap = new FixedColorMap();
 
-        sources = new ArrayList<Source>();
+        sources = new ArrayList<>();
         categories = new ArrayList<String>();
 
         dataset = new DefaultCategoryDataset();
@@ -141,21 +142,25 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
 
     public void update() {
         for (int i = 0; i < sources.size(); i++) {
-            Source source = sources.get(i);
-            double d = source.getDouble();
+            var source = sources.get(i);
+            double d = source.get().doubleValue();
             String category = categories.get(i);
 
             dataset.addValue(d, yaxis, category);
         }
     }
 
-    private abstract class Source {
+    private abstract class Source implements Supplier<Double> {
         // public String label;
         public Enum<?> vId;
         protected boolean isUpdatable;
 
         public abstract double getDouble();
 
+        @Override
+        public Double get() {
+            return this.getDouble();
+        }
     }
 
     private class DSource extends Source {

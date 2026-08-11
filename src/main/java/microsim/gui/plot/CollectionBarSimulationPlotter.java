@@ -2,6 +2,9 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
@@ -58,7 +61,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<ArraySource> sources;
+    private ArrayList<Supplier<? extends List<? extends Number>>> sources;
     private ArrayList<String> categories;
 
     private DefaultCategoryDataset dataset;
@@ -67,12 +70,16 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
 
     private Integer maxBars;
 
-    private abstract class ArraySource {
+    private abstract class ArraySource implements Supplier<List<Double>> {
         // public String label;
         protected boolean isUpdatable;
 
         public abstract double[] getDoubleArray();
 
+        @Override
+        public List<Double> get() {
+            return DoubleStream.of(this.getDoubleArray()).boxed().toList();
+        }
     }
 
     private class DArraySource extends ArraySource {
@@ -179,7 +186,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         this.setResizable(true);
         this.setTitle(title);
 
-        sources = new ArrayList<ArraySource>();
+        sources = new ArrayList<>();
         categories = new ArrayList<String>();
 
         dataset = new DefaultCategoryDataset();
@@ -238,7 +245,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
             var cs = sources.get(i);
             final String category = categories.get(i);
 
-            double[] vals = cs.getDoubleArray();
+            double[] vals = cs.get().stream().mapToDouble(Number::doubleValue).toArray();
             for (int j = 0; j < vals.length && (j < (maxBars == null ? Integer.MAX_VALUE : maxBars)); j++)
                 dataset.addValue(vals[j], category, "" + j);
         }

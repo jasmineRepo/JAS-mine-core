@@ -2,6 +2,9 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
@@ -72,7 +75,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
 
     final JFreeChart chart;
 
-    private ArrayList<WeightedArraySource> sources;
+    private ArrayList<Supplier<? extends List<? extends Number>>> sources;
+    private ArrayList<Supplier<? extends List<? extends Number>>> weights;
+    private ArrayList<String> labels;
 
     private Weighted_HistogramDataset dataset;
 
@@ -162,7 +167,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         this.minimum = minimum;
         this.maximum = maximum;
 
-        sources = new ArrayList<WeightedArraySource>();
+        sources = new ArrayList<>();
+        weights = new ArrayList<>();
+        labels = new ArrayList<>();
 
         dataset = new Weighted_HistogramDataset();
 
@@ -224,6 +231,14 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         this.setSize(400, 400);
     }
 
+    public void addSource(String label,
+            Supplier<? extends List<? extends Number>> values,
+            Supplier<? extends List<? extends Number>> weights) {
+        this.sources.add(values);
+        this.weights.add(weights);
+        this.labels.add(label);
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             update();
@@ -244,13 +259,13 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         // chart.getXYPlot().getRenderer().setSeriesPaint(s, new Color(r, g, b, 130));
 
         for (int i = 0; i < sources.size(); i++) {
-            var cs = sources.get(i);
-            double[] vals = cs.getDoubleArray();
-            double[] weights = cs.getWeights();
+            var vals = sources.get(i).get().stream().mapToDouble(Number::doubleValue).toArray();
+            var wgts = weights.get(i).get().stream().mapToDouble(Number::doubleValue).toArray();
+            var label = labels.get(i);
             if (minimum != null && maximum != null) {
-                dataset.addSeries(cs.label, vals, weights, bins, minimum, maximum);
+                dataset.addSeries(label, vals, wgts, bins, minimum, maximum);
             } else
-                dataset.addSeries(cs.label, vals, weights, bins);
+                dataset.addSeries(label, vals, wgts, bins);
 
         }
         dataset.seriesChanged(
@@ -259,19 +274,25 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
     }
 
     private abstract class WeightedArraySource {
-        public String label;
         protected boolean isUpdatable;
 
         public abstract double[] getDoubleArray();
 
         public abstract double[] getWeights();
+
+        public List<Double> values() {
+            return DoubleStream.of(this.getDoubleArray()).boxed().toList();
+        }
+
+        public List<Double> weights() {
+            return DoubleStream.of(this.getWeights()).boxed().toList();
+        }
     }
 
     private class DWeightedArraySource extends WeightedArraySource {
         public IWeightedDoubleArraySource source;
 
-        public DWeightedArraySource(String label, IWeightedDoubleArraySource source) {
-            super.label = label;
+        public DWeightedArraySource(IWeightedDoubleArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -296,8 +317,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
     private class FWeightedArraySource extends WeightedArraySource {
         public IWeightedFloatArraySource source;
 
-        public FWeightedArraySource(String label, IWeightedFloatArraySource source) {
-            super.label = label;
+        public FWeightedArraySource(IWeightedFloatArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -327,8 +347,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
     private class IWeightedArraySource extends WeightedArraySource {
         public IWeightedIntArraySource source;
 
-        public IWeightedArraySource(String label, IWeightedIntArraySource source) {
-            super.label = label;
+        public IWeightedArraySource(IWeightedIntArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -358,8 +377,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
     private class LWeightedArraySource extends WeightedArraySource {
         public IWeightedLongArraySource source;
 
-        public LWeightedArraySource(String label, IWeightedLongArraySource source) {
-            super.label = label;
+        public LWeightedArraySource(IWeightedLongArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -397,8 +415,8 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               A collection containing the sources.
      */
     public void addCollectionSource(String name, IWeightedDoubleArraySource source) {
-        DWeightedArraySource sequence = new DWeightedArraySource(name, source);
-        sources.add(sequence);
+        var sequence = new DWeightedArraySource(source);
+        this.addSource(name, sequence::values, sequence::weights);
     }
 
     /**
@@ -412,8 +430,8 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               A collection containing the sources.
      */
     public void addCollectionSource(String name, IWeightedFloatArraySource source) {
-        FWeightedArraySource sequence = new FWeightedArraySource(name, source);
-        sources.add(sequence);
+        var sequence = new FWeightedArraySource(source);
+        this.addSource(name, sequence::values, sequence::weights);
     }
 
     /**
@@ -427,8 +445,8 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               A collection containing the sources.
      */
     public void addCollectionSource(String name, IWeightedIntArraySource source) {
-        IWeightedArraySource sequence = new IWeightedArraySource(name, source);
-        sources.add(sequence);
+        var sequence = new IWeightedArraySource(source);
+        this.addSource(name, sequence::values, sequence::weights);
     }
 
     /**
@@ -442,8 +460,8 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               A collection containing the sources.
      */
     public void addCollectionSource(String name, IWeightedLongArraySource source) {
-        LWeightedArraySource sequence = new LWeightedArraySource(name, source);
-        sources.add(sequence);
+        var sequence = new LWeightedArraySource(source);
+        this.addSource(name, sequence::values, sequence::weights);
     }
 
 }
