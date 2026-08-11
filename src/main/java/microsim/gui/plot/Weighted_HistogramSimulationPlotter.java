@@ -231,6 +231,13 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         this.setSize(400, 400);
     }
 
+    /// Add a source of weighted values.
+    ///
+    /// Values and weights should be the same size.
+    ///
+    /// @param label   Label for the sources being added.
+    /// @param values  The source of values.
+    /// @param weights The source of weights.
     public void addSource(String label,
             Supplier<? extends List<? extends Number>> values,
             Supplier<? extends List<? extends Number>> weights) {
@@ -273,6 +280,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
 
     }
 
+    @Deprecated(forRemoval = true)
     private abstract class WeightedArraySource {
         protected boolean isUpdatable;
 
@@ -289,6 +297,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class DWeightedArraySource extends WeightedArraySource {
         public IWeightedDoubleArraySource source;
 
@@ -314,6 +323,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FWeightedArraySource extends WeightedArraySource {
         public IWeightedFloatArraySource source;
 
@@ -344,6 +354,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class IWeightedArraySource extends WeightedArraySource {
         public IWeightedIntArraySource source;
 
@@ -374,6 +385,7 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LWeightedArraySource extends WeightedArraySource {
         public IWeightedLongArraySource source;
 
@@ -413,7 +425,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IWeightedDoubleArraySource source) {
         var sequence = new DWeightedArraySource(source);
         this.addSource(name, sequence::values, sequence::weights);
@@ -428,7 +442,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IWeightedFloatArraySource source) {
         var sequence = new FWeightedArraySource(source);
         this.addSource(name, sequence::values, sequence::weights);
@@ -443,7 +459,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IWeightedIntArraySource source) {
         var sequence = new IWeightedArraySource(source);
         this.addSource(name, sequence::values, sequence::weights);
@@ -458,7 +476,9 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IWeightedLongArraySource source) {
         var sequence = new LWeightedArraySource(source);
         this.addSource(name, sequence::values, sequence::weights);

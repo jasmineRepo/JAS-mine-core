@@ -359,12 +359,24 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         this.setSize(400, 400);
     }
 
+    /// Set the source of weighted values for the left side.
+    ///
+    /// Values and weights should be the same size.
+    ///
+    /// @param values  The source of values.
+    /// @param weights The source of weights.
     public void setLeft(Supplier<? extends List<? extends Number>> values,
             Supplier<? extends List<? extends Number>> weights) {
         this.leftValues = values;
         this.leftWeights = weights;
     }
 
+    /// Set the source of weighted values for the right side.
+    ///
+    /// Values and weights should be the same size.
+    ///
+    /// @param values  The source of values.
+    /// @param weights The source of weights.
     public void setRight(Supplier<? extends List<? extends Number>> values,
             Supplier<? extends List<? extends Number>> weights) {
         this.rightValues = values;
@@ -501,6 +513,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private abstract class WeightedArraySource {
         public String label;
         protected boolean isUpdatable;
@@ -518,6 +531,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class DWeightedArraySource extends WeightedArraySource {
         public IWeightedDoubleArraySource source;
 
@@ -544,6 +558,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FWeightedArraySource extends WeightedArraySource {
         public IWeightedFloatArraySource source;
 
@@ -575,6 +590,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class IWeightedArraySource extends WeightedArraySource {
         public IWeightedIntArraySource source;
 
@@ -606,6 +622,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LWeightedArraySource extends WeightedArraySource {
         public IWeightedLongArraySource source;
 
@@ -644,7 +661,9 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedDoubleArraySource[] source) {
         if (source.length != 2)
             return;
@@ -663,7 +682,9 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedFloatArraySource[] source) {
         if (source.length != 2)
             return;
@@ -682,7 +703,9 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedIntArraySource[] source) {
         if (source.length != 2)
             return;
@@ -701,7 +724,9 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedLongArraySource[] source) {
         if (source.length != 2)
             return;
