@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import microsim.caching.Once;
-import microsim.caching.OncePerSimTime;
+import microsim.caching.OnceUntil;
 import microsim.engine.SimulationEngine;
 
 /// Lazy collection filtering.
@@ -56,8 +56,9 @@ public class FilteredCollection<A> implements Supplier<List<A>> {
         return new Once<>(this);
     }
 
-    /// Wrap the [FilteredCollection] in a [OncePerSimTime] cache.
-    public OncePerSimTime<List<A>> oncePerSimTime(SimulationEngine engine) {
-        return new OncePerSimTime<>(engine, this);
+    /// Wrap the [FilteredCollection] in a [OnceUntil] cache that checks when the
+    /// simulation time changes.
+    public OnceUntil<List<A>> oncePerSimTime(SimulationEngine engine) {
+        return OnceUntil.timeChanges(this, engine);
     }
 }

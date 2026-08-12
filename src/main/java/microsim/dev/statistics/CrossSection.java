@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import microsim.caching.Once;
-import microsim.caching.OncePerSimTime;
+import microsim.caching.OnceUntil;
 import microsim.engine.SimulationEngine;
 
 /// A cross section is a collection of values; each of them representing the
@@ -31,8 +31,9 @@ public class CrossSection<A, T> implements Supplier<List<T>> {
         return new Once<>(this);
     }
 
-    /// Wrap the [CrossSection] in a [OncePerSimTime] cache.
-    public OncePerSimTime<List<T>> oncePerSimTime(SimulationEngine engine) {
-        return new OncePerSimTime<>(engine, this);
+    /// Wrap the [CrossSection] in a [OnceUntil] cache that checks when the
+    /// simulation time changes.
+    public OnceUntil<List<T>> oncePerSimTime(SimulationEngine engine) {
+        return OnceUntil.timeChanges(this, engine);
     }
 }
