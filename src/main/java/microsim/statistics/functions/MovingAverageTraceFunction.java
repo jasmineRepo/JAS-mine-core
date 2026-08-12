@@ -45,7 +45,7 @@ import microsim.statistics.ILongSource;
  *
  * @author Michele Sonnessa
  * @author Ross Richardson
- * @deprecated use {@link microsim.dev.statistics.Stats}
+ * @deprecated use {@link microsim.dev.statistics.AccumulatorStats}
  */
 @Deprecated(forRemoval = true)
 @SuppressWarnings("removal")
