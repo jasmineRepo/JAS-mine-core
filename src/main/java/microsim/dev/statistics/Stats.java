@@ -2,6 +2,7 @@ package microsim.dev.statistics;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
@@ -20,6 +21,11 @@ public class Stats {
 
     public Stats(List<? extends Number> values) {
         this.values = values.stream().map(Number::doubleValue).collect(Collectors.toUnmodifiableList());
+    }
+
+    /// Convenience method to work with the [Supplier] API.
+    public static Supplier<Stats> supplier(Supplier<? extends List<? extends Number>> supplier) {
+        return () -> new Stats(supplier.get());
     }
 
     private DoubleStream doubles() {

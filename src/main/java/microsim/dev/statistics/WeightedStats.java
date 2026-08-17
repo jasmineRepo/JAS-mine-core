@@ -2,6 +2,7 @@
 package microsim.dev.statistics;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import microsim.caching.Once;
 
@@ -20,6 +21,11 @@ public class WeightedStats {
     public WeightedStats(WeightedValues<? extends Number> wvals) {
         var values = wvals.values().stream().map(Number::doubleValue).toList();
         this.wvals = new WeightedValues<>(values, wvals.weights());
+    }
+
+    /// Convenience method to work with the [Supplier] API.
+    public static Supplier<WeightedStats> supplier(Supplier<? extends WeightedValues<? extends Number>> supplier) {
+        return () -> new WeightedStats(supplier.get());
     }
 
     private static double wsum(WeightedValues<Double> wvals) {
