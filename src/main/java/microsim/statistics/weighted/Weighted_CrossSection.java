@@ -54,8 +54,7 @@ import microsim.statistics.reflectors.LongInvoker;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- * @deprecated use two {@link microsim.dev.statistics.TimeSeries} for values and
- *             weight, and {@link microsim.dev.statistics.WeightedStats}
+ * @deprecated use {@link microsim.dev.statistics.WeightedCrossSection}
  */
 @Deprecated(forRemoval = true)
 @SuppressWarnings("removal")
