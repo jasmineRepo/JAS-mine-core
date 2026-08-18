@@ -3,12 +3,12 @@ package microsim.gui.plot;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
+import microsim.dev.statistics.WeightedValues;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.IUpdatableSource;
@@ -89,10 +89,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
     private JFreeChart chart;
 
-    private Supplier<? extends List<? extends Number>> leftValues;
-    private Supplier<? extends List<? extends Number>> leftWeights;
-    private Supplier<? extends List<? extends Number>> rightValues;
-    private Supplier<? extends List<? extends Number>> rightWeights;
+    private Supplier<? extends WeightedValues<? extends Number>> leftValues;
+    private Supplier<? extends WeightedValues<? extends Number>> rightValues;
 
     private Weighted_PyramidDataset dataset;
 
@@ -361,26 +359,16 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
     /// Set the source of weighted values for the left side.
     ///
-    /// Values and weights should be the same size.
-    ///
-    /// @param values  The source of values.
-    /// @param weights The source of weights.
-    public void setLeft(Supplier<? extends List<? extends Number>> values,
-            Supplier<? extends List<? extends Number>> weights) {
+    /// @param values  The source of weighted values.
+    public void setLeft(Supplier<? extends WeightedValues<? extends Number>> values) {
         this.leftValues = values;
-        this.leftWeights = weights;
     }
 
     /// Set the source of weighted values for the right side.
     ///
-    /// Values and weights should be the same size.
-    ///
-    /// @param values  The source of values.
-    /// @param weights The source of weights.
-    public void setRight(Supplier<? extends List<? extends Number>> values,
-            Supplier<? extends List<? extends Number>> weights) {
+    /// @param values  The source of weighted values.
+    public void setRight(Supplier<? extends WeightedValues<? extends Number>> values) {
         this.rightValues = values;
-        this.rightWeights = weights;
     }
 
     public void onEvent(Enum<?> type) {
@@ -397,10 +385,12 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         double[][] groupRanges = null;
 
         // Get the source data
-        var leftVals = this.leftValues.get().stream().mapToDouble(Number::doubleValue).toArray();
-        var leftWeights = this.leftWeights.get().stream().mapToDouble(Number::doubleValue).toArray();
-        var rightVals = this.rightValues.get().stream().mapToDouble(Number::doubleValue).toArray();
-        var rightWeights = this.rightWeights.get().stream().mapToDouble(Number::doubleValue).toArray();
+        var leftWv = this.leftValues.get();
+        var leftVals = leftWv.values().stream().mapToDouble(Number::doubleValue).toArray();
+        var leftWeights = leftWv.weights().stream().mapToDouble(Number::doubleValue).toArray();
+        var rightWv = this.rightValues.get();
+        var rightVals = rightWv.values().stream().mapToDouble(Number::doubleValue).toArray();
+        var rightWeights = rightWv.weights().stream().mapToDouble(Number::doubleValue).toArray();
         final double[][] vals = new double[][] { leftVals, rightVals };
         final double[][] weights = new double[][] { leftWeights, rightWeights };
 
@@ -522,12 +512,10 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
         public abstract double[] getWeights();
 
-        public List<Double> values() {
-            return DoubleStream.of(this.getDoubleArray()).boxed().toList();
-        }
-
-        public List<Double> weights() {
-            return DoubleStream.of(this.getWeights()).boxed().toList();
+        public WeightedValues<Double> values() {
+            var values = DoubleStream.of(this.getDoubleArray()).boxed().toList();
+            var weights = DoubleStream.of(this.getWeights()).boxed().toList();
+            return new WeightedValues<>(values, weights);
         }
     }
 
@@ -671,8 +659,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
             return;
         var left = new DWeightedArraySource(catNames[0], source[0]);
         var right = new DWeightedArraySource(catNames[1], source[1]);
-        this.setLeft(left::values, left::weights);
-        this.setRight(right::values, right::weights);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -692,8 +680,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
             return;
         var left = new FWeightedArraySource(catNames[0], source[0]);
         var right = new FWeightedArraySource(catNames[1], source[1]);
-        this.setLeft(left::values, left::weights);
-        this.setRight(right::values, right::weights);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -713,8 +701,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
             return;
         var left = new IWeightedArraySource(catNames[0], source[0]);
         var right = new IWeightedArraySource(catNames[1], source[1]);
-        this.setLeft(left::values, left::weights);
-        this.setRight(right::values, right::weights);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -734,8 +722,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
             return;
         var left = new LWeightedArraySource(catNames[0], source[0]);
         var right = new LWeightedArraySource(catNames[1], source[1]);
-        this.setLeft(left::values, left::weights);
-        this.setRight(right::values, right::weights);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
 }
