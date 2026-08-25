@@ -14,10 +14,10 @@ import microsim.statistics.ILongArraySource;
  * cross section of data. Input currently must be doubleArray double[].
  * 
  * @author Patryk Bronka
- * 
- *
+ * @deprecated use {@link microsim.dev.statistics.Stats}
  */
-
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class PercentileArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 
     public enum Variables {

@@ -2,6 +2,9 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
@@ -67,7 +70,8 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
 
     final JFreeChart chart;
 
-    private ArrayList<ArraySource> sources;
+    private ArrayList<Supplier<? extends List<? extends Number>>> sources;
+    private ArrayList<String> labels;
 
     private HistogramDataset dataset;
 
@@ -147,7 +151,8 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
         this.minimum = minimum;
         this.maximum = maximum;
 
-        sources = new ArrayList<ArraySource>();
+        sources = new ArrayList<>();
+        labels = new ArrayList<>();
 
         dataset = new HistogramDataset();
 
@@ -205,6 +210,15 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
         this.setSize(400, 400);
     }
 
+    /// Add a source of values to plot.
+    ///
+    /// @param name   the legend name for this source.
+    /// @param source the value source.
+    public void addSource(String name, Supplier<? extends List<? extends Number>> source) {
+        this.sources.add(source);
+        this.labels.add(name);
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             update();
@@ -226,12 +240,13 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
 
         for (int i = 0; i < sources.size(); i++) {
             var cs = sources.get(i);
-            double[] vals = cs.getDoubleArray();
+            var label = labels.get(i);
+            double[] vals = cs.get().stream().mapToDouble(Number::doubleValue).toArray();
 
             if (minimum != null && maximum != null) {
-                dataset.addSeries(cs.label, vals, bins, minimum, maximum);
+                dataset.addSeries(label, vals, bins, minimum, maximum);
             } else
-                dataset.addSeries(cs.label, vals, bins);
+                dataset.addSeries(label, vals, bins);
 
         }
         dataset.seriesChanged(
@@ -239,19 +254,23 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
 
     }
 
-    private abstract class ArraySource {
-        public String label;
+    @Deprecated(forRemoval = true)
+    private abstract class ArraySource implements Supplier<List<Double>> {
         protected boolean isUpdatable;
 
         public abstract double[] getDoubleArray();
 
+        @Override
+        public List<Double> get() {
+            return DoubleStream.of(this.getDoubleArray()).boxed().toList();
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DArraySource extends ArraySource {
         public IDoubleArraySource source;
 
-        public DArraySource(String label, IDoubleArraySource source) {
-            super.label = label;
+        public DArraySource(IDoubleArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -268,11 +287,11 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FArraySource extends ArraySource {
         public IFloatArraySource source;
 
-        public FArraySource(String label, IFloatArraySource source) {
-            super.label = label;
+        public FArraySource(IFloatArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -294,11 +313,11 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class IArraySource extends ArraySource {
         public IIntArraySource source;
 
-        public IArraySource(String label, IIntArraySource source) {
-            super.label = label;
+        public IArraySource(IIntArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -320,11 +339,11 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LArraySource extends ArraySource {
         public ILongArraySource source;
 
-        public LArraySource(String label, ILongArraySource source) {
-            super.label = label;
+        public LArraySource(ILongArraySource source) {
             this.source = source;
             isUpdatable = (source instanceof IUpdatableSource);
         }
@@ -354,10 +373,13 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IDoubleArraySource source) {
-        DArraySource sequence = new DArraySource(name, source);
+        DArraySource sequence = new DArraySource(source);
         sources.add(sequence);
+        labels.add(name);
     }
 
     /**
@@ -368,10 +390,13 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IFloatArraySource source) {
-        FArraySource sequence = new FArraySource(name, source);
+        FArraySource sequence = new FArraySource(source);
         sources.add(sequence);
+        labels.add(name);
     }
 
     /**
@@ -382,10 +407,13 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IIntArraySource source) {
-        IArraySource sequence = new IArraySource(name, source);
+        IArraySource sequence = new IArraySource(source);
         sources.add(sequence);
+        labels.add(name);
     }
 
     /**
@@ -396,10 +424,13 @@ public class HistogramSimulationPlotter extends JInternalFrame implements EventL
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, ILongArraySource source) {
-        LArraySource sequence = new LArraySource(name, source);
+        LArraySource sequence = new LArraySource(source);
         sources.add(sequence);
+        labels.add(name);
     }
 
 }

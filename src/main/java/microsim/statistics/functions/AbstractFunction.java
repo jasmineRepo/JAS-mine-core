@@ -38,8 +38,10 @@ import microsim.statistics.TimeChecker;
  * Boston, MA 02111-1307, USA.
  * 
  * @author Michele Sonnessa
- * 
+ * @deprecated unnecessary with {@link microsim.dev.statistics.Stats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class AbstractFunction implements EventListener, IUpdatableSource {
 
     protected TimeChecker timeChecker;

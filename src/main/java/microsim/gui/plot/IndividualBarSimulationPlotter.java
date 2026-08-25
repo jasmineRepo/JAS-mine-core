@@ -3,6 +3,7 @@ package microsim.gui.plot;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import javax.swing.JInternalFrame;
 
@@ -65,7 +66,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Source> sources;
+    private ArrayList<Supplier<? extends Number>> sources;
     private ArrayList<String> categories;
 
     private DefaultCategoryDataset dataset;
@@ -83,7 +84,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         this.yaxis = yaxis;
         colorMap = new FixedColorMap();
 
-        sources = new ArrayList<Source>();
+        sources = new ArrayList<>();
         categories = new ArrayList<String>();
 
         dataset = new DefaultCategoryDataset();
@@ -141,23 +142,29 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
 
     public void update() {
         for (int i = 0; i < sources.size(); i++) {
-            Source source = sources.get(i);
-            double d = source.getDouble();
+            var source = sources.get(i);
+            double d = source.get().doubleValue();
             String category = categories.get(i);
 
             dataset.addValue(d, yaxis, category);
         }
     }
 
-    private abstract class Source {
+    @Deprecated(forRemoval = true)
+    private abstract class Source implements Supplier<Double> {
         // public String label;
         public Enum<?> vId;
         protected boolean isUpdatable;
 
         public abstract double getDouble();
 
+        @Override
+        public Double get() {
+            return this.getDouble();
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DSource extends Source {
         public IDoubleSource source;
 
@@ -180,6 +187,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FSource extends Source {
         public IFloatSource source;
 
@@ -202,6 +210,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class ISource extends Source {
         public IIntSource source;
 
@@ -224,6 +233,7 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LSource extends Source {
         public ILongSource source;
 
@@ -246,6 +256,27 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    /// Add a source of value to plot.
+    ///
+    /// @param legend the legend name for this source.
+    /// @param source the value source.
+    public void addSource(String legend, Supplier<? extends Number> source) {
+        this.sources.add(source);
+        this.categories.add(legend);
+    }
+
+    /// Add a source of value to plot, specifying the colour.
+    ///
+    /// @param legend the legend name for this source.
+    /// @param source the value source.
+    /// @param color  the color to use for plotting.
+    public void addSource(String legend, Supplier<? extends Number> source, Color color) {
+        this.sources.add(source);
+        this.categories.add(legend);
+        var iseries = sources.size() - 1;
+        this.colorMap.addColor(iseries, color);
+    }
+
     /**
      * Build a series retrieving data from a IDoubleSource object, using the
      * default variableId.
@@ -255,7 +286,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      * @param plottableObject
      *                        The data source object implementing the IDoubleSource
      *                        interface.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IDoubleSource plottableObject) {
         sources.add(new DSource(legend, plottableObject, IDoubleSource.Variables.Default));
         // set up gradient paints for series...
@@ -273,7 +306,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                      The variable or method name of the source object.
      * @param getFromMethod
      *                      Specifies if the variableName is a field or a method.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, Object target, String variableName,
             boolean getFromMethod) {
         Source source = null;
@@ -316,7 +351,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        interface.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IDoubleSource plottableObject, Color color) {
         addSources(legend, plottableObject);
         int seriesNum = sources.size() - 1; // Start with value of 0
@@ -336,7 +373,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        The variable id of the source object.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IDoubleSource plottableObject,
             Enum<?> variableID, Color color) {
         sources.add(new DSource(legend, plottableObject, variableID));
@@ -356,7 +395,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        interface.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IFloatSource plottableObject, Color color) {
         sources.add(new FSource(legend, plottableObject, IFloatSource.Variables.Default));
         categories.add(legend);
@@ -376,7 +417,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        The variable id of the source object.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IFloatSource plottableObject,
             Enum<?> variableID, Color color) {
         sources.add(new FSource(legend, plottableObject, variableID));
@@ -396,7 +439,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        interface.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, ILongSource plottableObject, Color color) {
         sources.add(new LSource(legend, plottableObject, ILongSource.Variables.Default));
         categories.add(legend);
@@ -416,7 +461,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        The variable id of the source object.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, ILongSource plottableObject,
             Enum<?> variableID, Color color) {
         sources.add(new LSource(legend, plottableObject, variableID));
@@ -436,7 +483,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        interface.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IIntSource plottableObject, Color color) {
         sources.add(new ISource(legend, plottableObject, IIntSource.Variables.Default));
         categories.add(legend);
@@ -456,7 +505,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                        The variable id of the source object.
      * @param color
      *                        Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, IIntSource plottableObject,
             Enum<?> variableID, Color color) {
         sources.add(new ISource(legend, plottableObject, variableID));
@@ -478,7 +529,9 @@ public class IndividualBarSimulationPlotter extends JInternalFrame implements Ev
      *                      Specifies if the variableName is a field or a method.
      * @param color
      *                      Specifies the color of the bar
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSources(String legend, Object target, String variableName,
             boolean getFromMethod, Color color) {
         addSources(legend, target, variableName, getFromMethod);

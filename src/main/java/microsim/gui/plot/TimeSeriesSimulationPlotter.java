@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import javax.swing.JInternalFrame;
 
@@ -67,7 +68,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Source> sources;
+    private ArrayList<Supplier<? extends Number>> sources;
 
     private XYSeriesCollection dataset;
 
@@ -92,7 +93,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         this.setTitle(title);
         this.maxSamples = maxSamples;
 
-        sources = new ArrayList<Source>();
+        sources = new ArrayList<>();
 
         dataset = new XYSeriesCollection();
 
@@ -145,13 +146,72 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         this.setSize(400, 400);
     }
 
+    /// Add a value source.
+    ///
+    /// @param legend Name of the series.
+    /// @param source The source of values.
+    public void addSource(String legend, Supplier<? extends Number> source) {
+        this.sources.add(source);
+
+        XYSeries series = new XYSeries(legend);
+        if (maxSamples > 0)
+            series.setMaximumItemCount(maxSamples);
+        dataset.addSeries(series);
+    }
+
+    /// Add a value source and set some plotting properties.
+    ///
+    /// @param legend       Name of the series.
+    /// @param source       The source of values.
+    /// @param lineColor    The color of the line.
+    /// @param shapesFilled whether to fill the markers.
+    /// @param isDashed     whether the line is dashed.
+    /// @param shape        what shape to use for markers.
+    public void addSource(String legend, Supplier<? extends Number> source, Color lineColor,
+            boolean shapesFilled, boolean isDashed, Shape shape) {
+        this.sources.add(source);
+
+        XYSeries series = new XYSeries(legend);
+        if (maxSamples > 0)
+            series.setMaximumItemCount(maxSamples);
+        dataset.addSeries(series);
+
+        int seriesIndex = dataset.getSeriesIndex(series.getKey());
+        var renderer = getRenderer();
+        renderer.setSeriesPaint(seriesIndex, lineColor);
+        renderer.setSeriesShapesFilled(seriesIndex, shapesFilled);
+        if (isDashed) {
+            var dashed = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f,
+                    new float[] { 10.0f }, 0.0f);
+            renderer.setSeriesStroke(seriesIndex, dashed);
+        }
+        renderer.setSeriesShape(seriesIndex, shape);
+    }
+
+    /// Add a value source and set plotting properties for validation plot.
+    ///
+    /// @param legend     Name of the series.
+    /// @param source     The source of values.
+    /// @param lineColor  The color of the line.
+    /// @param validation Switch between two plotting styles for validation.
+    public void addSource(String legend, Supplier<? extends Number> source, Color lineColor,
+            boolean validation) {
+        if (validation) {
+            var myRectangle = new Rectangle2D.Float(-3, -3, 6, 6);
+            this.addSource(legend, source, lineColor, false, true, myRectangle);
+        } else {
+            var myCircle = new Ellipse2D.Float(-3, -3, 6, 6);
+            this.addSource(legend, source, lineColor, true, false, myCircle);
+        }
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             double d = 0.0;
             for (int i = 0; i < sources.size(); i++) {
-                Source source = sources.get(i);
+                var source = sources.get(i);
                 XYSeries series = dataset.getSeries(i);
-                d = source.getDouble();
+                d = source.get().doubleValue();
                 series.add(SimulationEngine.getInstance().getTime(), d);
                 // if (maxSamples > 0 && series.getItemCount() > maxSamples ) {
                 // series.remove(0);
@@ -160,23 +220,20 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         }
     }
 
-    private abstract class Source {
-        // public String label;
+    @Deprecated(forRemoval = true)
+    private abstract class Source implements Supplier<Double> {
         public Enum<?> vId;
         protected boolean isUpdatable;
 
         public abstract double getDouble();
 
-        // public String getLabel() {
-        // return label;
-        // }
-        //
-        // public void setLabel(String string) {
-        // label = string;
-        // }
-
+        @Override
+        public Double get() {
+            return this.getDouble();
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DSource extends Source {
         public IDoubleSource source;
 
@@ -199,6 +256,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FSource extends Source {
         public IFloatSource source;
 
@@ -221,6 +279,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class ISource extends Source {
         public IIntSource source;
 
@@ -243,6 +302,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LSource extends Source {
         public ILongSource source;
 
@@ -274,7 +334,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      * @param plottableObject
      *                        The data source object implementing the IDoubleSource
      *                        interface.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject) {
         sources.add(new DSource(legend, plottableObject, IDoubleSource.Variables.Default));
         // plot.addLegend(sources.size() - 1, legend);
@@ -284,6 +346,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         dataset.addSeries(series);
     }
 
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject, Color lineColor, boolean shapesFilled,
             boolean isDashed, Shape shape) {
         sources.add(new DSource(legend, plottableObject, IDoubleSource.Variables.Default));
@@ -315,7 +378,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      *                        interface.
      * @param variableID
      *                        The variable id of the source object.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject,
             Enum<?> variableID) {
         sources.add(new DSource(legend, plottableObject, variableID));
@@ -326,6 +391,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
         dataset.addSeries(series);
     }
 
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject, Enum<?> variableID, Color lineColor,
             boolean shapesFilled, boolean isDashed, Shape shape) {
         sources.add(new DSource(legend, plottableObject, variableID));
@@ -348,6 +414,7 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
 
     }
 
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject, Enum<?> variableID, Color lineColor,
             boolean validation) {
         if (validation) {
@@ -369,7 +436,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      * @param plottableObject
      *                        The data source object implementing the IFloatSource
      *                        interface.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IFloatSource plottableObject) {
         sources.add(new FSource(legend, plottableObject, IFloatSource.Variables.Default));
         // plot.addLegend(sources.size() - 1, legend);
@@ -389,7 +458,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      *                        interface.
      * @param variableID
      *                        The variable id of the source object.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IFloatSource plottableObject,
             Enum<?> variableID) {
         sources.add(new FSource(legend, plottableObject, variableID));
@@ -408,7 +479,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      * @param plottableObject
      *                        The data source object implementing the ILongSource
      *                        interface.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject) {
         sources.add(new LSource(legend, plottableObject, ILongSource.Variables.Default));
         // plot.addLegend(sources.size() - 1, legend);
@@ -428,7 +501,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      *                        interface.
      * @param variableID
      *                        The variable id of the source object.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject,
             Enum<?> variableID) {
         sources.add(new LSource(legend, plottableObject, variableID));
@@ -447,7 +522,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      * @param plottableObject
      *                        The data source object implementing the IIntSource
      *                        interface.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IIntSource plottableObject) {
         sources.add(new ISource(legend, plottableObject, IIntSource.Variables.Default));
         // plot.addLegend(sources.size() - 1, legend);
@@ -467,7 +544,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      *                        interface.
      * @param variableID
      *                        The variable id of the source object.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IIntSource plottableObject,
             Enum<?> variableID) {
         sources.add(new ISource(legend, plottableObject, variableID));
@@ -489,7 +568,9 @@ public class TimeSeriesSimulationPlotter extends JInternalFrame implements Event
      *                      The variable or method name of the source object.
      * @param getFromMethod
      *                      Specifies if the variableName is a field or a method.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, Object target, String variableName,
             boolean getFromMethod) {
         Source source = null;

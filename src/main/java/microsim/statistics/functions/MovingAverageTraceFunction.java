@@ -45,7 +45,10 @@ import microsim.statistics.ILongSource;
  *
  * @author Michele Sonnessa
  * @author Ross Richardson
+ * @deprecated use {@link microsim.dev.statistics.AccumulatorStats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class MovingAverageTraceFunction extends AbstractFunction implements IDoubleSource {
 
     protected static final int TYPE_DBL = 0;

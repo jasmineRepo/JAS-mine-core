@@ -3,9 +3,12 @@ package microsim.gui.plot;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
+import microsim.dev.statistics.WeightedValues;
 import microsim.event.CommonEventType;
 import microsim.event.EventListener;
 import microsim.statistics.IUpdatableSource;
@@ -86,7 +89,8 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
     private JFreeChart chart;
 
-    private WeightedArraySource[] sources;
+    private Supplier<? extends WeightedValues<? extends Number>> leftValues;
+    private Supplier<? extends WeightedValues<? extends Number>> rightValues;
 
     private Weighted_PyramidDataset dataset;
 
@@ -329,8 +333,6 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
     private void preparePlotter() {
         this.setResizable(true);
-        sources = new WeightedArraySource[2];
-
         chart = ChartFactory.createStackedBarChart(
                 title, // chart title
                 this.xaxis, // x axis label
@@ -355,6 +357,20 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         this.setSize(400, 400);
     }
 
+    /// Set the source of weighted values for the left side.
+    ///
+    /// @param values  The source of weighted values.
+    public void setLeft(Supplier<? extends WeightedValues<? extends Number>> values) {
+        this.leftValues = values;
+    }
+
+    /// Set the source of weighted values for the right side.
+    ///
+    /// @param values  The source of weighted values.
+    public void setRight(Supplier<? extends WeightedValues<? extends Number>> values) {
+        this.rightValues = values;
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             update();
@@ -363,16 +379,20 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
 
     // This function generates a new chart based on the latest data
     public void update() {
-        if (sources.length != 2 || catNames.length != 2)
+        if (this.leftValues == null || this.rightValues == null)
             return;
         GroupName[] groupNames = null;
         double[][] groupRanges = null;
 
         // Get the source data
-        var leftData = sources[0];
-        var rightData = sources[1];
-        final double[][] vals = new double[][] { leftData.getDoubleArray(), rightData.getDoubleArray() };
-        final double[][] weights = new double[][] { leftData.getWeights(), rightData.getWeights() };
+        var leftWv = this.leftValues.get();
+        var leftVals = leftWv.values().stream().mapToDouble(Number::doubleValue).toArray();
+        var leftWeights = leftWv.weights().stream().mapToDouble(Number::doubleValue).toArray();
+        var rightWv = this.rightValues.get();
+        var rightVals = rightWv.values().stream().mapToDouble(Number::doubleValue).toArray();
+        var rightWeights = rightWv.weights().stream().mapToDouble(Number::doubleValue).toArray();
+        final double[][] vals = new double[][] { leftVals, rightVals };
+        final double[][] weights = new double[][] { leftWeights, rightWeights };
 
         // If there are no groups defined, create one for each age between the min/max
         // found in the data
@@ -483,6 +503,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private abstract class WeightedArraySource {
         public String label;
         protected boolean isUpdatable;
@@ -490,8 +511,15 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         public abstract double[] getDoubleArray();
 
         public abstract double[] getWeights();
+
+        public WeightedValues<Double> values() {
+            var values = DoubleStream.of(this.getDoubleArray()).boxed().toList();
+            var weights = DoubleStream.of(this.getWeights()).boxed().toList();
+            return new WeightedValues<>(values, weights);
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DWeightedArraySource extends WeightedArraySource {
         public IWeightedDoubleArraySource source;
 
@@ -518,6 +546,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FWeightedArraySource extends WeightedArraySource {
         public IWeightedFloatArraySource source;
 
@@ -549,6 +578,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class IWeightedArraySource extends WeightedArraySource {
         public IWeightedIntArraySource source;
 
@@ -580,6 +610,7 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LWeightedArraySource extends WeightedArraySource {
         public IWeightedLongArraySource source;
 
@@ -618,14 +649,18 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedDoubleArraySource[] source) {
         if (source.length != 2)
             return;
         if (catNames.length != 2)
             return;
-        sources[0] = new DWeightedArraySource(catNames[0], source[0]);
-        sources[1] = new DWeightedArraySource(catNames[1], source[1]);
+        var left = new DWeightedArraySource(catNames[0], source[0]);
+        var right = new DWeightedArraySource(catNames[1], source[1]);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -635,14 +670,18 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedFloatArraySource[] source) {
         if (source.length != 2)
             return;
         if (catNames.length != 2)
             return;
-        sources[0] = new FWeightedArraySource(catNames[0], source[0]);
-        sources[1] = new FWeightedArraySource(catNames[1], source[1]);
+        var left = new FWeightedArraySource(catNames[0], source[0]);
+        var right = new FWeightedArraySource(catNames[1], source[1]);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -652,14 +691,18 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedIntArraySource[] source) {
         if (source.length != 2)
             return;
         if (catNames.length != 2)
             return;
-        sources[0] = new IWeightedArraySource(catNames[0], source[0]);
-        sources[1] = new IWeightedArraySource(catNames[1], source[1]);
+        var left = new IWeightedArraySource(catNames[0], source[0]);
+        var right = new IWeightedArraySource(catNames[1], source[1]);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
     /**
@@ -669,14 +712,18 @@ public class Weighted_PyramidPlotter extends JInternalFrame implements EventList
      * 
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link setLeft} and {@link setRight} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(IWeightedLongArraySource[] source) {
         if (source.length != 2)
             return;
         if (catNames.length != 2)
             return;
-        sources[0] = new LWeightedArraySource(catNames[0], source[0]);
-        sources[1] = new LWeightedArraySource(catNames[1], source[1]);
+        var left = new LWeightedArraySource(catNames[0], source[0]);
+        var right = new LWeightedArraySource(catNames[1], source[1]);
+        this.setLeft(left::values);
+        this.setRight(right::values);
     }
 
 }

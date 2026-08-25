@@ -61,7 +61,9 @@ import microsim.statistics.reflectors.LongInvoker;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa and Ross Richardson
+ * @deprecated use {@link microsim.dev.statistics.AccumulatorStats}
  */
+@Deprecated(forRemoval = true)
 public abstract class MultiTraceFunction implements IDoubleSource, IUpdatableSource, EventListener {
 
     public enum Variables {

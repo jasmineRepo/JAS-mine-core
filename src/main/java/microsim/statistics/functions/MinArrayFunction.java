@@ -45,7 +45,10 @@ import microsim.statistics.ILongSource;
  * Boston, MA 02111-1307, USA.
  *
  * @author Michele Sonnessa
+ * @deprecated use {@link microsim.dev.statistics.Stats}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public abstract class MinArrayFunction extends AbstractArrayFunction implements IDoubleSource {
 
     /**

@@ -2,6 +2,9 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import javax.swing.JInternalFrame;
 
@@ -58,7 +61,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<ArraySource> sources;
+    private ArrayList<Supplier<? extends List<? extends Number>>> sources;
     private ArrayList<String> categories;
 
     private DefaultCategoryDataset dataset;
@@ -67,14 +70,20 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
 
     private Integer maxBars;
 
-    private abstract class ArraySource {
+    @Deprecated(forRemoval = true)
+    private abstract class ArraySource implements Supplier<List<Double>> {
         // public String label;
         protected boolean isUpdatable;
 
         public abstract double[] getDoubleArray();
 
+        @Override
+        public List<Double> get() {
+            return DoubleStream.of(this.getDoubleArray()).boxed().toList();
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DArraySource extends ArraySource {
         public IDoubleArraySource source;
 
@@ -96,6 +105,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FArraySource extends ArraySource {
         public IFloatArraySource source;
 
@@ -122,6 +132,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class IArraySource extends ArraySource {
         public IIntArraySource source;
 
@@ -148,6 +159,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LArraySource extends ArraySource {
         public ILongArraySource source;
 
@@ -179,7 +191,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         this.setResizable(true);
         this.setTitle(title);
 
-        sources = new ArrayList<ArraySource>();
+        sources = new ArrayList<>();
         categories = new ArrayList<String>();
 
         dataset = new DefaultCategoryDataset();
@@ -227,6 +239,15 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
         this.setSize(400, 400);
     }
 
+    /// Add a source of values to plot.
+    ///
+    /// @param name   the legend name for this source.
+    /// @param source the value source.
+    public void addSource(String name, Supplier<? extends List<? extends Number>> source) {
+        this.sources.add(source);
+        this.categories.add(name);
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             update();
@@ -238,7 +259,7 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
             var cs = sources.get(i);
             final String category = categories.get(i);
 
-            double[] vals = cs.getDoubleArray();
+            double[] vals = cs.get().stream().mapToDouble(Number::doubleValue).toArray();
             for (int j = 0; j < vals.length && (j < (maxBars == null ? Integer.MAX_VALUE : maxBars)); j++)
                 dataset.addValue(vals[j], category, "" + j);
         }
@@ -252,7 +273,9 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IDoubleArraySource source) {
         DArraySource sequence = new DArraySource(name, source);
         sources.add(sequence);
@@ -267,7 +290,9 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IFloatArraySource source) {
         FArraySource sequence = new FArraySource(name, source);
         sources.add(sequence);
@@ -282,7 +307,9 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, IIntArraySource source) {
         IArraySource sequence = new IArraySource(name, source);
         sources.add(sequence);
@@ -297,7 +324,9 @@ public class CollectionBarSimulationPlotter extends JInternalFrame implements Ev
      *               The name of the series, which is shown in the legend.
      * @param source
      *               A collection containing the sources.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addCollectionSource(String name, ILongArraySource source) {
         LArraySource sequence = new LArraySource(name, source);
         sources.add(sequence);

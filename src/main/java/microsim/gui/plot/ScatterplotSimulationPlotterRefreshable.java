@@ -2,6 +2,7 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import javax.swing.JInternalFrame;
 
@@ -72,7 +73,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
 
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<Pair<Source, Source>> sources;
+    private ArrayList<Pair<Supplier<? extends Number>, Supplier<? extends Number>>> sources;
 
     private XYSeriesCollection dataset;
 
@@ -139,7 +140,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         this.setTitle(title);
         this.maxSamples = maxSamples;
 
-        sources = new ArrayList<Pair<Source, Source>>();
+        sources = new ArrayList<>();
 
         dataset = new XYSeriesCollection();
 
@@ -182,6 +183,20 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         this.setSize(400, 400);
     }
 
+    /// Add sources for the position of a series.
+    ///
+    /// @param legend  Name of the series.
+    /// @param sourceX Source for the x-axis position.
+    /// @param sourceY Source for the y-axis position.
+    public void addSource(String legend, Supplier<? extends Number> sourceX, Supplier<? extends Number> sourceY) {
+        sources.add(new Pair<>(sourceX, sourceY));
+
+        XYSeries series = new XYSeries(legend);
+        if (maxSamples > 0)
+            series.setMaximumItemCount(maxSamples);
+        dataset.addSeries(series);
+    }
+
     public void onEvent(Enum<?> type) {
         if (type instanceof CommonEventType && type.equals(CommonEventType.Update)) {
             update();
@@ -191,11 +206,11 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
     public void update() {
         double x = 0.0, y = 0.0;
         for (int i = 0; i < sources.size(); i++) {
-            Source source_X = sources.get(i).getFirst();
-            Source source_Y = sources.get(i).getSecond();
+            var source_X = sources.get(i).getFirst();
+            var source_Y = sources.get(i).getSecond();
             XYSeries series = dataset.getSeries(i);
-            x = source_X.getDouble();
-            y = source_Y.getDouble();
+            x = source_X.get().doubleValue();
+            y = source_Y.get().doubleValue();
             series.add(x, y);
             // if (maxSamples > 0 && series.getItemCount() > maxSamples ) { //Should no
             // longer be necessary if using XYSeries.setMaximumItemCount()
@@ -206,23 +221,20 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         }
     }
 
-    private abstract class Source {
-        // public String label;
+    @Deprecated(forRemoval = true)
+    private abstract class Source implements Supplier<Double> {
         public Enum<?> vId;
         protected boolean isUpdatable;
 
         public abstract double getDouble();
 
-        // public String getLabel() {
-        // return label;
-        // }
-        //
-        // public void setLabel(String string) {
-        // label = string;
-        // }
-
+        @Override
+        public Double get() {
+            return this.getDouble();
+        }
     }
 
+    @Deprecated(forRemoval = true)
     private class DSource extends Source {
         public IDoubleSource source;
 
@@ -245,6 +257,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class FSource extends Source {
         public IFloatSource source;
 
@@ -267,6 +280,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class ISource extends Source {
         public IIntSource source;
 
@@ -289,6 +303,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
         }
     }
 
+    @Deprecated(forRemoval = true)
     private class LSource extends Source {
         public ILongSource source;
 
@@ -326,11 +341,13 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      *                          The data source object implementing the
      *                          IDoubleSource
      *                          interface to produce values for the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject_X, IDoubleSource plottableObject_Y) {
         DSource sourceX = new DSource(legend, plottableObject_X, IDoubleSource.Variables.Default);
         DSource sourceY = new DSource(legend, plottableObject_Y, IDoubleSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -358,12 +375,14 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject_X,
             Enum<?> variableID_X, IDoubleSource plottableObject_Y, Enum<?> variableID_Y) {
         DSource sourceX = new DSource(legend, plottableObject_X, variableID_X);
         DSource sourceY = new DSource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -383,14 +402,15 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param plottableObject_Y
      *                          The data source object implementing the IFloatSource
      *                          interface to produce values for the y-axis (range).
-     * 
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IFloatSource plottableObject_X, IFloatSource plottableObject_Y) {
         // sources.add(new FSource(legend, plottableObject,
         // IFloatSource.Variables.Default));
         FSource sourceX = new FSource(legend, plottableObject_X, IFloatSource.Variables.Default);
         FSource sourceY = new FSource(legend, plottableObject_Y, IFloatSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
 
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
@@ -416,12 +436,14 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IFloatSource plottableObject_X,
             Enum<?> variableID_X, IFloatSource plottableObject_Y, Enum<?> variableID_Y) {
         FSource sourceX = new FSource(legend, plottableObject_X, variableID_X);
         FSource sourceY = new FSource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -441,13 +463,15 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param plottableObject_Y
      *                          The data source object implementing the ILongSource
      *                          interface producing values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject_X, ILongSource plottableObject_Y) {
         // sources.add(new LSource(legend, plottableObject,
         // ILongSource.Variables.Default));
         LSource sourceX = new LSource(legend, plottableObject_X, ILongSource.Variables.Default);
         LSource sourceY = new LSource(legend, plottableObject_Y, ILongSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
 
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
@@ -473,12 +497,14 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject_X,
             Enum<?> variableID_X, ILongSource plottableObject_Y, Enum<?> variableID_Y) {
         LSource sourceX = new LSource(legend, plottableObject_X, variableID_X);
         LSource sourceY = new LSource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -500,13 +526,15 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      *                          The data source object implementing the IIntSource
      *                          interface
      *                          producing values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IIntSource plottableObject_X, IIntSource plottableObject_Y) {
         // sources.add(new ISource(legend, plottableObject,
         // IIntSource.Variables.Default));
         ISource sourceX = new ISource(legend, plottableObject_X, IIntSource.Variables.Default);
         ISource sourceY = new ISource(legend, plottableObject_Y, IIntSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
 
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
@@ -534,14 +562,15 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
-     * 
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IIntSource plottableObject_X,
             Enum<?> variableID_X, IIntSource plottableObject_Y, Enum<?> variableID_Y) {
         // sources.add(new ISource(legend, plottableObject, variableID));
         ISource sourceX = new ISource(legend, plottableObject_X, variableID_X);
         ISource sourceY = new ISource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
 
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
@@ -573,7 +602,9 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param getFromMethod_Y
      *                        Specifies if the variableName_Y is a field or a
      *                        method.
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, Object target_X, String variableName_X,
             boolean getFromMethod_X, Object target_Y, String variableName_Y,
             boolean getFromMethod_Y) {
@@ -623,7 +654,7 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
                     + " does not provide a value of a valid data type.");
 
         // sources.add(source);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
             series.setMaximumItemCount(maxSamples);
@@ -645,11 +676,13 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param plottableObject_Y
      *                          The data source object implementing the ILongSource
      *                          interface to produce values for the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject_X, ILongSource plottableObject_Y) {
         DSource sourceX = new DSource(legend, plottableObject_X, IDoubleSource.Variables.Default);
         LSource sourceY = new LSource(legend, plottableObject_Y, ILongSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -677,12 +710,14 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, IDoubleSource plottableObject_X,
             Enum<?> variableID_X, ILongSource plottableObject_Y, Enum<?> variableID_Y) {
         DSource sourceX = new DSource(legend, plottableObject_X, variableID_X);
         LSource sourceY = new LSource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -704,11 +739,13 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      *                          The data source object implementing the
      *                          IDoubleSource
      *                          interface to produce values for the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject_X, IDoubleSource plottableObject_Y) {
         LSource sourceX = new LSource(legend, plottableObject_X, ILongSource.Variables.Default);
         DSource sourceY = new DSource(legend, plottableObject_Y, IDoubleSource.Variables.Default);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
@@ -736,12 +773,14 @@ public class ScatterplotSimulationPlotterRefreshable extends JInternalFrame impl
      * @param variableID_Y
      *                          The variable id of the source object producing
      *                          values of the y-axis (range).
+     * @deprecated Use {@link addSource} instead.
      */
+    @Deprecated(forRemoval = true)
     public void addSeries(String legend, ILongSource plottableObject_X,
             Enum<?> variableID_X, IDoubleSource plottableObject_Y, Enum<?> variableID_Y) {
         LSource sourceX = new LSource(legend, plottableObject_X, variableID_X);
         DSource sourceY = new DSource(legend, plottableObject_Y, variableID_Y);
-        sources.add(new Pair<Source, Source>(sourceX, sourceY));
+        sources.add(new Pair<>(sourceX, sourceY));
         // plot.addLegend(sources.size() - 1, legend);
         XYSeries series = new XYSeries(legend);
         if (maxSamples > 0)
