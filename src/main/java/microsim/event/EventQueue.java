@@ -233,7 +233,7 @@ public class EventQueue {
      *                          event. If this parameter is set to 0, this event
      *                          will not be fired more than once.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public EventQueue schedule(Event event, double atTime, double timeBetweenEvents) {
         event.setTimeOrderingAndLoopPeriod(atTime, 0, timeBetweenEvents);
         scheduleEvent(event);
@@ -263,7 +263,7 @@ public class EventQueue {
      * @param atTime
      *               The time when event will be fired for the first time.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public EventQueue schedule(Event event, double atTime) {
         event.setTimeOrderingAndLoopPeriod(atTime, 0, 0.);
         scheduleEvent(event);

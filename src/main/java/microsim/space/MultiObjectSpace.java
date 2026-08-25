@@ -117,7 +117,7 @@ public class MultiObjectSpace extends DenseObjectSpace {
      * @deprecated Its name has been changed in countObjectsAt Alias for
      *             countObjectsAt
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public int countAt(int x, int y) {
         return countObjectsAt(x, y);
     }

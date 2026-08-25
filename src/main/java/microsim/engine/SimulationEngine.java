@@ -211,6 +211,7 @@ public class SimulationEngine extends Thread {
         ExperimentManager.getInstance().saveExperimentOnDatabase = !turnOffDatabaseConnection;
     }
 
+    @Deprecated(forRemoval = true)
     public Class<?> getBuilderClass() {
         return builderClass;
     }
@@ -227,7 +228,7 @@ public class SimulationEngine extends Thread {
         return turnOffDatabaseConnectionAvailable;
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public void setBuilderClass(Class<?> builderClass) {
         if (!ExperimentBuilder.class.isAssignableFrom(builderClass))
             throw new RuntimeException(builderClass + " does not implement ExperimentBuilder interface!");
