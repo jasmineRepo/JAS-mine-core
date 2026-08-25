@@ -15,7 +15,7 @@ import java.lang.annotation.ElementType;
  * @author Michele Sonnessa
  *
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD }) // Added by Ross
 public @interface ModelParameter {
