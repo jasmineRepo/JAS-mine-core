@@ -22,6 +22,8 @@ public class CrossSection<A, T> implements Supplier<List<T>> {
         this.getObservable = getObservable;
     }
 
+    /// Get the cross-section.
+    @Override
     public List<T> get() {
         return this.source.get().stream().map(this.getObservable).collect(Collectors.toUnmodifiableList());
     }

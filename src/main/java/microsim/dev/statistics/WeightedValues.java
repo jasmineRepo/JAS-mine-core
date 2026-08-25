@@ -9,6 +9,8 @@ public class WeightedValues<T> {
     private final List<Double> weights;
 
     /// Associate `values` with `weights`.
+    ///
+    /// @throws IllegalArgumentException If `values` and `weights` have different lengths.
     public WeightedValues(List<? extends T> values, List<Double> weights) {
         if (values.size() != weights.size()) {
             throw new IllegalArgumentException("values and weights should have the same length");
