@@ -5,6 +5,9 @@ import microsim.statistics.IDoubleSource;
 import java.util.List;
 import java.util.Map;
 
+/// @deprecated use [microsim.dev.statistics.regression]
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public interface IDiscreteChoiceModel<E extends Enum<E> & IntegerValuedEnum> {
 
     List<E> getEventList();

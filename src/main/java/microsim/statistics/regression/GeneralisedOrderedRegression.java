@@ -21,7 +21,12 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
  *         yhatstar_j = Xb_j - e_j
  *         yhat_j = 1 if yhatstar_j>=0 and 0 otherwise
  *         P(yhat_j=1|X) = P(yhatstar_j>=0|X) = P(Xb_j-e_j>=0) = F(Xb_j)
- *****************************************************************/
+ *
+ * @deprecated use
+ *             {@link microsim.dev.statistics.regression.GeneralisedOrderedRegression}
+ */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     Map<E1, MultiKeyCoefficientMap> maps;

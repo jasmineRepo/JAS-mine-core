@@ -1,5 +1,8 @@
 package microsim.statistics.regression;
 
+/// @deprecated use [microsim.dev.statistics.regression.Models]
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public enum RegressionType implements IntegerValuedEnum {
 
     Linear(-1),

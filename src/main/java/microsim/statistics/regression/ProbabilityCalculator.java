@@ -20,7 +20,10 @@ import microsim.statistics.IDoubleSource;
  *         Probit: e follows standard normal distribution; F(Xb) = CDF of
  *         standard normal distribution
  *         Logit: e follows logistic distribution; F(Xb) = 1 / (1 + exp(-Xb))
- *****************************************************************/
+ * @deprecated use {@link microsim.dev.statistics.regression.BinomialRegression}
+ */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class ProbabilityCalculator {
 
     RegressionType type;
