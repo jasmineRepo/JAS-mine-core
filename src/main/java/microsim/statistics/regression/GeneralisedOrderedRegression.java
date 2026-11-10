@@ -5,8 +5,6 @@ import microsim.statistics.IDoubleSource;
 
 import java.util.*;
 
-import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
-
 /*****************************************************************
  * Generalised Ordered Discrete Variable Models
  *
@@ -35,7 +33,7 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
 
     public GeneralisedOrderedRegression(RegressionType type, Class<E1> enumType,
             MultiKeyCoefficientMap multinomialCoefficients) {
-        maps = populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
+        maps = RegressionUtils.populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
         eventList = Arrays.asList(enumType.getEnumConstants());
         eventList.sort(Comparator.comparingInt(IntegerValuedEnum::getValue));
         if (eventList.size() < 3)
