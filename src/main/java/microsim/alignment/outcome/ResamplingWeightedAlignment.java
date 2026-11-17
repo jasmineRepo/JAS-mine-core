@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
+import microsim.Sampling;
 import microsim.agent.Weight;
 import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
-import microsim.statistics.regression.RegressionUtils;
 
 /**
  * Align the population by weighted resampling. This involves picking an agent
@@ -244,12 +243,11 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
         int avgResampleAttemptsPerAgent = 20;
         double sum = 0.;
         double total = 0.;
-        HashMap<T, Double> trueAgentMap = new HashMap<T, Double>();
-        HashMap<T, Double> falseAgentMap = new HashMap<T, Double>();
+        var trueAgents = new ArrayList<T>();
+        var falseAgents = new ArrayList<T>();
 
         // compute total number of simulated positive outcomes
-        for (int i = 0; i < list.size(); i++) {
-            T agent = list.get(i);
+        for (var agent : list) {
             double weight = agent.getWeight();
             if (weight <= 0.) {
                 throw new IllegalArgumentException("Weight cannot be zero or negative in ResamplingWeightedAlignment!");
@@ -257,9 +255,9 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
             total += weight;
             if (closure.getOutcome(agent)) {
                 sum += weight;
-                trueAgentMap.put(agent, weight);
+                trueAgents.add(agent);
             } else {
-                falseAgentMap.put(agent, weight);
+                falseAgents.add(agent);
             }
         }
 
@@ -284,46 +282,34 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 
         // if too many positive outcomes (delta is positive)
         if (delta > 0.) {
-            if (maxResamplingAttempts < trueAgentMap.size()) { // This will catch the case where maxResamplingAttempts
-                                                               // is not included in the arguments. Also it provides a
-                                                               // lower bound for the user to specify, which is the size
-                                                               // of the subset of the population whose outcomes need
-                                                               // changing. Anything less, and the number is
-                                                               // automatically enlarged (in the line below).
-                maxResamplingAttempts = avgResampleAttemptsPerAgent * trueAgentMap.size(); // This creates a default
-                                                                                           // value of 20 times the size
-                                                                                           // of the subset of the
-                                                                                           // population to be resampled
-                                                                                           // in order to move the delta
-                                                                                           // towards 0. Therefore, in
-                                                                                           // order to improve delta, a
-                                                                                           // member of the population
-                                                                                           // undergoing alignment will
-                                                                                           // be resampled up to a
-                                                                                           // maximum of 20 times on
-                                                                                           // average in order to change
-                                                                                           // their outcome, before the
-                                                                                           // alignment algorithm will
-                                                                                           // give up and terminate.
+            // This will catch the case where maxResamplingAttempts is not
+            // included in the arguments. Also it provides a lower bound for
+            // the user to specify, which is the size of the subset of the
+            // population whose outcomes need changing. Anything less, and the
+            // number is automatically enlarged (in the line below).
+            if (maxResamplingAttempts < trueAgents.size()) {
+                // This creates a default value of 20 times the size of the
+                // subset of the population to be resampled in order to move
+                // the delta towards 0. Therefore, in order to improve delta, a
+                // member of the population undergoing alignment will be
+                // resampled up to a maximum of 20 times on average in order to
+                // change their outcome, before the alignment algorithm will
+                // give up and terminate.
+                maxResamplingAttempts = avgResampleAttemptsPerAgent * trueAgents.size();
             }
-            while ((delta > 0.) && (count < maxResamplingAttempts) && !trueAgentMap.isEmpty()) {
+            while ((delta > 0.) && (count < maxResamplingAttempts) && !trueAgents.isEmpty()) {
                 // System.out.println("count, " + count + ", maxCount, " + maxResamplingAttempts
                 // + ", delta, " + delta + ", sum, " + (delta + targetNumber) + ", targetNumber,
                 // " + targetNumber);
                 count++;
-                T agent = RegressionUtils.event(trueAgentMap, SimulationEngine.getRnd(), false); // This makes sample
-                                                                                                 // probability
-                                                                                                 // proportional to
-                                                                                                 // weight (which are
-                                                                                                 // the values of the
-                                                                                                 // trueAgentMap)
+                var agent = Sampling.weighted(SimulationEngine.getRnd(), trueAgents, T::getWeight, 1).get(0);
                 double weight = agent.getWeight();
                 if (delta >= weight) { // Agent has small enough weight to be allowed to make the change.
                     closure.resample(agent);
                     if (!closure.getOutcome(agent)) {
                         delta -= weight;
                         count = 0;
-                        trueAgentMap.remove(agent);
+                        trueAgents.remove(agent);
                     }
                 } else {
                     if (agentSmallestButTooLargeWeight == null) {
@@ -332,10 +318,10 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
                         agentSmallestButTooLargeWeight = agent; // Replace with agent that has smaller weight (that is
                                                                 // still just too big to be used)
                     }
-                    trueAgentMap.remove(agent); // Agent is too big to be resampled normally, only at the end if it
-                                                // brings delta closer to zero. Therefore, we should not still include
-                                                // it in the map to be sampled as it cannot be resampled, so it just
-                                                // wastes time to potentially try it again and again!
+                    trueAgents.remove(agent); // Agent is too big to be resampled normally, only at the end if it
+                                              // brings delta closer to zero. Therefore, we should not still include
+                                              // it in the map to be sampled as it cannot be resampled, so it just
+                                              // wastes time to potentially try it again and again!
                 }
             }
             if (agentSmallestButTooLargeWeight != null) {
@@ -360,48 +346,34 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
 
         else if (delta < 0) { // if too few positive outcomes (delta is negative)
 
-            if (maxResamplingAttempts < falseAgentMap.size()) { // This will catch the case where maxResamplingAttempts
-                                                                // is not included in the arguments. Also it provides a
-                                                                // lower bound for the user to specify, which is the
-                                                                // size of the subset of the population whose outcomes
-                                                                // need changing. Anything less, and the number is
-                                                                // automatically enlarged (in the line below).
-                maxResamplingAttempts = avgResampleAttemptsPerAgent * falseAgentMap.size(); // This creates a default
-                                                                                            // value of 20 times the
-                                                                                            // size of the subset of the
-                                                                                            // population to be
-                                                                                            // resampled in order to
-                                                                                            // move the delta towards 0.
-                                                                                            // Therefore, in order to
-                                                                                            // improve delta, a member
-                                                                                            // of the population
-                                                                                            // undergoing alignment will
-                                                                                            // be resampled up to a
-                                                                                            // maximum of 20 times on
-                                                                                            // average in order to
-                                                                                            // change their outcome,
-                                                                                            // before the alignment
-                                                                                            // algorithm will give up
-                                                                                            // and terminate.
+            // This will catch the case where maxResamplingAttempts is not
+            // included in the arguments. Also it provides a lower bound for
+            // the user to specify, which is the size of the subset of the
+            // population whose outcomes need changing. Anything less, and the
+            // number is automatically enlarged (in the line below).
+            if (maxResamplingAttempts < falseAgents.size()) {
+                // This creates a default value of 20 times the size of the
+                // subset of the population to be resampled in order to move
+                // the delta towards 0. Therefore, in order to improve delta, a
+                // member of the population undergoing alignment will be
+                // resampled up to a maximum of 20 times on average in order to
+                // change their outcome, before the alignment algorithm will
+                // give up and terminate.
+                maxResamplingAttempts = avgResampleAttemptsPerAgent * falseAgents.size();
             }
-            while ((delta < 0.) && (count < maxResamplingAttempts) && !falseAgentMap.isEmpty()) {
+            while ((delta < 0.) && (count < maxResamplingAttempts) && !falseAgents.isEmpty()) {
                 // System.out.println("count, " + count + ", maxCount, " + maxResamplingAttempts
                 // + ", delta, " + delta + ", sum, " + (delta + targetNumber) + ", targetNumber,
                 // " + targetNumber);
                 count++;
-                T agent = RegressionUtils.event(falseAgentMap, SimulationEngine.getRnd(), false); // This makes sample
-                                                                                                  // probability
-                                                                                                  // proportional to
-                                                                                                  // weight (which are
-                                                                                                  // the values of the
-                                                                                                  // falseAgentMap)
+                var agent = Sampling.weighted(SimulationEngine.getRnd(), falseAgents, T::getWeight, 1).get(0);
                 double weight = agent.getWeight();
                 if (-delta >= weight) { // Agent has small enough weight to be allowed to make the change.
                     closure.resample(agent);
                     if (closure.getOutcome(agent)) {
                         delta += weight;
                         count = 0;
-                        falseAgentMap.remove(agent);
+                        falseAgents.remove(agent);
                     }
                 } else {
                     if (agentSmallestButTooLargeWeight == null) {
@@ -410,10 +382,10 @@ public class ResamplingWeightedAlignment<T extends EventListener & Weight> exten
                         agentSmallestButTooLargeWeight = agent; // Replace with agent that has smaller weight (that is
                                                                 // still just too big to be used)
                     }
-                    falseAgentMap.remove(agent); // Agent is too big to be resampled normally, only at the end if it
-                                                 // brings delta closer to zero. Therefore, we should not still include
-                                                 // it in the map to be sampled as it cannot be resampled, so it just
-                                                 // wastes time to potentially try it again and again!
+                    falseAgents.remove(agent); // Agent is too big to be resampled normally, only at the end if it
+                                               // brings delta closer to zero. Therefore, we should not still include
+                                               // it in the map to be sampled as it cannot be resampled, so it just
+                                               // wastes time to potentially try it again and again!
                 }
             }
             if (agentSmallestButTooLargeWeight != null) {
