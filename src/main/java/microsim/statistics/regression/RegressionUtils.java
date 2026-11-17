@@ -16,7 +16,10 @@ import org.apache.commons.math3.linear.RealMatrix;
  *
  * @author Ross Richardson
  * @author Justin van de Ven
+ * @deprecated use {@link microsim.dev.statistics.regression}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class RegressionUtils {
 
     private static final double EPSILON = 1.e-15; // Consider making larger if there are regular

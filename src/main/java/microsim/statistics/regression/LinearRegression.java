@@ -18,7 +18,10 @@ import org.apache.commons.beanutils.PropertyUtils;
  *
  * @author Michele Sonnessa
  * @author Ross Richardson
+ * @deprecated use {@link microsim.dev.statistics.regression.LinearFit}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class LinearRegression implements ILinearRegression {
 
     private MultiKeyCoefficientMap map = null;

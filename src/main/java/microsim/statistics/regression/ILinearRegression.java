@@ -5,6 +5,8 @@ import java.util.Map;
 import microsim.statistics.IDoubleSource;
 import microsim.statistics.IObjectSource;
 
+/// @deprecated use [microsim.dev.statistics.regression]
+@Deprecated(forRemoval = true)
 public interface ILinearRegression {
 
     double getScore(Object individual);

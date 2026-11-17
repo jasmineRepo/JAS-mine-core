@@ -5,8 +5,6 @@ import microsim.statistics.IDoubleSource;
 
 import java.util.*;
 
-import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
-
 /*****************************************************************
  * Multinomial Discrete Variable Models
  *
@@ -22,7 +20,12 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
  *         Define P(y_i=1|X) = exp(Xb_i) / sum(exp(Xb_1),...exp(Xb_n)) for all i
  *         Identification is permitted by normalising one category, k, such that
  *         exp(Xb_k) = 1.0
- *****************************************************************/
+ *
+ * @deprecated use
+ *             {@link microsim.dev.statistics.regression.MultinomialRegression}
+ */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     Map<E1, MultiKeyCoefficientMap> maps;
@@ -31,7 +34,7 @@ public class MultinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> impl
 
     public MultinomialRegression(RegressionType type, Class<E1> enumType,
             MultiKeyCoefficientMap multinomialCoefficients) {
-        maps = populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
+        maps = RegressionUtils.populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
         eventList = Arrays.asList(enumType.getEnumConstants());
         eventList.sort(Comparator.comparingInt(IntegerValuedEnum::getValue));
         if (eventList.size() < 3)

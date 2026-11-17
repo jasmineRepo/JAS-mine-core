@@ -7,7 +7,9 @@ package microsim.statistics.regression;
  * regression scores and probabilities.
  * 
  * @author richardsonr
+ * @deprecated use {@link microsim.dev.statistics.regression}
  */
+@Deprecated(forRemoval = true)
 public enum RegressionColumnNames {
 
     REGRESSOR, // Name of key column containing the regressors (also known as covariates)

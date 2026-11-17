@@ -5,8 +5,6 @@ import microsim.statistics.IDoubleSource;
 
 import java.util.*;
 
-import static microsim.statistics.regression.RegressionUtils.populateMultinomialCoefficientMap;
-
 /*****************************************************************
  * Generalised Ordered Discrete Variable Models
  *
@@ -21,7 +19,12 @@ import static microsim.statistics.regression.RegressionUtils.populateMultinomial
  *         yhatstar_j = Xb_j - e_j
  *         yhat_j = 1 if yhatstar_j>=0 and 0 otherwise
  *         P(yhat_j=1|X) = P(yhatstar_j>=0|X) = P(Xb_j-e_j>=0) = F(Xb_j)
- *****************************************************************/
+ *
+ * @deprecated use
+ *             {@link microsim.dev.statistics.regression.GeneralisedOrderedRegression}
+ */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     Map<E1, MultiKeyCoefficientMap> maps;
@@ -30,7 +33,7 @@ public class GeneralisedOrderedRegression<E1 extends Enum<E1> & IntegerValuedEnu
 
     public GeneralisedOrderedRegression(RegressionType type, Class<E1> enumType,
             MultiKeyCoefficientMap multinomialCoefficients) {
-        maps = populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
+        maps = RegressionUtils.populateMultinomialCoefficientMap(enumType, multinomialCoefficients);
         eventList = Arrays.asList(enumType.getEnumConstants());
         eventList.sort(Comparator.comparingInt(IntegerValuedEnum::getValue));
         if (eventList.size() < 3)

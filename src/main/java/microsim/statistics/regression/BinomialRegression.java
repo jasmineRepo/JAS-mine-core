@@ -19,7 +19,10 @@ import java.util.*;
  * @param <E1> event type.
  *
  * @author Justin van de Ven
+ * @deprecated use {@link microsim.dev.statistics.regression.BinomialRegression}
  */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class BinomialRegression<E1 extends Enum<E1> & IntegerValuedEnum> implements IDiscreteChoiceModel<E1> {
 
     MultiKeyCoefficientMap map;
