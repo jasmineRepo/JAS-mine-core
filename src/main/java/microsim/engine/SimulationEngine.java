@@ -2,7 +2,6 @@ package microsim.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +17,7 @@ import microsim.event.SystemEventType;
 import microsim.exception.SimulationException;
 import microsim.exception.SimulationRuntimeException;
 
-import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,7 +78,9 @@ public class SimulationEngine extends Thread {
     private Map<String, SimulationManager> modelMap;
     private boolean modelBuild = false;
 
-    private static Random rnd;
+    // FIXME: no reason for this to be static.
+    // FIXME: this generator is of poor quality, we should use a more robust one.
+    private static JDKRandomGenerator rnd;
     private long randomSeed;
 
     protected ArrayList<EngineListener> engineListeners;
@@ -148,53 +149,13 @@ public class SimulationEngine extends Thread {
         eventQueue = new EventQueue();
         models = new ArrayList<SimulationManager>();
         modelMap = new HashMap<String, SimulationManager>();
+        rnd = new JDKRandomGenerator();
         randomSeed = System.currentTimeMillis();
-        // rnd = new Random(randomSeed);
-        rnd = new RandomNumberGenerator(randomSeed);
+        rnd.setSeed(randomSeed);
         engineListeners = new ArrayList<EngineListener>();
         this.atStepEnd = new ArrayList<>();
 
         instance = this;
-    }
-
-    /*
-     * This class enables the construction of an apache commons math3
-     * MultivariateNormalDistribution class that uses the SimulationEngine's rnd
-     * object.
-     * 
-     * RandomNumberGenerator is basically the Java.util.Random object as previously,
-     * however now it implements the RandomGenerator interface from apache commons
-     * math3,
-     * which is compatible with Java.util.Random
-     * 
-     * @author Ross Richardson
-     *
-     */
-    class RandomNumberGenerator extends Random implements RandomGenerator {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 5942825728562046996L;
-
-        RandomNumberGenerator(long seed) {
-            super(seed);
-        }
-
-        @Override
-        public void setSeed(int seed) {
-            setSeed((long) seed);
-
-        }
-
-        @Override
-        public void setSeed(int[] seed) {
-            throw new RuntimeException("SimulationEngine's RandomNumberGenerator class "
-                    + "is derived from the Java.util.Random class, which doesn't "
-                    + "implement a constructor taking an int[] argument.  This method "
-                    + "should not be used!\n" + Arrays.toString(Thread.currentThread().getStackTrace()));
-        }
-
     }
 
     public boolean isTurnOffDatabaseConnection() {
@@ -331,12 +292,10 @@ public class SimulationEngine extends Thread {
         return eventQueue.getTime();
     }
 
-    /**
-     * Return a reference to the current Random generator.
-     * 
-     * @return The current random generator.
-     */
-    public static Random getRnd() {
+    /// Current random generator.
+    ///
+    /// @return an instance of [JDKRandomGenerator]
+    public static JDKRandomGenerator getRnd() {
         return rnd;
     }
 
@@ -358,7 +317,7 @@ public class SimulationEngine extends Thread {
         models = new ArrayList<SimulationManager>();
         modelMap = new HashMap<String, SimulationManager>();
         randomSeed = System.currentTimeMillis();
-        rnd = new RandomNumberGenerator(randomSeed);
+        rnd.setSeed(randomSeed);
     }
 
     /**
@@ -649,8 +608,11 @@ public class SimulationEngine extends Thread {
 
     }
 
+    /// Current random number generator.
+    ///
+    /// @deprecated use [getRnd] instead.
+    @Deprecated(forRemoval = true)
     public Random getRandom() {
-        // return new Random(rnd.nextLong());
         return rnd;
     }
 

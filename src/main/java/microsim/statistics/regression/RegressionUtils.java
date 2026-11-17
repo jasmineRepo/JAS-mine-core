@@ -10,7 +10,6 @@ import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.random.RandomGenerator;
 
 /**
  * Miscellaneous regression helpers.
@@ -462,7 +461,7 @@ public class RegressionUtils {
                                                                                 // SYMMETRIC_MATRIX_EPS (relative
                                                                                 // tolerance) a priori
         MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution(
-                (RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrix);
+                SimulationEngine.getRnd(), means, covarianceMatrix);
         means = multiNormDist.sample(); // This returns the bootstrapped values of the estimates
 
         // Create new multikeycoefficientmap to return with new bootstrapped column, in
@@ -563,7 +562,7 @@ public class RegressionUtils {
                                                                                 // SYMMETRIC_MATRIX_EPS (relative
                                                                                 // tolerance) a priori
         MultivariateNormalDistribution multiNormDist = new MultivariateNormalDistribution(
-                (RandomGenerator) SimulationEngine.getRnd(), means, covarianceMatrixOrdered);
+                SimulationEngine.getRnd(), means, covarianceMatrixOrdered);
         means = multiNormDist.sample(); // This returns the bootstrapped values of the estimates
 
         MultiKeyCoefficientMap bootstrapMap = new MultiKeyCoefficientMap(coefficientKeys, valuesNames);
