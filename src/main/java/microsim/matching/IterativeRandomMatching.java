@@ -5,16 +5,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.math3.util.Pair;
 
+import microsim.Sampling;
 import microsim.engine.SimulationEngine;
-import microsim.statistics.regression.RegressionUtils;
 
 public class IterativeRandomMatching<T> implements IterativeMatchingAlgorithm<T> {
 
@@ -61,25 +59,20 @@ public class IterativeRandomMatching<T> implements IterativeMatchingAlgorithm<T>
                                               // for example the matching score is infinity or NaN).
             T agent1 = c1.get(i);
 
-            Map<T, Double> potentialMatches = new LinkedHashMap<T, Double>();
-            for (T candidate : c2) {
-                Double score = doubleClosure.getValue(agent1, candidate);
-                if (Double.isFinite(score)) { // Do not add people with scores of infinity or NaN
-                    potentialMatches.put(candidate, Math.exp(-score)); // Lower scores are more likely. Note therefore
-                                                                       // that we shouldn't use a pseudo-normal (i.e.
-                                                                       // Math.exp(-score*score/2), because that would
-                                                                       // be a symmetric distribution, whereas we need
-                                                                       // one that favours one direction of the score
-                                                                       // (i.e. negative - a large negative score is
-                                                                       // more favoured than a small positive one,
-                                                                       // unlike in the normal dist.).
-                }
-            }
+            // Randomly sample a partner with a probability associated with the
+            // score. Lower scores are more likely. Note therefore that we
+            // shouldn't use a pseudo-normal distribution (i.e.
+            // Math.exp(-score*score/2), because that would be a symmetric
+            // distribution, whereas we need one that favours one direction of
+            // the score (i.e. negative - a large negative score is more
+            // favoured than a small positive one, unlike in the normal dist.).
+            var sampledPartner = Sampling.weighted(SimulationEngine.getRnd(), c2, candidate -> {
+                var score = doubleClosure.getValue(agent1, candidate);
+                return Double.isFinite(score) ? Math.exp(-score) : 0.0;
+            }, 1);
 
-            // Randomly sample a partner with a probability associated with the score
-            // (lowest scores are more likely)
-            if (!potentialMatches.isEmpty()) { // If no potential partners, move on to the next agent1
-                T partner = RegressionUtils.event(potentialMatches, false);
+            if (!sampledPartner.isEmpty()) { // If no potential partners, move on to the next agent1
+                var partner = sampledPartner.get(0);
                 matching.match(agent1, partner);
                 c2.remove(partner);
                 // numberMatchesMade++;
