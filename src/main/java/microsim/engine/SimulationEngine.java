@@ -608,8 +608,11 @@ public class SimulationEngine extends Thread {
 
     }
 
+    /// Current random number generator.
+    ///
+    /// @deprecated use [getRnd] instead.
+    @Deprecated(forRemoval = true)
     public Random getRandom() {
-        // return new Random(rnd.nextLong());
         return rnd;
     }
 
