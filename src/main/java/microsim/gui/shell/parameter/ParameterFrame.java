@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.swing.*;
 import microsim.annotation.GUIparameter;
 import microsim.annotation.ModelParameter;
+import microsim.data.GUIParameterHistory;
 import microsim.gui.shell.MicrosimShell;
 
 import org.metawidget.inspector.composite.CompositeInspector;
@@ -75,6 +76,13 @@ public class ParameterFrame extends JInternalFrame {
 
     public void save() {
         binder.save(metawidget);
+    }
+
+    /** Save this frame and return only GUI parameters whose values changed. */
+    public List<GUIParameterHistory.ParameterValue> saveAndGetChanges() throws IllegalAccessException {
+        List<GUIParameterHistory.ParameterValue> before = GUIParameterHistory.capture(target);
+        save();
+        return GUIParameterHistory.changedValues(before, GUIParameterHistory.capture(target));
     }
 
     public static class TooltipInspector

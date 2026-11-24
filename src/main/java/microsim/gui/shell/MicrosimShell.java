@@ -23,6 +23,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
+import microsim.data.GUIParameterHistory;
 import microsim.engine.EngineListener;
 import microsim.engine.SimulationEngine;
 import microsim.engine.SimulationManager;
@@ -535,8 +536,22 @@ public class MicrosimShell extends JFrame {
         }
 
         public void updateModelParams() {
+            List<GUIParameterHistory.ParameterValue> changes = new ArrayList<>();
             for (ParameterFrame parameterFrame : parameterFrames) {
-                parameterFrame.save();
+                try {
+                    changes.addAll(parameterFrame.saveAndGetChanges());
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Could not read updated GUI parameters", e);
+                }
+            }
+
+            if (changes.isEmpty() || callerEngine.getCurrentExperiment() == null) return;
+            try {
+                GUIParameterHistory.appendChanges(
+                        new File(callerEngine.getCurrentExperiment().getOutputFolder()),
+                        callerEngine.getTime(), changes);
+            } catch (IOException e) {
+                System.out.println("Warning: could not write parameter update log: " + e.getMessage());
             }
         }
 

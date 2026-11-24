@@ -39,6 +39,13 @@ class ExperimentManagerLifecycleTest {
         ModelFixture(int value) {
             this.value = value;
         }
+
+        void editValue(Experiment experiment, double time, int newValue) throws Exception {
+            var before = GUIParameterHistory.capture(this);
+            value = newValue;
+            var changes = GUIParameterHistory.changedValues(before, GUIParameterHistory.capture(this));
+            GUIParameterHistory.appendChanges(Path.of(experiment.getOutputFolder()).toFile(), time, changes);
+        }
     }
 
     @TempDir
@@ -108,7 +115,7 @@ class ExperimentManagerLifecycleTest {
         assertEquals("earlier run must survive", Files.readString(sentinel));
         Experiment next = manager.createExperiment(null);
         manager.setupExperiment(next, new ModelFixture(9));
-        assertTrue(Files.isDirectory(Path.of(next.getOutputFolder())));
+        assertTrue(Files.exists(Path.of(next.getOutputFolder(), "GUIparameters.csv")));
     }
 
     @Test
@@ -121,7 +128,9 @@ class ExperimentManagerLifecycleTest {
         Experiment first = manager.createExperiment(null);
         first.runId = "run-a";
         first.setOutputFolder(firstRunDirectory.toString());
-        first = manager.setupExperiment(first, new ModelFixture(1));
+        ModelFixture firstModel = new ModelFixture(1);
+        first = manager.setupExperiment(first, firstModel);
+        firstModel.editValue(first, 2027.0, 11);
 
         String sessionDatabaseUrl = DatabaseUtils.databaseOutputUrl;
         assertNotNull(first.id);
@@ -135,7 +144,21 @@ class ExperimentManagerLifecycleTest {
         Experiment second = manager.createExperiment(null);
         second.runId = "run-b";
         second.setOutputFolder(secondRunDirectory.toString());
-        second = manager.setupExperiment(second, new ModelFixture(2));
+        ModelFixture secondModel = new ModelFixture(2);
+        second = manager.setupExperiment(second, secondModel);
+        secondModel.editValue(second, 2028.0, 22);
+
+        String component = ModelFixture.class.getCanonicalName();
+        assertEquals(List.of(
+                GUIParameterHistory.HEADER,
+                "0.0," + component + ",value,1",
+                "2027.0," + component + ",value,11"),
+                Files.readAllLines(firstRunDirectory.resolve(GUIParameterHistory.FILE_NAME)));
+        assertEquals(List.of(
+                GUIParameterHistory.HEADER,
+                "0.0," + component + ",value,2",
+                "2028.0," + component + ",value,22"),
+                Files.readAllLines(secondRunDirectory.resolve(GUIParameterHistory.FILE_NAME)));
 
         assertNotNull(second.id);
         assertNotEquals(first.id, second.id);
@@ -161,5 +184,24 @@ class ExperimentManagerLifecycleTest {
         assertFalse(DatabaseUtils.isOutputInitialized());
         assertNull(DatabaseUtils.databaseOutputUrl);
         assertNull(DatabaseUtils.databaseInputUrl);
+    }
+
+    @Test
+    void initialParameterHistoryIsWrittenWhenDatabasePersistenceIsDisabled() throws Exception {
+        manager.saveExperimentOnDatabase = false;
+        manager.copyInputFolderStructure = false;
+        Path runDirectory = temporaryDirectory.resolve("output/no-database");
+
+        Experiment experiment = manager.createExperiment(null);
+        experiment.runId = "no-database";
+        experiment.setOutputFolder(runDirectory.toString());
+        experiment = manager.setupExperiment(experiment, new ModelFixture(7));
+
+        assertNull(experiment.id);
+        assertFalse(DatabaseUtils.isOutputInitialized());
+        assertEquals(List.of(
+                GUIParameterHistory.HEADER,
+                "0.0," + ModelFixture.class.getCanonicalName() + ",value,7"),
+                Files.readAllLines(runDirectory.resolve(GUIParameterHistory.FILE_NAME)));
     }
 }

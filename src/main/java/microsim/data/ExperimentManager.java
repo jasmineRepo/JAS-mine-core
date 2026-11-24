@@ -217,6 +217,13 @@ public class ExperimentManager {
                 if (entityManager != null && entityManager.isOpen()) entityManager.close();
             }
         }
+        try {
+            GUIParameterHistory.writeInitial(
+                    new File(experiment.getOutputFolder()), 0.0, models);
+        } catch (Exception e) {
+            log.error("Failed to write initial GUI parameter history", e);
+        }
+
         return experiment;
     }
 }
