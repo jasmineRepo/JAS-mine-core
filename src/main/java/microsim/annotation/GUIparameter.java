@@ -6,8 +6,9 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * Annotate variables of the simulation manager to automatically display on the
- * GUI (Graphical User Interface). A GUIparameter can be modified at run-time.
+ * Annotates simulation-manager fields for display in the GUI. By default, a
+ * parameter is available for editing at runtime. Set {@link #runtimeModifiable()}
+ * to false to indicate that it should remain fixed after the model is built.
  * Was previously called ModelParmameter but the name was changed as it was
  * considered
  * misleading.
@@ -23,5 +24,10 @@ public @interface GUIparameter {
     public String name() default "";
 
     public String description() default "";
+
+    /**
+     * @return whether the parameter may be edited after the model is built
+     */
+    public boolean runtimeModifiable() default true;
 
 }
