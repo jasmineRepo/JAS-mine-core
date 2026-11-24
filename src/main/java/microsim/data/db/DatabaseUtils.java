@@ -254,6 +254,8 @@ public class DatabaseUtils {
 
                 var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + databaseInputUrl);
+                microsim.data.StorageProtection.protectDatabase("core.input-factory",
+                    java.nio.file.Path.of(databaseInputUrl), "Retained core input connection factory");
                 entityManagerFactory = Persistence.createEntityManagerFactory("sim-model", propertyMap);
 
             } catch (Throwable ex) {
@@ -274,6 +276,8 @@ public class DatabaseUtils {
                 // Create the EntityManagerFactory
                 var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseInputUrl);
+                microsim.data.StorageProtection.protectDatabase("core.schema-update:" + databaseInputUrl,
+                    java.nio.file.Path.of(databaseInputUrl), "Schema update connection lifetime not established");
                 EntityManager em = Persistence.createEntityManagerFactory("sim-model", propertyMap)
                         .createEntityManager();
                 EntityTransaction tx = em.getTransaction();
@@ -296,22 +300,73 @@ public class DatabaseUtils {
             tx.rollback();
     }
 
+    /** Return whether the session-scoped output database factory is open. */
+    public static synchronized boolean isOutputInitialized() {
+        return outEntityManagerFactory != null && outEntityManagerFactory.isOpen();
+    }
+
+    /**
+     * Close the session-scoped output database factory and clear its configured
+     * URL. Normal model resets must not call this method; it is for JVM/session
+     * shutdown and test cleanup.
+     */
+    public static synchronized void closeOutputEntityManagerFactory() {
+        try {
+            if (outEntityManagerFactory != null && outEntityManagerFactory.isOpen()) {
+                outEntityManagerFactory.close();
+            }
+        } finally {
+            outEntityManagerFactory = null;
+            databaseOutputUrl = null;
+        }
+    }
+
+    /**
+     * Close the input database factory and clear its configured URL. Normal model
+     * resets must not call this method; it is for JVM/session shutdown and tests.
+     */
+    public static synchronized void closeInputEntityManagerFactory() {
+        try {
+            if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+                entityManagerFactory.close();
+            }
+            microsim.data.StorageProtection.release("core.input-factory");
+        } finally {
+            entityManagerFactory = null;
+            databaseInputUrl = null;
+        }
+    }
+
+    /** Close all JAS-mine database factories at JVM/session termination. */
+    public static synchronized void closeEntityManagerFactories() {
+        RuntimeException failure = null;
+        try {
+            closeInputEntityManagerFactory();
+        } catch (RuntimeException e) {
+            failure = e;
+        }
+        try {
+            closeOutputEntityManagerFactory();
+        } catch (RuntimeException e) {
+            if (failure == null) failure = e;
+            else failure.addSuppressed(e);
+        }
+        if (failure != null) throw failure;
+    }
+
     public static EntityManager getOutEntityManger() {
         return getOutEntityManger("sim-model-out");
     }
 
-    public static EntityManager getOutEntityManger(String persistenceUnitName) {
+    public static synchronized EntityManager getOutEntityManger(String persistenceUnitName) {
         if (SimulationEngine.getInstance().isTurnOffDatabaseConnection())
             return null;
 
-        if (outEntityManagerFactory == null) {
+        if (!isOutputInitialized()) {
             try {
-
-                // Create the EntityManagerFactory
                 var propertyMap = new HashMap<String, String>();
                 propertyMap.put("hibernate.connection.url", "jdbc:h2:file:" + DatabaseUtils.databaseOutputUrl);
                 outEntityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName, propertyMap);
-
             } catch (Throwable ex) {
                 log.fatal("Initial EntityManagerFactory creation failed." + ex);
                 if (ex instanceof PersistenceException)
