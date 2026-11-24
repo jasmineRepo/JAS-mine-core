@@ -396,7 +396,21 @@ public class SimulationEngine extends Thread {
             currentExperiment = ExperimentManager.getInstance().setupExperiment(currentExperiment,
                     models.toArray());
         } catch (Exception e) {
-            e.printStackTrace();
+            var failure = new microsim.exception.ExperimentSetupException(e);
+            // Failed input copies or database setup cannot produce a usable run.
+            // Attempt every cleanup, preserving the original cause if disposal fails.
+            modelBuild = false;
+            runningStatus = false;
+            eventQueue.clear();
+            for (SimulationManager manager : models) {
+                try { manager.dispose(); }
+                catch (RuntimeException cleanup) { failure.addSuppressed(cleanup); }
+            }
+            models.clear();
+            modelMap.clear();
+            try { microsim.data.db.DatabaseUtils.closeEntityManagerFactories(); }
+            catch (RuntimeException cleanup) { failure.addSuppressed(cleanup); }
+            throw failure;
         }
 
         if (modelBuild)
