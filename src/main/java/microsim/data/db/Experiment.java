@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,6 +57,9 @@ public class Experiment {
     @Transient
     private String outputFolder;
 
+    @Transient
+    private boolean generatedOutputFolder;
+
     public Experiment() {
         initialiseOutputFolder();
     }
@@ -69,18 +73,25 @@ public class Experiment {
 
     public void setOutputFolder(String outputFolder) {
         this.outputFolder = outputFolder;
+        generatedOutputFolder = false;
     }
+
+    /** Automatically named runs must claim a new directory before writing. */
+    public boolean isGeneratedOutputFolder() { return generatedOutputFolder; }
 
     public void initialiseOutputFolder() {
 
         if (null != Experiment.testOutputFolder) {
             outputFolder = Experiment.testOutputFolder;
+            generatedOutputFolder = false;
             return;
         }
 
         if (runId == null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            runId = sdf.format(new Date());
+            // Keep the date prefix and numeric run-name alphabet used by the
+            // web exporters. UUID randomness is independent of the model RNG.
+            runId = sdf.format(new Date()) + "-" + Long.toUnsignedString(UUID.randomUUID().getMostSignificantBits());
         }
         // multiRunId represents the seed of this run
         if (this.multiRunId == null) {
@@ -88,6 +99,7 @@ public class Experiment {
         } else {
             outputFolder = outputRootFolder + File.separatorChar + runId + "_" + multiRunId;
         }
+        generatedOutputFolder = true;
 
     }
 

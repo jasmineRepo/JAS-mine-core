@@ -8,6 +8,7 @@ import java.util.Map;
 import microsim.data.ExperimentManager;
 import microsim.data.ParameterDomain;
 import microsim.event.SystemEventType;
+import microsim.exception.ExperimentSetupException;
 
 /**
  * MultiRun is a template abstract class useful to guide the modeller to build
@@ -103,7 +104,7 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
             try {
                 go();
             } catch (Exception e) {
-                System.out.println("Run failed: " + e.getMessage());
+                reportRunFailure(e);
                 System.exit(1);
             }
 
@@ -116,6 +117,15 @@ public abstract class MultiRun extends Thread implements EngineListener, Experim
         }
 
         System.exit(0);
+    }
+
+    static void reportRunFailure(Exception failure) {
+        System.out.println("Run failed: " + failure.getMessage());
+        if (failure instanceof ExperimentSetupException) {
+            // The native launcher keeps stderr private. Preserve nested quota/I/O
+            // causes for resource recovery without exposing them in HTTP errors.
+            failure.printStackTrace(System.err);
+        }
     }
 
     /** The go method starts the multi-run simulation. */
