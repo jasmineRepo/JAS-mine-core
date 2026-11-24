@@ -64,6 +64,8 @@ public class SimulationEngine extends Thread {
 
     private int eventThresold = 0;
 
+    private final ExecutionTimer executionTimer = new ExecutionTimer();
+
     private int currentRunNumber = 1;
 
     private Experiment currentExperiment = null;
@@ -313,6 +315,7 @@ public class SimulationEngine extends Thread {
 
     public void reset() {
         pause();
+        executionTimer.reset();
         eventQueue = new EventQueue();
         models = new ArrayList<SimulationManager>();
         modelMap = new HashMap<String, SimulationManager>();
@@ -386,6 +389,7 @@ public class SimulationEngine extends Thread {
 
     /** Call the buildModel() method of each active SimModel. */
     public void buildModels() {
+        executionTimer.reset();
         currentExperiment = ExperimentManager.getInstance().createExperiment(multiRunId);
 
         turnOffDatabaseConnectionAvailable = (!turnOffDatabaseConnection);
@@ -557,10 +561,24 @@ public class SimulationEngine extends Thread {
         if (!modelBuild)
             buildModels();
 
-        eventQueue.step();
+        long timingGeneration = executionTimer.start();
+        try {
+            eventQueue.step();
+        } finally {
+            executionTimer.stop(timingGeneration);
+        }
         notifySimulationListeners(SystemEventType.Step);
         this.atStepEnd.forEach(SideEffect::call);
         Thread.yield();
+    }
+
+    /**
+     * Wall-clock nanoseconds spent executing queued events since the latest build/reset.
+     * Includes the current event when called by a model. Excludes building, idle/paused
+     * intervals, inter-step delays and engine listener/atStepEnd callbacks.
+     */
+    public long getExecutionTimeNanos() {
+        return executionTimer.elapsedNanos();
     }
 
     protected synchronized void notifySimulationListeners(SystemEventType event) {
