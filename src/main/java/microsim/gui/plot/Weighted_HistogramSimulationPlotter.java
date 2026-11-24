@@ -2,6 +2,7 @@ package microsim.gui.plot;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
 
@@ -79,6 +80,22 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
     private ArrayList<String> labels;
 
     private Weighted_HistogramDataset dataset;
+
+    /** Immutable plotted values from one completed update, safe for concurrent readers. */
+    public record HistogramSeries(String name, List<Double> binEdges, List<Double> values) {
+        public HistogramSeries {
+            binEdges = List.copyOf(binEdges);
+            values = List.copyOf(values);
+        }
+    }
+
+    private volatile List<HistogramSeries> completedHistogram = List.of();
+
+    /** Does not evaluate sources or wait for an in-progress simulation step. */
+    public List<HistogramSeries> getCompletedHistogram() {
+        return completedHistogram;
+    }
+
 
     private HistogramType type;
 
@@ -270,6 +287,21 @@ public class Weighted_HistogramSimulationPlotter extends JInternalFrame implemen
         }
         dataset.seriesChanged(
                 new SeriesChangeEvent(new String("Update at time " + SimulationEngine.getInstance().getTime())));
+
+        List<HistogramSeries> completed = new ArrayList<>();
+        for (int series = 0; series < dataset.getSeriesCount(); series++) {
+            List<Double> edges = new ArrayList<>();
+            List<Double> values = new ArrayList<>();
+            int items = dataset.getItemCount(series);
+            for (int item = 0; item < items; item++) {
+                edges.add(dataset.getStartX(series, item).doubleValue());
+                values.add(dataset.getY(series, item).doubleValue());
+            }
+            if (items > 0) edges.add(dataset.getEndX(series, items - 1).doubleValue());
+            completed.add(new HistogramSeries(dataset.getSeriesKey(series).toString(), edges, values));
+        }
+        // Publish only after all series succeed. Existing desktop exceptions propagate.
+        completedHistogram = List.copyOf(completed);
 
     }
 
